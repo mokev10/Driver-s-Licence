@@ -5,3 +5,8 @@ pdf417gen>=0.5.0
 pytest>=7.0
 charset-normalizer>=2.0.0
 urllib3>=1.26.0
+pandas
+plotly
+numpy
+pillow
+python-dotenv
