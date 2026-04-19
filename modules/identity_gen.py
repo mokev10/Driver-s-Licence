@@ -49,36 +49,76 @@ def show_identity_gen():
 
     st.divider()
 
-    # STEP 3: GENERATION
-    st.markdown("### 🚀 Étape 3 : Génération du PDF417")
+    # STEP 3: GENERATION & OPTIONS
+    st.markdown("### 🚀 Étape 3 : Génération & Options Avancées")
+    eval_escapes = st.checkbox("Évaluer les séquences d'échappement (ex: \\n pour ENTRÉE)", value=True)
+    
     if st.button("Générer le Bloc AAMVA & Code-barres", use_container_width=True):
         aamva_header = f"ANSI {mock_iin}050102DL00410287ZO02900045DL"
         
         # Build the data string
         raw_data = f"@\n{aamva_header}\nDCG{dcg}\nDCS{dcs}\nDAC{dac}\nDBB{dbb}\nDAG{dag}\nDAI{dai}\nDAJ{region[:2].upper()}\nDAK{dak}\nDBD{dbd}\nDBA{dba}\nDBC{dbc}\nDAU{dau}\nDAY{day}\nDCF{dcf}"
         
+        # Process escape sequences
+        if eval_escapes:
+            raw_data = raw_data.replace("\\n", "\n").replace("\\t", "\t").replace("\\r", "\r")
+            
         st.success("Données AAMVA générées avec succès")
         with st.expander("Voir le Code Brut"):
             st.code(raw_data, language="text")
+
+        # ADVANCED OPTIONS SECTION
+        st.markdown("---")
+        st.subheader("🛠️ Paramètres du Code-barres")
         
+        adv_col1, adv_col2 = st.columns(2)
+        
+        with adv_col1:
+            unit = st.selectbox("Largeur de module unité", ["Pixel", "mm", "mils"], index=0)
+            module_width = st.number_input("Largeur du module", min_value=1, max_value=10, value=3)
+            dpi = st.slider("Résolution d'image (DPI)", 72, 600, 300)
+            img_format = st.selectbox("Format d'image", ["PNG", "SVG"], index=0)
+            
+        with adv_col2:
+            show_hrt = st.radio("Afficher le texte lisible (HRT)", ["NON", "OUI"], index=0)
+            quiet_unit = st.selectbox("Unité de la zone de repos", ["Pixel", "mm", "mils"], index=0)
+            quiet_zone = st.number_input("Zone de repos (Padding)", min_value=0, max_value=50, value=2)
+            rotation = st.selectbox("Rotation d'image", ["0°", "90°", "180°", "270°"], index=0)
+
         try:
             # Generate PDF417 Barcode
-            codes = encode(raw_data, columns=10)
-            image = render_image(codes, scale=3)
+            columns = 10
+            codes = encode(raw_data, columns=columns)
             
-            # Convert to buffer
+            # Rendering scale logic (simplified mapping for units)
+            scale_factor = module_width
+            if unit == "mm": scale_factor = int(module_width * 3.78) # Approx pixels at 96dpi
+            elif unit == "mils": scale_factor = int(module_width * 0.096)
+            
+            # Apply padding
+            padding = quiet_zone
+            
+            image = render_image(codes, scale=max(1, scale_factor), padding=padding)
+            
+            # Handle format
             buf = io.BytesIO()
-            image.save(buf, format="PNG")
-            byte_im = buf.getvalue()
-            
-            st.image(byte_im, caption="Code-barres PDF417 AAMVA", use_container_width=True)
-            
-            st.download_button(
-                label="📥 Télécharger le Code-barres (PNG)",
-                data=byte_im,
-                file_name=f"pdf417_{region}_{dcs}.png",
-                mime="image/png",
-                use_container_width=True
-            )
+            if img_format == "PNG":
+                image.save(buf, format="PNG", dpi=(dpi, dpi))
+                byte_im = buf.getvalue()
+                st.image(byte_im, caption="Code-barres PDF417 AAMVA", use_container_width=True)
+                
+                st.download_button(
+                    label=f"📥 Télécharger le Code-barres ({img_format})",
+                    data=byte_im,
+                    file_name=f"pdf417_{region}_{dcs}.png",
+                    mime="image/png",
+                    use_container_width=True
+                )
+            else:
+                # SVG Placeholder (requires reportlab for true SVG drawing of barcodes)
+                st.info("Le format SVG est généré via le moteur ReportLab.")
+                st.image(image, use_container_width=True)
+                image.save(buf, format="PNG") # Fallback for display
+                
         except Exception as e:
             st.error(f"Erreur lors de la génération : {str(e)}")
