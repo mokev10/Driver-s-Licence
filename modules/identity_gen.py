@@ -89,18 +89,28 @@ def show_identity_gen():
             # Generate PDF417 Bit Codes
             codes = encode(raw_data_internal, columns=10)
             
-            # Rendering scale logic
-            scale_factor = module_width
-            if unit == "mm": scale_factor = int(module_width * 3.78)
-            elif unit == "mils": scale_factor = int(module_width * 0.096)
+            # Rendering scale logic (DPI-Aware Precision)
+            # 1 inch = 25.4 mm
+            pixels_per_inch = dpi
+            pixels_per_mm = pixels_per_inch / 25.4
             
+            if unit == "mm":
+                scale_factor = module_width * pixels_per_mm
+            elif unit == "mils":
+                # 1 mil = 1/1000 inch
+                scale_factor = (module_width / 1000) * pixels_per_inch
+            else: # Pixel
+                scale_factor = module_width
+            
+            # For SVG/PNG rendering, we need at least 1 pixel module width
+            final_scale = max(1.0, float(scale_factor))
             padding = int(quiet_zone)
             
             with col_out2:
                 st.markdown(f"#### 🖼️ Aperçu ({img_format})")
                 # GENERATE PNG
                 if img_format == "PNG":
-                    image = render_image(codes, scale=max(1, int(scale_factor)), padding=padding)
+                    image = render_image(codes, scale=max(1, int(final_scale)), padding=padding)
                     buf = io.BytesIO()
                     image.save(buf, format="PNG", dpi=(dpi, dpi))
                     byte_im = buf.getvalue()
@@ -121,7 +131,7 @@ def show_identity_gen():
                     from reportlab.graphics import renderSVG
                     from reportlab.lib import colors
                     
-                    mod_width = max(1, int(scale_factor))
+                    mod_width = final_scale
                     mod_height = mod_width * 3
                     
                     rows = len(codes)
@@ -132,10 +142,11 @@ def show_identity_gen():
                     
                     d = Drawing(draw_width, draw_height)
                     
-                    # FIX: Use proper color objects instead of strings
+                    # Fill white background
                     d.add(Rect(0, 0, draw_width, draw_height, fillColor=colors.white, strokeColor=None))
                     
                     for r_idx, row in enumerate(codes):
+                        # Coordinate system for reportlab starts from bottom
                         y = draw_height - ((r_idx + padding + 1) * mod_height)
                         for c_idx, bit in enumerate(row):
                             if bit:
@@ -146,7 +157,20 @@ def show_identity_gen():
                     if isinstance(svg_data, bytes):
                         svg_data = svg_data.decode("utf-8")
                     
-                    st.markdown(f'<div style="background: white; padding: 10px; border-radius: 4px; display: inline-block;">{svg_data}</div>', unsafe_allow_html=True)
+                    # Make SVG responsive for the preview window
+                    # We inject a viewBox and remove hardcoded width/height to let the browser scale it
+                    responsive_svg = svg_data.replace('<svg ', f'<svg viewBox="0 0 {draw_width} {draw_height}" preserveAspectRatio="xMinYMin meet" ')
+                    # Force the SVG to take 100% width of the parent div
+                    responsive_svg = responsive_svg.replace('width=', 'data-orig-width=').replace('height=', 'data-orig-height=')
+                    
+                    st.markdown(
+                        f'''
+                        <div style="background: white; padding: 15px; border-radius: 8px; border: 1px solid #444; width: 100%;">
+                            {responsive_svg}
+                        </div>
+                        ''', 
+                        unsafe_allow_html=True
+                    )
                     
                     st.download_button(
                         label="📥 Télécharger SVG",
