@@ -1,39 +1,52 @@
 # ⚡ PDF417 Free Generator Hub
 
-Professional AAMVA-compliant barcode orchestration service built with Python and Streamlit.
+Professional AAMVA-compliant barcode orchestration service built with Python and Streamlit. This hub serves as a central platform for identity data generation, orchestration, and technical mapping.
 
-## 🚀 Fluent generation steps
+## 🚀 Unified Workflow
 
-The application is structured into three intuitive stages to ensure accuracy and ease of use:
+The application starts directly on the **Identity Gen** interface for maximum efficiency. The generation process follows three fluid steps:
 
-### 🌍 Étape 1 : Sélection de la Juridiction
-*   **Country Selection**: Choose between the United States and Canada.
-*   **Jurisdiction Mapping**: Automatically loads the specific AAMVA IIN (Issuer Identification Number) for all 50 US States and 10 Canadian Provinces.
+### 1️⃣ Étape 1 : Sélection de la Juridiction
+*   **Country Selection**: Choose between the **United States** and **Canada** from a fluid dropdown.
+*   **Jurisdiction Mapping**: Dynamically loads the specific AAMVA IIN (Issuer Identification Number) for:
+    *   **50 US States** (California, New York, Texas, etc.)
+    *   **10 Canadian Provinces** (Ontario, Quebec, British Columbia, etc.)
+*   **Automatic IIN Assignment**: The system calculates the header based on the selected region instantly.
 
-### ✍️ Étape 2 : Champs préfixés (saisie)
-*   **Technical Mapping**: Input data directly into the standard AAMVA fields (DCG, DCS, DAC, etc.).
-*   **Real-time Validation**: Tooltips provide documentation for each prefixed field to ensure compliance with identity standards.
+### 2️⃣ Étape 2 : Champs préfixés (saisie)
+*   **AAMVA Technical Interface**: A modern 2-column grid layout specifically designed for the 14 standard AAMVA prefixes:
+    *   **DCG, DCS, DAC, DBB, DAG, DAI, DAJ, DAK, DBD, DBA, DBC, DAU, DAY, DCF**.
+*   **Smart Defaults**: The **DCG** field (Country Identification) intelligently updates to "USA" or "CAN" based on your Step 1 selection.
+*   **Integrated Documentation**: Hover over the help icons (❓) to see the full description of each technical field.
 
-### 🚀 Étape 3 : Génération du PDF417
-*   **Dynamic Encoding**: Generates a raw AAMVA data block with standardized headers.
-*   **High-Density Rendering**: Produces a high-resolution PDF417 barcode using the `pdf417gen` engine.
-*   **Direct Export**: Instant PNG download for integration into card design software.
+### 3️⃣ Étape 3 : Génération du PDF417
+*   **Dynamic Encoding**: One-click generation of the standardized AAMVA data block.
+*   **High-Density Rendering**: Produces professional-grade PDF417 barcodes using the `pdf417gen` engine.
+*   **Export Options**:
+    *   **Raw Data**: View the encoded data block in a code expander.
+    *   **PNG Download**: Instantly download the barcode as a high-quality image (`pdf417_[region]_[last_name].png`).
 
 ---
 
-## 🛠️ Installation & Setup
+## 🏗️ Technical Architecture
 
-1.  **Clone the repository**
-2.  **Install dependencies**:
+*   **Frontend**: Streamlit with custom "Elegant Dark" CSS for a tactile, professional-grade interface.
+*   **Animation Engine**: CSS-based `fadeIn` transitions for smooth component loading.
+*   **Barcode Logic**: `pdf417gen` Python library for high-performance encoding.
+*   **Navigation**: sidebar-based radio navigation allowing access to secondary modules:
+    *   🏠 **Hub Overview**: View active modules and system uptime.
+    *   📊 **Data Analysis**: Interactive Plotly-based analytics tools.
+    *   ⚙️ **Settings**: Global system configuration.
+
+## 🛠️ Getting Started
+
+1.  **Install dependencies**:
     ```bash
     pip install -r requirements.txt
     ```
-3.  **Run the application**:
+2.  **Launch**:
     ```bash
     streamlit run app.py
     ```
 
-## 🎨 Design Philosophy
-*   **Modern Transitions**: Features CSS-based `fadeIn` animations for page loads.
-*   **Tactile UI**: High-contrast dark theme with amber accents and interactive button feedback.
-*   **Modular Hub**: Designed to be expanded with additional data analysis or generation tools.
+Built for precision, reliability, and modern user experience.
