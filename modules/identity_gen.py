@@ -49,10 +49,24 @@ def show_identity_gen():
 
     st.divider()
 
-    # STEP 3: GENERATION & OPTIONS
-    st.markdown("### 🚀 Étape 3 : Génération & Options Avancées")
-    eval_escapes = st.checkbox("Évaluer les séquences d'échappement (ex: \\n pour ENTRÉE)", value=True)
+    # STEP 3: OPTIONS & GENERATION
+    st.markdown("### 🚀 Étape 3 : Configuration & Génération")
     
+    with st.expander("🛠️ Paramètres du Code-barres (Avancé)", expanded=False):
+        adv_col1, adv_col2 = st.columns(2)
+        
+        with adv_col1:
+            unit = st.selectbox("Largeur de module unité", ["Pixel", "mm", "mils"], index=0)
+            module_width = st.number_input("Largeur du module", min_value=1, max_value=10, value=3)
+            dpi = st.slider("Résolution d'image (DPI)", 72, 600, 300)
+            img_format = st.selectbox("Format d'image", ["PNG", "SVG"], index=0)
+            
+        with adv_col2:
+            show_hrt = st.radio("Afficher le texte lisible (HRT)", ["NON", "OUI"], index=0)
+            quiet_unit = st.selectbox("Unité de la zone de repos", ["Pixel", "mm", "mils"], index=0)
+            quiet_zone = st.number_input("Zone de repos (Padding)", min_value=0, max_value=50, value=2)
+            eval_escapes = st.checkbox("Évaluer les séquences d'échappement", value=True)
+
     if st.button("Générer le Bloc AAMVA & Code-barres", use_container_width=True):
         aamva_header = f"ANSI {mock_iin}050102DL00410287ZO02900045DL"
         
@@ -67,58 +81,78 @@ def show_identity_gen():
         with st.expander("Voir le Code Brut"):
             st.code(raw_data, language="text")
 
-        # ADVANCED OPTIONS SECTION
-        st.markdown("---")
-        st.subheader("🛠️ Paramètres du Code-barres")
-        
-        adv_col1, adv_col2 = st.columns(2)
-        
-        with adv_col1:
-            unit = st.selectbox("Largeur de module unité", ["Pixel", "mm", "mils"], index=0)
-            module_width = st.number_input("Largeur du module", min_value=1, max_value=10, value=3)
-            dpi = st.slider("Résolution d'image (DPI)", 72, 600, 300)
-            img_format = st.selectbox("Format d'image", ["PNG", "SVG"], index=0)
-            
-        with adv_col2:
-            show_hrt = st.radio("Afficher le texte lisible (HRT)", ["NON", "OUI"], index=0)
-            quiet_unit = st.selectbox("Unité de la zone de repos", ["Pixel", "mm", "mils"], index=0)
-            quiet_zone = st.number_input("Zone de repos (Padding)", min_value=0, max_value=50, value=2)
-            rotation = st.selectbox("Rotation d'image", ["0°", "90°", "180°", "270°"], index=0)
-
         try:
-            # Generate PDF417 Barcode
+            # Generate PDF417 Bit Codes
             columns = 10
             codes = encode(raw_data, columns=columns)
             
-            # Rendering scale logic (simplified mapping for units)
+            # Rendering scale logic
             scale_factor = module_width
-            if unit == "mm": scale_factor = int(module_width * 3.78) # Approx pixels at 96dpi
+            if unit == "mm": scale_factor = int(module_width * 3.78)
             elif unit == "mils": scale_factor = int(module_width * 0.096)
             
-            # Apply padding
             padding = quiet_zone
             
-            image = render_image(codes, scale=max(1, scale_factor), padding=padding)
-            
-            # Handle format
-            buf = io.BytesIO()
+            # GENERATE PNG
             if img_format == "PNG":
+                image = render_image(codes, scale=max(1, scale_factor), padding=padding)
+                buf = io.BytesIO()
                 image.save(buf, format="PNG", dpi=(dpi, dpi))
                 byte_im = buf.getvalue()
-                st.image(byte_im, caption="Code-barres PDF417 AAMVA", use_container_width=True)
+                
+                st.subheader("Aperçu du Code-barres (PNG)")
+                st.image(byte_im, use_container_width=True)
                 
                 st.download_button(
-                    label=f"📥 Télécharger le Code-barres ({img_format})",
+                    label="📥 Télécharger le Code-barres (PNG)",
                     data=byte_im,
                     file_name=f"pdf417_{region}_{dcs}.png",
                     mime="image/png",
                     use_container_width=True
                 )
+            
+            # GENERATE SVG
             else:
-                # SVG Placeholder (requires reportlab for true SVG drawing of barcodes)
-                st.info("Le format SVG est généré via le moteur ReportLab.")
-                st.image(image, use_container_width=True)
-                image.save(buf, format="PNG") # Fallback for display
+                from reportlab.graphics.shapes import Drawing, Rect
+                from reportlab.graphics import renderSVG
+                
+                # pdf417gen codes is a list of integers representing bit patterns
+                # We need to draw these as rectangles
+                # scale_factor is used as width of each module
+                # Height of PDF417 modules is typically 3x their width
+                mod_width = max(1, scale_factor)
+                mod_height = mod_width * 3
+                
+                rows = len(codes)
+                cols = len(codes[0]) if rows > 0 else 0
+                
+                draw_width = (cols * mod_width) + (2 * padding * mod_width)
+                draw_height = (rows * mod_height) + (2 * padding * mod_height)
+                
+                d = Drawing(draw_width, draw_height)
+                
+                # Draw white background
+                d.add(Rect(0, 0, draw_width, draw_height, fillColor="#FFFFFF", strokeColor=None))
+                
+                for r_idx, row in enumerate(codes):
+                    y = draw_height - ((r_idx + padding + 1) * mod_height)
+                    for c_idx, bit in enumerate(row):
+                        if bit:
+                            x = (c_idx + padding) * mod_width
+                            d.add(Rect(x, y, mod_width, mod_height, fillColor="#000000", strokeColor=None))
+                
+                svg_data = renderSVG.drawToString(d)
+                
+                st.subheader("Aperçu du Code-barres (SVG)")
+                st.markdown(f'<div style="background: white; padding: 20px; border-radius: 8px;">{svg_data}</div>', unsafe_allow_html=True)
+                
+                st.download_button(
+                    label="📥 Télécharger le Code-barres (SVG)",
+                    data=svg_data,
+                    file_name=f"pdf417_{region}_{dcs}.svg",
+                    mime="image/svg+xml",
+                    use_container_width=True
+                )
                 
         except Exception as e:
             st.error(f"Erreur lors de la génération : {str(e)}")
