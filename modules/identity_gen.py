@@ -33,18 +33,17 @@ def show_identity_gen():
     with col1:
         dcg = st.text_input("DCG", "USA" if country == "United States" else "CAN", help="Country Identification")
         dac = st.text_input("DAC", "JEAN", help="First Name")
+        dcs = st.text_input("DCS", "NICOLAS", help="Last Name")
+        dbb = st.text_input("DBB", "19941208", help="Date of Birth (YYYYMMDD)")
+        daq = st.text_input("DAQ", "D9823415", help="License Number")
         dag = st.text_input("DAG", "1560 SHERBROOKE ST E", help="Street Address")
-        dbd = st.text_input("DBD", "20230510", help="Document Issue Date")
-        dbc = st.selectbox("DBC", ["1", "2", "3"], help="Sex (1=Male, 2=Female, 3=Other)")
-        day = st.text_input("DAY", "BRUN", help="Eye Color")
         
     with col2:
-        dcs = st.text_input("DCS", "NICOLAS", help="Last Name")
-        dbb = st.text_input("DBB", "19941208", help="Date of Birth")
         dai = st.text_input("DAI", "MONTREAL", help="City")
         dak = st.text_input("DAK", "H2L4M1", help="Postal Code")
+        dbd = st.text_input("DBD", "20230510", help="Document Issue Date")
         dba = st.text_input("DBA", "20310509", help="Document Expiration Date")
-        dau = st.text_input("DAU", "180", help="Height")
+        dbc = st.selectbox("DBC", ["1", "2", "3"], help="Sex (1=Male, 2=Female, 3=Other)")
         dcf = st.text_input("DCF", "PEJQ04N96", help="Document Discriminator")
 
     st.divider()
@@ -56,22 +55,24 @@ def show_identity_gen():
         adv_col1, adv_col2 = st.columns(2)
         
         with adv_col1:
-            unit = st.selectbox("Largeur de module unité", ["Pixel", "mm", "mils"], index=0)
-            module_width = st.number_input("Largeur du module", min_value=1, max_value=10, value=3)
-            dpi = st.slider("Résolution d'image (DPI)", 72, 600, 300)
-            img_format = st.selectbox("Format d'image", ["PNG", "SVG"], index=0)
+            unit = st.selectbox("Largeur de module unité", ["Pixel", "mm", "mils"], index=1) # Default to mm
+            module_width = st.number_input("Largeur du module", min_value=0.1, max_value=1.0, value=0.38, step=0.01)
+            dpi = st.slider("Résolution d'image (DPI)", 72, 600, 600) # High default
+            img_format = st.selectbox("Format d'image", ["SVG", "PNG"], index=0)
             
         with adv_col2:
             show_hrt = st.radio("Afficher le texte lisible (HRT)", ["NON", "OUI"], index=0)
-            quiet_unit = st.selectbox("Unité de la zone de repos", ["Pixel", "mm", "mils"], index=0)
-            quiet_zone = st.number_input("Zone de repos (Padding)", min_value=0, max_value=50, value=2)
+            quiet_unit = st.selectbox("Unité de la zone de repos", ["mm", "Pixel", "mils"], index=0)
+            quiet_zone = st.number_input("Zone de repos (Padding)", min_value=0.0, max_value=50.0, value=3.0)
             eval_escapes = st.checkbox("Évaluer les séquences d'échappement", value=True)
 
     if st.button("Générer le Bloc AAMVA & Code-barres", use_container_width=True):
+        # AAMVA Header Construction
         aamva_header = f"ANSI {mock_iin}050102DL00410287ZO02900045DL"
         
-        # Build the data string
-        raw_data = f"@\n{aamva_header}\nDCG{dcg}\nDCS{dcs}\nDAC{dac}\nDBB{dbb}\nDAG{dag}\nDAI{dai}\nDAJ{region[:2].upper()}\nDAK{dak}\nDBD{dbd}\nDBA{dba}\nDBC{dbc}\nDAU{dau}\nDAY{day}\nDCF{dcf}"
+        # Build the structured data string
+        # DL is already part of the header usually or a segment
+        raw_data = f"@\n{aamva_header}\nDCG{dcg}\nDCS{dcs}\nDAC{dac}\nDBB{dbb}\nDAQ{daq}\nDAG{dag}\nDAI{dai}\nDAJ{region[:2].upper()}\nDAK{dak}\nDBD{dbd}\nDBA{dba}\nDBC{dbc}\nDCF{dcf}"
         
         # Process escape sequences
         if eval_escapes:
@@ -115,11 +116,9 @@ def show_identity_gen():
             else:
                 from reportlab.graphics.shapes import Drawing, Rect
                 from reportlab.graphics import renderSVG
+                from reportlab.lib import colors
                 
                 # pdf417gen codes is a list of integers representing bit patterns
-                # We need to draw these as rectangles
-                # scale_factor is used as width of each module
-                # Height of PDF417 modules is typically 3x their width
                 mod_width = max(1, scale_factor)
                 mod_height = mod_width * 3
                 
@@ -131,20 +130,24 @@ def show_identity_gen():
                 
                 d = Drawing(draw_width, draw_height)
                 
-                # Draw white background
-                d.add(Rect(0, 0, draw_width, draw_height, fillColor="#FFFFFF", strokeColor=None))
+                # Draw white background using proper color object
+                d.add(Rect(0, 0, draw_width, draw_height, fillColor=colors.white, strokeColor=None))
                 
                 for r_idx, row in enumerate(codes):
                     y = draw_height - ((r_idx + padding + 1) * mod_height)
                     for c_idx, bit in enumerate(row):
                         if bit:
                             x = (c_idx + padding) * mod_width
-                            d.add(Rect(x, y, mod_width, mod_height, fillColor="#000000", strokeColor=None))
+                            d.add(Rect(x, y, mod_width, mod_height, fillColor=colors.black, strokeColor=None))
                 
                 svg_data = renderSVG.drawToString(d)
                 
+                # Ensure svg_data is a string (drawToString can sometimes return bytes)
+                if isinstance(svg_data, bytes):
+                    svg_data = svg_data.decode("utf-8")
+                
                 st.subheader("Aperçu du Code-barres (SVG)")
-                st.markdown(f'<div style="background: white; padding: 20px; border-radius: 8px;">{svg_data}</div>', unsafe_allow_html=True)
+                st.markdown(f'<div style="background: white; padding: 20px; border-radius: 8px; display: inline-block;">{svg_data}</div>', unsafe_allow_html=True)
                 
                 st.download_button(
                     label="📥 Télécharger le Code-barres (SVG)",
