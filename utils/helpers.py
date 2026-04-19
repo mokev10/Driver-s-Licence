@@ -3,8 +3,11 @@ import streamlit as st
 def apply_custom_style():
     st.markdown("""
         <style>
-        .main {
+        [data-testid="stAppViewContainer"] {
             background-color: #0A0A0B;
+        }
+        [data-testid="stSidebar"] {
+            background-color: #141417;
         }
         .stButton>button {
             background-color: #F59E0B;
@@ -18,9 +21,6 @@ def apply_custom_style():
             background-color: #D97706;
             transform: scale(1.02);
             border: none;
-        }
-        .css-1d391kg {
-            background-color: #141417;
         }
         </style>
     """, unsafe_allow_html=True)
