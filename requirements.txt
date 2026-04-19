@@ -1,0 +1,7 @@
+streamlit
+pandas
+plotly
+numpy
+bwip-js
+pillow
+python-dotenv
