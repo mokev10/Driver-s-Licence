@@ -5,19 +5,35 @@ from pdf417gen import encode, render_image
 import io
 
 def show_identity_gen():
-    st.header("🪪 Identity Generation Module")
-    st.write("Specialized module for generating AAMVA-compliant identity data and PDF417 barcodes.")
+    st.title("🪪 PDF417 Free Generator")
+    st.write("Professional AAMVA-compliant barcode orchestration service.")
+    st.divider()
+
+    # STEP 1: JURISDICTION
+    st.markdown("### 🌍 Étape 1 : Sélection de la Juridiction")
+    col_geo1, col_geo2 = st.columns(2)
     
-    st.markdown("### Champs préfixés (saisie)")
+    with col_geo1:
+        country = st.selectbox("Sélectionner le Pays", ["United States", "Canada"], key="country_sel")
     
-    # Organizing fields into a 2-column grid to match the screenshot
+    with col_geo2:
+        if country == "United States":
+            region = st.selectbox("Sélectionner l'État", sorted(list(IIN_US.keys())), index=4, key="state_sel")
+            mock_iin = IIN_US.get(region)
+        else:
+            region = st.selectbox("Sélectionner la Province", sorted(list(IIN_CA.keys())), key="prov_sel")
+            mock_iin = IIN_CA.get(region)
+
+    st.divider()
+
+    # STEP 2: FIELDS
+    st.markdown("### ✍️ Étape 2 : Champs préfixés (saisie)")
+    
     col1, col2 = st.columns(2)
-    
     with col1:
-        dcg = st.text_input("DCG", "CAN", help="Country Identification")
+        dcg = st.text_input("DCG", "USA" if country == "United States" else "CAN", help="Country Identification")
         dac = st.text_input("DAC", "JEAN", help="First Name")
         dag = st.text_input("DAG", "1560 SHERBROOKE ST E", help="Street Address")
-        daj = st.selectbox("DAJ", sorted(list(IIN_US.keys()) + list(IIN_CA.keys())), index=55, help="Jurisdiction")
         dbd = st.text_input("DBD", "20230510", help="Document Issue Date")
         dbc = st.selectbox("DBC", ["1", "2", "3"], help="Sex (1=Male, 2=Female, 3=Other)")
         day = st.text_input("DAY", "BRUN", help="Eye Color")
@@ -31,35 +47,38 @@ def show_identity_gen():
         dau = st.text_input("DAU", "180", help="Height")
         dcf = st.text_input("DCF", "PEJQ04N96", help="Document Discriminator")
 
-    if st.button("Generate AAMVA Data Block & Barcode", use_container_width=True):
-        # Determine IIN based on DAJ selection
-        mock_iin = IIN_US.get(daj) or IIN_CA.get(daj) or "636000"
+    st.divider()
+
+    # STEP 3: GENERATION
+    st.markdown("### 🚀 Étape 3 : Génération du PDF417")
+    if st.button("Générer le Bloc AAMVA & Code-barres", use_container_width=True):
         aamva_header = f"ANSI {mock_iin}050102DL00410287ZO02900045DL"
         
-        # Build the data string according to the prefixes
-        raw_data = f"@\n{aamva_header}\nDCG{dcg}\nDCS{dcs}\nDAC{dac}\nDBB{dbb}\nDAG{dag}\nDAI{dai}\nDAJ{daj[:2].upper()}\nDAK{dak}\nDBD{dbd}\nDBA{dba}\nDBC{dbc}\nDAU{dau}\nDAY{day}\nDCF{dcf}"
+        # Build the data string
+        raw_data = f"@\n{aamva_header}\nDCG{dcg}\nDCS{dcs}\nDAC{dac}\nDBB{dbb}\nDAG{dag}\nDAI{dai}\nDAJ{region[:2].upper()}\nDAK{dak}\nDBD{dbd}\nDBA{dba}\nDBC{dbc}\nDAU{dau}\nDAY{day}\nDCF{dcf}"
         
-        st.success("AAMVA Data Block Generated Successfully")
-        st.code(raw_data, language="text")
+        st.success("Données AAMVA générées avec succès")
+        with st.expander("Voir le Code Brut"):
+            st.code(raw_data, language="text")
         
         try:
             # Generate PDF417 Barcode
             codes = encode(raw_data, columns=10)
             image = render_image(codes, scale=3)
             
-            # Convert to buffer to display in Streamlit
+            # Convert to buffer
             buf = io.BytesIO()
             image.save(buf, format="PNG")
             byte_im = buf.getvalue()
             
-            st.subheader("Generated Barcode")
-            st.image(byte_im, caption="AAMVA PDF417 Barcode", use_container_width=True)
+            st.image(byte_im, caption="Code-barres PDF417 AAMVA", use_container_width=True)
             
             st.download_button(
-                label="Download Barcode Image",
+                label="📥 Télécharger le Code-barres (PNG)",
                 data=byte_im,
-                file_name=f"dl_barcode_{dcs}.png",
+                file_name=f"pdf417_{region}_{dcs}.png",
                 mime="image/png",
+                use_container_width=True
             )
         except Exception as e:
-            st.error(f"Error generating barcode: {str(e)}")
+            st.error(f"Erreur lors de la génération : {str(e)}")
