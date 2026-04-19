@@ -25,7 +25,9 @@ import {
   IIN_CA, 
   US_STATES, 
   CA_PROVINCES, 
-  PREFIX_FIELDS 
+  PREFIX_FIELDS,
+  US_ABBR,
+  CA_ABBR
 } from './constants';
 
 type Country = 'Canada' | 'United States' | '';
@@ -58,9 +60,12 @@ export default function App() {
   // Sync state/prov when subdivision changes
   useEffect(() => {
     if (subdivision) {
-      setFields(prev => ({ ...prev, DAJ: subdivision === 'California' ? 'CA' : subdivision }));
+      const abbr = country === 'United States' 
+        ? US_ABBR[subdivision] 
+        : CA_ABBR[subdivision];
+      setFields(prev => ({ ...prev, DAJ: abbr || subdivision }));
     }
-  }, [subdivision]);
+  }, [subdivision, country]);
 
   const handleFieldChange = (code: string, value: string) => {
     setFields(prev => ({ ...prev, [code]: value }));
