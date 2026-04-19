@@ -1,0 +1,6 @@
+{
+  "name": "California DL Generator",
+  "description": "Un générateur de permis de conduire Californien avec code-barres PDF417, inspiré du projet Streamlit de mokev10.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
