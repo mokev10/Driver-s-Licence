@@ -1,7 +1,7 @@
-streamlit
-pandas
-plotly
-numpy
-bwip-js
-pillow
-python-dotenv
+streamlit>=1.0.0
+requests>=2.28.0
+reportlab>=4.0
+pdf417gen>=0.5.0
+pytest>=7.0
+charset-normalizer>=2.0.0
+urllib3>=1.26.0
