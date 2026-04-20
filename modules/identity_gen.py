@@ -149,8 +149,21 @@ def show_identity_gen(lang="EN"):
         try:
             codes = encode(raw_data_internal, columns=10)
 
-            scale_factor = module_width
+            # =========================
+            # SAFETY CHECK (IMPORTANT)
+            # =========================
+            if not codes or len(codes) == 0 or len(codes[0]) == 0:
+                st.error("PDF417 generation failed (empty matrix).")
+                st.stop()
+
+            rows = len(codes)
+            cols = len(codes[0])
+
+            scale = int(module_width)
             padding = int(quiet_zone)
+
+            draw_width = (cols + 2 * padding) * scale
+            draw_height = (rows + 2 * padding) * scale
 
             with col_out2:
                 st.markdown(f"#### 🖼️ {t['preview']}")
@@ -159,9 +172,12 @@ def show_identity_gen(lang="EN"):
                 # PNG
                 # =========================
                 if img_format == "PNG":
-                    image = render_image(codes, scale=int(scale_factor), padding=padding)
+
+                    image = render_image(codes, scale=scale, padding=padding)
+
                     buf = io.BytesIO()
                     image.save(buf, format="PNG", dpi=(dpi, dpi))
+
                     st.image(buf.getvalue(), use_container_width=True)
 
                     st.download_button(
@@ -172,21 +188,23 @@ def show_identity_gen(lang="EN"):
                     )
 
                 # =========================
-                # SVG (CORRIGÉ PROPREMENT)
+                # SVG (FIX COMPLET)
                 # =========================
                 else:
-                    svg = render_svg(
-                        codes,
-                        scale=int(scale_factor),
-                        ratio=3,
-                        color="black"
+
+                    svg_obj = render_svg(codes, scale=scale)
+
+                    svg_str = svg_obj.to_xml() if hasattr(svg_obj, "to_xml") else str(svg_obj)
+
+                    # VIEWBOX FIX (IMPORTANT)
+                    svg_str = svg_str.replace(
+                        "<svg",
+                        f'<svg viewBox="0 0 {draw_width} {draw_height}" preserveAspectRatio="xMidYMid meet" '
                     )
 
-                    # FIX IMPORTANT : padding NON supporté → géré ici
-                    svg_str = svg.to_xml() if hasattr(svg, "to_xml") else str(svg)
-
+                    # OPTION TEXT
                     if show_text == "NON":
-                        svg_str = svg_str.replace("<text", "<!--text").replace("</text>", "</text-->")
+                        svg_str = svg_str.replace("<text", "<!-- text").replace("</text>", "</text -->")
 
                     st.markdown(
                         f"<div style='background:white;padding:10px;border-radius:8px'>{svg_str}</div>",
