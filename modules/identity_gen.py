@@ -10,7 +10,7 @@ def show_identity_gen():
     st.divider()
 
     # STEP 1: JURISDICTION
-    st.markdown("### 🌍 Étape 1 : Sélection de la Juridiction")
+    st.markdown("### Step 1: Select the country and state or province")
     col_geo1, col_geo2 = st.columns(2)
     
     with col_geo1:
