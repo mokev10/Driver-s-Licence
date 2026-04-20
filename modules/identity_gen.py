@@ -4,33 +4,37 @@ from utils.constants import IIN_US, IIN_CA
 from pdf417gen import encode, render_image
 import io
 
+
 def show_identity_gen():
     st.title("AAMVA Raw Data Generator")
     st.write("Advanced tool for generating forensic-quality AAMVA raw data strings")
     st.divider()
 
-   # STEP 1: JURISDICTION
+    # STEP 1: JURISDICTION
 
-icon_url = (
-    "https://img.icons8.com/external-justicon-flat-justicon/64/external-united-states-countrys-flags-justicon-flat-justicon.png"
-    if country == "United States"
-    else "https://img.icons8.com/external-justicon-flat-justicon/64/external-canada-countrys-flags-justicon-flat-justicon.png"
-)
+    country = st.selectbox("Sélectionner le Pays", ["United States", "Canada"], key="country_sel")
 
-st.markdown(
-    f"""
-    <div style="display:flex; align-items:center; gap:10px;">
-        <img src="{icon_url}" width="24">
-        <h3 style="margin:0;">Step 1: Select the country and state or province</h3>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+    icon_url = (
+        "https://img.icons8.com/external-justicon-flat-justicon/64/external-united-states-countrys-flags-justicon-flat-justicon.png"
+        if country == "United States"
+        else "https://img.icons8.com/external-justicon-flat-justicon/64/external-canada-countrys-flags-justicon-flat-justicon.png"
+    )
+
+    st.markdown(
+        f"""
+        <div style="display:flex; align-items:center; gap:10px;">
+            <img src="{icon_url}" width="24">
+            <h3 style="margin:0;">Step 1: Select the country and state or province</h3>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
     col_geo1, col_geo2 = st.columns(2)
-    
+
     with col_geo1:
         country = st.selectbox("Sélectionner le Pays", ["United States", "Canada"], key="country_sel")
-    
+
     with col_geo2:
         if country == "United States":
             region = st.selectbox("Sélectionner l'État/Territoire", sorted(list(IIN_US.keys())), index=4, key="state_sel")
