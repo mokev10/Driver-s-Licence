@@ -1,7 +1,7 @@
-import os
 import cv2
 import subprocess
 import tempfile
+import os
 
 
 def png_to_svg_via_potrace(
@@ -10,32 +10,29 @@ def png_to_svg_via_potrace(
     threshold: int = 200
 ) -> str:
     """
-    Convertit une image PNG (bytes) en SVG vectoriel via OpenCV + Potrace.
-
-    Retourne : SVG string
+    Convert PNG bytes → SVG string using OpenCV + Potrace
     """
 
-    # 🔥 fichier temporaire image
-    with tempfile.TemporaryDirectory() as tmpdir:
+    with tempfile.TemporaryDirectory() as tmp:
 
-        input_path = os.path.join(tmpdir, "input.png")
-        pbm_path = os.path.join(tmpdir, "temp.pbm")
-        svg_path = os.path.join(tmpdir, "output.svg")
+        input_path = os.path.join(tmp, "input.png")
+        pbm_path = os.path.join(tmp, "temp.pbm")
+        svg_path = os.path.join(tmp, "output.svg")
 
-        # write input image
+        # write image
         with open(input_path, "wb") as f:
             f.write(image_bytes)
 
-        # read image
+        # read grayscale
         img = cv2.imread(input_path, cv2.IMREAD_GRAYSCALE)
 
         if img is None:
-            raise ValueError("Image invalide")
+            raise ValueError("Invalid image input")
 
-        # binarisation (IMPORTANT pour PDF417)
+        # binarisation (crucial pour barcode)
         _, bw = cv2.threshold(img, threshold, 255, cv2.THRESH_BINARY)
 
-        # save PBM (format requis par potrace)
+        # save PBM (required by potrace)
         cv2.imwrite(pbm_path, bw)
 
         # run potrace
@@ -52,8 +49,8 @@ def png_to_svg_via_potrace(
             stderr=subprocess.DEVNULL
         )
 
-        # read SVG result
+        # read SVG
         with open(svg_path, "r", encoding="utf-8") as f:
-            svg_data = f.read()
+            svg = f.read()
 
-        return svg_data
+        return svg
