@@ -27,7 +27,15 @@ def show_identity_gen():
     st.divider()
 
     # STEP 2: MANDATORY FIELDS
-    st.markdown("### Step 2: Required fields (AAMVA)")
+    st.markdown(
+    """
+    <div style="display:flex; align-items:center; gap:10px;">
+        <img src="https://img.icons8.com/external-itim2101-lineal-itim2101/64/external-pipeline-plumber-tools-itim2101-lineal-itim2101-6.png" width="24">
+        <h3 style="margin:0;">Step 2: Required fields (AAMVA)</h3>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
     
     col1, col2 = st.columns(2)
     with col1:
@@ -51,7 +59,7 @@ def show_identity_gen():
     # STEP 3: OPTIONS & GENERATION
     st.markdown("### Step 3: Configuration & Generation")
     
-    with st.expander("![icon](https://img.icons8.com/external-nawicon-detailed-outline-nawicon/24/external-Management-business-management-nawicon-detailed-outline-nawicon.png) Barcode Settings (Advanced)"):
+    with st.expander("![icon](https://img.icons8.com/external-nawicon-mixed-nawicon/64/external-Management-business-management-nawicon-mixed-nawicon.png) Barcode Settings (Advanced)"):
         adv_col1, adv_col2 = st.columns(2)
         
         with adv_col1:
