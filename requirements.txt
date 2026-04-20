@@ -10,3 +10,4 @@ plotly
 numpy
 pillow
 python-dotenv
+opencv-python-headless
