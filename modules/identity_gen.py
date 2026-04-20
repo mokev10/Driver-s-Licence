@@ -10,7 +10,15 @@ def show_identity_gen():
     st.divider()
 
     # STEP 1: JURISDICTION
-    st.markdown("### Step 1: Select the country and state or province")
+    st.markdown(
+    """
+    <div style="display:flex; align-items:center; gap:10px;">
+        <img src="https://img.icons8.com/external-justicon-flat-justicon/64/external-united-states-countrys-flags-justicon-flat-justicon.png" width="24">
+        <h3 style="margin:0;">Step 1: Select the country and state or province</h3>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
     col_geo1, col_geo2 = st.columns(2)
     
     with col_geo1:
