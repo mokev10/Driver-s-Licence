@@ -34,28 +34,7 @@ def main():
     # Header
     header_component()
 
-    # Content Logic
-    if app_mode == "🏠 Hub Overview":
-        st.title("Welcome to the Modular Hub")
-        st.write("This central platform orchestrates multiple Python-based services. Select a module from the sidebar to begin.")
-        
-        # Dashboard Grid (Summary Cards)
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.metric(label="Active Modules", value="3", delta="1")
-        with col2:
-            st.metric(label="System Status", value="STABLE", delta="0.00042")
-        with col3:
-            st.metric(label="Uptime", value="99.9%", delta="0.1%")
-            
-        st.markdown("---")
-        st.subheader("Recent Activity")
-        st.write("- Identity Module updated to standards V20")
-        st.write("- Data Analysis pipeline optimized for big data")
-
-    elif app_mode == "📊 Data Analysis":
-        show_data_analysis()
-        
+   
     elif app_mode == "🪪 Identity Gen":
         show_identity_gen()
         
