@@ -10,27 +10,34 @@ def show_identity_gen():
     st.divider()
 
     # STEP 1: JURISDICTION
-    st.markdown(
-    """
+icon_url = (
+    "https://img.icons8.com/external-justicon-flat-justicon/64/external-united-states-countrys-flags-justicon-flat-justicon.png"
+    if country == "United States"
+    else "https://img.icons8.com/external-justicon-flat-justicon/64/external-canada-countrys-flags-justicon-flat-justicon.png"
+)
+
+st.markdown(
+    f"""
     <div style="display:flex; align-items:center; gap:10px;">
-        <img src="https://img.icons8.com/external-justicon-flat-justicon/64/external-united-states-countrys-flags-justicon-flat-justicon.png" width="24">
+        <img src="{icon_url}" width="24">
         <h3 style="margin:0;">Step 1: Select the country and state or province</h3>
     </div>
     """,
     unsafe_allow_html=True
 )
-    col_geo1, col_geo2 = st.columns(2)
-    
-    with col_geo1:
-        country = st.selectbox("Sélectionner le Pays", ["United States", "Canada"], key="country_sel")
-    
-    with col_geo2:
-        if country == "United States":
-            region = st.selectbox("Sélectionner l'État/Territoire", sorted(list(IIN_US.keys())), index=4, key="state_sel")
-            mock_iin = IIN_US.get(region)
-        else:
-            region = st.selectbox("Sélectionner la Province", sorted(list(IIN_CA.keys())), key="prov_sel")
-            mock_iin = IIN_CA.get(region)
+
+col_geo1, col_geo2 = st.columns(2)
+
+with col_geo1:
+    country = st.selectbox("Sélectionner le Pays", ["United States", "Canada"], key="country_sel")
+
+with col_geo2:
+    if country == "United States":
+        region = st.selectbox("Sélectionner l'État/Territoire", sorted(list(IIN_US.keys())), index=4, key="state_sel")
+        mock_iin = IIN_US.get(region)
+    else:
+        region = st.selectbox("Sélectionner la Province", sorted(list(IIN_CA.keys())), key="prov_sel")
+        mock_iin = IIN_CA.get(region)
 
     st.divider()
 
