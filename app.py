@@ -66,7 +66,7 @@ def main():
             unsafe_allow_html=True
         )
 
-        if st.button("Toggle theme", key="theme_toggle"):
+        if st.button("Theme", key="theme_toggle"):
             st.session_state.dark_mode = not st.session_state.dark_mode
 
     # 🎨 Apply theme
