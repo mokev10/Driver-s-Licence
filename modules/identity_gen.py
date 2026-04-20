@@ -7,9 +7,6 @@ import io
 
 def show_identity_gen(lang="EN"):
 
-    # =========================
-    # TEXTES MULTILINGUES
-    # =========================
     TEXT = {
         "EN": {
             "title": "AAMVA Raw Data Generator",
@@ -24,7 +21,8 @@ def show_identity_gen(lang="EN"):
             "success": "HDR generation (600 DPI) completed.",
             "raw": "Raw Data String",
             "use": "Use this string in external tools.",
-            "preview": "Preview"
+            "preview": "Preview",
+            "show_text": "Show text"
         },
         "FR": {
             "title": "Générateur de données AAMVA",
@@ -39,15 +37,13 @@ def show_identity_gen(lang="EN"):
             "success": "Génération HDR (600 DPI) terminée.",
             "raw": "Chaîne brute",
             "use": "Utilisez cette chaîne dans vos outils externes.",
-            "preview": "Aperçu"
+            "preview": "Aperçu",
+            "show_text": "Afficher le texte"
         }
     }
 
     t = TEXT.get(lang, TEXT["EN"])
 
-    # =========================
-    # HEADER
-    # =========================
     st.title(t["title"])
     st.write(t["desc"])
     st.divider()
@@ -102,15 +98,7 @@ def show_identity_gen(lang="EN"):
     # =========================
     # STEP 2
     # =========================
-    st.markdown(
-        f"""
-        <div style="display:flex; align-items:center; gap:10px;">
-            <img src="https://img.icons8.com/external-itim2101-lineal-itim2101/64/external-pipeline-plumber-tools-itim2101-lineal-itim2101-6.png" width="24">
-            <h3 style="margin:0;">{t["step2"]}</h3>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    st.markdown(f"### {t['step2']}")
 
     col1, col2 = st.columns(2)
 
@@ -137,19 +125,15 @@ def show_identity_gen(lang="EN"):
     # =========================
     st.markdown(f"### {t['step3']}")
 
-    with st.expander("Barcode Settings (Advanced)"):
+    show_hrt = st.radio(t["show_text"], ["NON", "OUI"], index=0)
 
+    with st.expander("Barcode Settings (Advanced)"):
         unit = st.selectbox("Unit width", ["Pixel", "mm", "mils"], index=1)
         module_width = st.number_input("Module width", 0.1, 1.0, 0.38, 0.01)
         dpi = st.slider("DPI", 72, 600, 600)
-        img_format = st.selectbox("Image format", ["SVG", "PNG"], index=0)
-
-        show_text = st.radio("Show text", ["NON", "OUI"], index=0)
+        img_format = st.selectbox("Format", ["SVG", "PNG"], index=0)
         quiet_zone = st.number_input("Padding", 0.0, 50.0, 3.0)
 
-    # =========================
-    # GENERATION
-    # =========================
     if st.button(t["generate"], use_container_width=True):
 
         aamva_header = f"ANSI {mock_iin}050102DL00410287ZO02900045DL"
@@ -161,65 +145,70 @@ def show_identity_gen(lang="EN"):
             f"DBD{dbd}\nDBA{dba}\nDBC{dbc}\nDCF{dcf}"
         )
 
+        if show_hrt == "NON":
+            display_text = raw_data_internal.replace("\n", "\\n")
+        else:
+            display_text = raw_data_internal
+
         st.success(t["success"])
 
         col_out1, col_out2 = st.columns(2)
 
         with col_out1:
-            st.markdown(f"#### 📄 {t['raw']}")
-            st.code(raw_data_internal.replace("\n", "\\n"))
+            st.code(display_text)
             st.info(t["use"])
 
         try:
             codes = encode(raw_data_internal, columns=10)
 
-            scale = max(1, int(module_width * (dpi / 25.4)))
+            pixels_per_mm = dpi / 25.4
+
+            if unit == "mm":
+                scale = module_width * pixels_per_mm
+            elif unit == "mils":
+                scale = (module_width / 1000) * dpi
+            else:
+                scale = module_width
+
+            scale = max(1, int(scale))
             padding = int(quiet_zone)
 
             with col_out2:
-                st.markdown(f"#### 🖼️ {t['preview']} ({img_format})")
+                st.markdown(f"### {t['preview']}")
 
-                # =========================
-                # PNG
-                # =========================
+                # ================= PNG =================
                 if img_format == "PNG":
-                    image = render_image(codes, scale=scale, padding=padding)
+                    img = render_image(codes, scale=scale, padding=padding)
                     buf = io.BytesIO()
-                    image.save(buf, format="PNG", dpi=(dpi, dpi))
+                    img.save(buf, format="PNG", dpi=(dpi, dpi))
 
-                    st.image(buf.getvalue(), use_container_width=True)
+                    st.image(buf.getvalue())
 
                     st.download_button(
-                        "📥 PNG",
+                        "Download PNG",
                         buf.getvalue(),
-                        f"pdf417_{dcs}.png",
-                        "image/png"
+                        file_name=f"{dcs}.png",
+                        mime="image/png"
                     )
 
-                # =========================
-                # SVG (REAL PDF417)
-                # =========================
+                # ================= SVG (REAL FIX) =================
                 else:
-                    svg_element = render_svg(
+                    svg_obj = render_svg(
                         codes,
                         scale=scale,
                         ratio=3,
                         padding=padding
                     )
 
-                    svg_data = svg_element.toxml()
+                    svg_data = svg_obj.toxml()
 
-                    st.components.v1.html(
-                        f'<div style="background:white;padding:10px;">{svg_data}</div>',
-                        height=300,
-                        scrolling=True
-                    )
+                    st.components.v1.html(svg_data, height=400, scrolling=True)
 
                     st.download_button(
-                        "📥 SVG 600 DPI",
+                        "Download SVG",
                         svg_data,
-                        f"pdf417_{dcs}.svg",
-                        "image/svg+xml"
+                        file_name=f"{dcs}.svg",
+                        mime="image/svg+xml"
                     )
 
         except Exception as e:
