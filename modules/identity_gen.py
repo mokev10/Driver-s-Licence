@@ -9,11 +9,18 @@ def show_identity_gen():
     st.write("Advanced tool for generating forensic-quality AAMVA raw data strings")
     st.divider()
 
-    # STEP 1: JURISDICTION
-    st.markdown(
-    """
+   # STEP 1: JURISDICTION
+
+icon_url = (
+    "https://img.icons8.com/external-justicon-flat-justicon/64/external-united-states-countrys-flags-justicon-flat-justicon.png"
+    if country == "United States"
+    else "https://img.icons8.com/external-justicon-flat-justicon/64/external-canada-countrys-flags-justicon-flat-justicon.png"
+)
+
+st.markdown(
+    f"""
     <div style="display:flex; align-items:center; gap:10px;">
-        <img src="https://img.icons8.com/external-justicon-flat-justicon/64/external-united-states-countrys-flags-justicon-flat-justicon.png" width="24">
+        <img src="{icon_url}" width="24">
         <h3 style="margin:0;">Step 1: Select the country and state or province</h3>
     </div>
     """,
