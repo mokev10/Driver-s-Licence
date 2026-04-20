@@ -6,7 +6,7 @@ import io
 
 def show_identity_gen():
     st.title("🪪 AAMVA Raw Data Generator")
-    st.write("Expert tool for generating forensic-grade AAMVA raw data strings.")
+    st.write("Advanced tool for generating forensic-quality AAMVA raw data strings")
     st.divider()
 
     # STEP 1: JURISDICTION
