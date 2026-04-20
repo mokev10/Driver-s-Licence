@@ -1,56 +1,57 @@
 import cv2
 import subprocess
-import tempfile
 import os
+import tempfile
 
 
-def png_to_svg_via_potrace(
-    image_bytes: bytes,
-    potrace_path: str,
-    threshold: int = 200
-) -> str:
+def png_to_svg(png_bytes, potrace_path, threshold=200):
     """
-    Convert PNG bytes → SVG string using OpenCV + Potrace
+    Convert PNG (bytes) → SVG using OpenCV + Potrace
     """
 
-    with tempfile.TemporaryDirectory() as tmp:
+    # temp folder
+    tmp_dir = tempfile.mkdtemp()
 
-        input_path = os.path.join(tmp, "input.png")
-        pbm_path = os.path.join(tmp, "temp.pbm")
-        svg_path = os.path.join(tmp, "output.svg")
+    png_path = os.path.join(tmp_dir, "input.png")
+    pbm_path = os.path.join(tmp_dir, "output.pbm")
+    svg_path = os.path.join(tmp_dir, "output.svg")
 
-        # write image
-        with open(input_path, "wb") as f:
-            f.write(image_bytes)
+    # save PNG
+    with open(png_path, "wb") as f:
+        f.write(png_bytes)
 
-        # read grayscale
-        img = cv2.imread(input_path, cv2.IMREAD_GRAYSCALE)
+    # read image
+    img = cv2.imread(png_path, cv2.IMREAD_GRAYSCALE)
 
-        if img is None:
-            raise ValueError("Invalid image input")
+    if img is None:
+        raise ValueError("Invalid image input")
 
-        # binarisation (crucial pour barcode)
-        _, bw = cv2.threshold(img, threshold, 255, cv2.THRESH_BINARY)
+    # binarization
+    _, bw = cv2.threshold(img, threshold, 255, cv2.THRESH_BINARY)
 
-        # save PBM (required by potrace)
-        cv2.imwrite(pbm_path, bw)
+    # save PBM (required by potrace)
+    cv2.imwrite(pbm_path, bw)
 
-        # run potrace
-        subprocess.run(
-            [
-                potrace_path,
-                pbm_path,
-                "-s",
-                "-o",
-                svg_path
-            ],
-            check=True,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL
-        )
+    # run potrace
+    subprocess.run([
+        potrace_path,
+        pbm_path,
+        "-s",
+        "-o",
+        svg_path
+    ], check=True)
 
-        # read SVG
-        with open(svg_path, "r", encoding="utf-8") as f:
-            svg = f.read()
+    # read SVG result
+    with open(svg_path, "r", encoding="utf-8") as f:
+        svg_data = f.read()
 
-        return svg
+    # cleanup
+    try:
+        os.remove(png_path)
+        os.remove(pbm_path)
+        os.remove(svg_path)
+        os.rmdir(tmp_dir)
+    except:
+        pass
+
+    return svg_data
