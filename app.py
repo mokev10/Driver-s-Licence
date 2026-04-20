@@ -23,7 +23,7 @@ def main():
         st.markdown("### 🧭 Navigation")
         app_mode = st.radio(
             "Select Dashboard Module",
-            ["🏠 Hub Overview", "📊 Data Analysis", "🪪 Identity Gen", "⚙️ Settings"],
+            ["🪪 Identity Gen"],
             index=2
         )
         
