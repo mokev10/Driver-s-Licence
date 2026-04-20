@@ -81,7 +81,7 @@ def main():
             st.session_state.dark_mode = not st.session_state.dark_mode
             st.rerun()
 
-    # 🌍 Language selector
+    # 🌍 Language selector + ICON
     with col3:
 
         lang = st.selectbox(
@@ -95,21 +95,14 @@ def main():
             st.session_state.lang = lang
             st.rerun()
 
-        # 🔥 ICON dynamique
+        # ✅ ICON fiable (UTILISE st.image → FIX BUG)
         icon_url = (
-            "https://img.icons8.com/external-justicon-flat-justicon/64/external-united-states-countrys-flags-justicon.png"
+            "https://img.icons8.com/external-justicon-flat-justicon/64/external-united-states-countrys-flags-justicon-flat-justicon.png"
             if st.session_state.lang == "EN"
-            else "https://img.icons8.com/external-justicon-flat-justicon/64/external-france-countrys-flags-justicon.png"
+            else "https://img.icons8.com/external-justicon-flat-justicon/64/external-france-countrys-flags-justicon-flat-justicon.png"
         )
 
-        st.markdown(
-            f"""
-            <div style="text-align:center; margin-top:-10px;">
-                <img src="{icon_url}" width="28">
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+        st.image(icon_url, width=28)
 
     # 🎨 Apply theme
     apply_custom_style(st.session_state.dark_mode)
@@ -122,7 +115,7 @@ def main():
     # 🧠 Header
     header_component()
 
-    # 📄 Main content (IMPORTANT → passer la langue)
+    # 📄 Main content
     show_identity_gen(st.session_state.lang)
 
 
