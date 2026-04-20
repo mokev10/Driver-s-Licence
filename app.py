@@ -69,7 +69,7 @@ def main():
 
     t = TEXTS[st.session_state.lang]
 
-    # 🔘 Top bar (Theme + Language)
+    # 🔘 Top bar
     col1, col2, col3 = st.columns([10, 1, 1])
 
     # 🌙 Theme button
@@ -81,28 +81,26 @@ def main():
             st.session_state.dark_mode = not st.session_state.dark_mode
             st.rerun()
 
-    # 🌍 Language selector + ICON
+    # 🌍 Language dropdown avec icône intégrée
     with col3:
+
+        LANG_OPTIONS = {
+            "EN": "🇺🇸 EN",
+            "FR": "🇫🇷 FR"
+        }
 
         lang = st.selectbox(
             "",
-            ["EN", "FR"],
+            options=list(LANG_OPTIONS.keys()),
             index=0 if st.session_state.lang == "EN" else 1,
-            key="lang_select"
+            format_func=lambda x: LANG_OPTIONS[x],
+            key="lang_select",
+            label_visibility="collapsed"
         )
 
         if lang != st.session_state.lang:
             st.session_state.lang = lang
             st.rerun()
-
-        # ✅ ICON fiable (UTILISE st.image → FIX BUG)
-        icon_url = (
-            "https://img.icons8.com/external-justicon-flat-justicon/64/external-united-states-countrys-flags-justicon-flat-justicon.png"
-            if st.session_state.lang == "EN"
-            else "https://img.icons8.com/external-justicon-flat-justicon/64/external-france-countrys-flags-justicon-flat-justicon.png"
-        )
-
-        st.image(icon_url, width=28)
 
     # 🎨 Apply theme
     apply_custom_style(st.session_state.dark_mode)
