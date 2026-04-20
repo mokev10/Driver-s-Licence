@@ -1,13 +1,15 @@
 import streamlit as st
 import datetime
 from utils.constants import IIN_US, IIN_CA
-from pdf417gen import encode, render_image
+from pdf417gen import encode, render_image, render_svg
 import io
 
 
 def show_identity_gen(lang="EN"):
 
-    # 🌍 TEXTES MULTILINGUES
+    # =========================
+    # TEXTES MULTILINGUES
+    # =========================
     TEXT = {
         "EN": {
             "title": "AAMVA Raw Data Generator",
@@ -43,7 +45,9 @@ def show_identity_gen(lang="EN"):
 
     t = TEXT.get(lang, TEXT["EN"])
 
-    # 🎯 HEADER
+    # =========================
+    # HEADER
+    # =========================
     st.title(t["title"])
     st.write(t["desc"])
     st.divider()
@@ -51,7 +55,6 @@ def show_identity_gen(lang="EN"):
     # =========================
     # STEP 1
     # =========================
-
     col_geo1, col_geo2 = st.columns(2)
 
     with col_geo1:
@@ -61,7 +64,6 @@ def show_identity_gen(lang="EN"):
             key="country_sel"
         )
 
-    # 🌐 ICON dynamique
     icon_url = (
         "https://img.icons8.com/external-justicon-flat-justicon/64/external-united-states-countrys-flags-justicon-flat-justicon.png"
         if country == "United States"
@@ -100,7 +102,6 @@ def show_identity_gen(lang="EN"):
     # =========================
     # STEP 2
     # =========================
-
     st.markdown(
         f"""
         <div style="display:flex; align-items:center; gap:10px;">
@@ -134,26 +135,21 @@ def show_identity_gen(lang="EN"):
     # =========================
     # STEP 3
     # =========================
-
     st.markdown(f"### {t['step3']}")
 
-    with st.expander(
-        "![icon](https://img.icons8.com/external-nawicon-mixed-nawicon/64/external-Management-business-management-nawicon-mixed-nawicon.png) Barcode Settings (Advanced)"
-    ):
-        adv_col1, adv_col2 = st.columns(2)
+    with st.expander("Barcode Settings (Advanced)"):
 
-        with adv_col1:
-            unit = st.selectbox("Unit width", ["Pixel", "mm", "mils"], index=1, key="unit_sel")
-            module_width = st.number_input("Module width", min_value=0.1, max_value=1.0, value=0.38, step=0.01)
-            dpi = st.slider("DPI", 72, 600, 600)
-            img_format = st.selectbox("Image format", ["SVG", "PNG"], index=0, key="format_sel")
+        unit = st.selectbox("Unit width", ["Pixel", "mm", "mils"], index=1)
+        module_width = st.number_input("Module width", 0.1, 1.0, 0.38, 0.01)
+        dpi = st.slider("DPI", 72, 600, 600)
+        img_format = st.selectbox("Image format", ["SVG", "PNG"], index=0)
 
-        with adv_col2:
-            show_hrt = st.radio("Show text", ["NON", "OUI"], index=0)
-            quiet_unit = st.selectbox("Quiet zone unit", ["mm", "Pixel", "mils"], index=0, key="quiet_sel")
-            quiet_zone = st.number_input("Padding", min_value=0.0, max_value=50.0, value=3.0)
-            eval_escapes = st.checkbox("Evaluate escapes", value=True)
+        show_text = st.radio("Show text", ["NON", "OUI"], index=0)
+        quiet_zone = st.number_input("Padding", 0.0, 50.0, 3.0)
 
+    # =========================
+    # GENERATION
+    # =========================
     if st.button(t["generate"], use_container_width=True):
 
         aamva_header = f"ANSI {mock_iin}050102DL00410287ZO02900045DL"
@@ -165,92 +161,66 @@ def show_identity_gen(lang="EN"):
             f"DBD{dbd}\nDBA{dba}\nDBC{dbc}\nDCF{dcf}"
         )
 
-        raw_data_display = raw_data_internal.replace("\n", "\\n")
-
         st.success(t["success"])
 
-        col_out1, col_out2 = st.columns([1, 1])
+        col_out1, col_out2 = st.columns(2)
 
         with col_out1:
             st.markdown(f"#### 📄 {t['raw']}")
-            st.code(raw_data_display, language="text")
+            st.code(raw_data_internal.replace("\n", "\\n"))
             st.info(t["use"])
 
         try:
             codes = encode(raw_data_internal, columns=10)
 
-            pixels_per_inch = dpi
-            pixels_per_mm = pixels_per_inch / 25.4
-
-            if unit == "mm":
-                scale_factor = module_width * pixels_per_mm
-            elif unit == "mils":
-                scale_factor = (module_width / 1000) * pixels_per_inch
-            else:
-                scale_factor = module_width
-
-            final_scale = max(1.0, float(scale_factor))
+            scale = max(1, int(module_width * (dpi / 25.4)))
             padding = int(quiet_zone)
 
             with col_out2:
                 st.markdown(f"#### 🖼️ {t['preview']} ({img_format})")
 
+                # =========================
+                # PNG
+                # =========================
                 if img_format == "PNG":
-                    image = render_image(codes, scale=max(1, int(final_scale)), padding=padding)
+                    image = render_image(codes, scale=scale, padding=padding)
                     buf = io.BytesIO()
                     image.save(buf, format="PNG", dpi=(dpi, dpi))
-                    byte_im = buf.getvalue()
 
-                    st.image(byte_im, use_container_width=True)
+                    st.image(buf.getvalue(), use_container_width=True)
 
                     st.download_button(
-                        label="📥 PNG",
-                        data=byte_im,
-                        file_name=f"pdf417_{dcs}.png",
-                        mime="image/png",
-                        use_container_width=True
+                        "📥 PNG",
+                        buf.getvalue(),
+                        f"pdf417_{dcs}.png",
+                        "image/png"
                     )
 
+                # =========================
+                # SVG (REAL PDF417)
+                # =========================
                 else:
-                    from reportlab.graphics.shapes import Drawing, Rect
-                    from reportlab.graphics import renderSVG
-                    from reportlab.lib import colors
+                    svg_element = render_svg(
+                        codes,
+                        scale=scale,
+                        ratio=3,
+                        padding=padding
+                    )
 
-                    mod_width = final_scale
-                    mod_height = mod_width * 3
+                    svg_data = svg_element.toxml()
 
-                    rows = len(codes)
-                    cols = len(codes[0]) if rows > 0 else 0
-
-                    draw_width = (cols * mod_width) + (2 * padding * mod_width)
-                    draw_height = (rows * mod_height) + (2 * padding * mod_height)
-
-                    d = Drawing(draw_width, draw_height)
-                    d.add(Rect(0, 0, draw_width, draw_height, fillColor=colors.white))
-
-                    for r_idx, row in enumerate(codes):
-                        y = draw_height - ((r_idx + padding + 1) * mod_height)
-                        for c_idx, bit in enumerate(row):
-                            if bit:
-                                x = (c_idx + padding) * mod_width
-                                d.add(Rect(x, y, mod_width, mod_height, fillColor=colors.black))
-
-                    svg_data = renderSVG.drawToString(d)
-
-                    st.markdown(
-                        f'<div style="background:white;padding:15px;border-radius:8px;">{svg_data}</div>',
-                        unsafe_allow_html=True
+                    st.components.v1.html(
+                        f'<div style="background:white;padding:10px;">{svg_data}</div>',
+                        height=300,
+                        scrolling=True
                     )
 
                     st.download_button(
-                        label="📥 SVG",
-                        data=svg_data,
-                        file_name=f"pdf417_{dcs}.svg",
-                        mime="image/svg+xml",
-                        use_container_width=True
+                        "📥 SVG 600 DPI",
+                        svg_data,
+                        f"pdf417_{dcs}.svg",
+                        "image/svg+xml"
                     )
 
         except Exception as e:
             st.error(f"Erreur : {str(e)}")
-
-
