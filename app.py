@@ -4,7 +4,7 @@ import os
 # Set page config
 st.set_page_config(
     page_title="Streamlit Hub",
-    page_icon="⚡",
+    page_icon="https://img.icons8.com/external-inipagistudio-mixed-inipagistudio/24/external-ai-web-programmer-inipagistudio-mixed-inipagistudio.png",
     layout="wide",
     initial_sidebar_state="expanded",
 )
