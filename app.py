@@ -51,13 +51,7 @@ def main():
     col1, col2 = st.columns([12, 1])
 
     # ✅ FIX: indentation correcte ici
-    with col2:
-        icon = (
-            "https://img.icons8.com/external-regular-kawalan-studio/28/external-dark-mode-user-interface-regular-kawalan-studio.png"
-            if st.session_state.dark_mode
-            else "https://img.icons8.com/external-flatart-icons-solid-flatarticons/28/external-sun-nature-flatart-icons-solid-flatarticons-2.png"
-        )
-
+ 
         if st.button("🌓"):
             st.session_state.dark_mode = not st.session_state.dark_mode
 
