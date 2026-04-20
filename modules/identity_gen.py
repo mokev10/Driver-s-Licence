@@ -46,7 +46,9 @@ def show_identity_gen(lang="EN"):
     st.write(t["desc"])
     st.divider()
 
-    # ================= STEP 1 =================
+    # =========================
+    # STEP 1
+    # =========================
     col_geo1, col_geo2 = st.columns(2)
 
     with col_geo1:
@@ -74,48 +76,73 @@ def show_identity_gen(lang="EN"):
 
     with col_geo2:
         if country == "United States":
-            region = st.selectbox(t["state"], sorted(IIN_US.keys()), key="state_sel")
-            mock_iin = IIN_US[region]
+            region = st.selectbox(
+                t["state"],
+                sorted(list(IIN_US.keys())),
+                index=4,
+                key="state_sel"
+            )
+            mock_iin = IIN_US.get(region)
         else:
-            region = st.selectbox(t["prov"], sorted(IIN_CA.keys()), key="prov_sel")
-            mock_iin = IIN_CA[region]
+            region = st.selectbox(
+                t["prov"],
+                sorted(list(IIN_CA.keys())),
+                key="prov_sel"
+            )
+            mock_iin = IIN_CA.get(region)
 
     st.divider()
 
-    # ================= STEP 2 =================
-    st.markdown(f"### {t['step2']}")
+    # =========================
+    # STEP 2
+    # =========================
+    st.markdown(
+        f"""
+        <div style="display:flex; align-items:center; gap:10px;">
+            <img src="https://img.icons8.com/external-itim2101-lineal-itim2101/64/external-pipeline-plumber-tools-itim2101-lineal-itim2101-6.png" width="24">
+            <h3 style="margin:0;">{t["step2"]}</h3>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
     col1, col2 = st.columns(2)
 
     with col1:
-        dcg = st.text_input("DCG", "USA" if country == "United States" else "CAN")
-        dac = st.text_input("DAC", "JEAN")
-        dcs = st.text_input("DCS", "NICOLAS")
-        dbb = st.text_input("DBB", "19941208")
-        daq = st.text_input("DAQ", "D9823415")
-        dag = st.text_input("DAG", "1560 SHERBROOKE ST E")
+        dcg = st.text_input("DCG (Country)", "USA" if country == "United States" else "CAN")
+        dac = st.text_input("DAC (First Name)", "JEAN")
+        dcs = st.text_input("DCS (Last Name)", "NICOLAS")
+        dbb = st.text_input("DBB (DOB YYYYMMDD)", "19941208")
+        daq = st.text_input("DAQ (License No)", "D9823415")
+        dag = st.text_input("DAG (Address)", "1560 SHERBROOKE ST E")
 
     with col2:
-        dai = st.text_input("DAI", "MONTREAL")
-        dak = st.text_input("DAK", "H2L4M1")
-        dbd = st.text_input("DBD", "20230510")
-        dba = st.text_input("DBA", "20310509")
-        dbc = st.selectbox("DBC", ["1", "2", "3"])
-        dcf = st.text_input("DCF", "PEJQ04N96")
+        dai = st.text_input("DAI (City)", "MONTREAL")
+        dak = st.text_input("DAK (Postal Code)", "H2L4M1")
+        dbd = st.text_input("DBD (Issue Date)", "20230510")
+        dba = st.text_input("DBA (Expiry Date)", "20310509")
+        dbc = st.selectbox("DBC (Sex)", ["1", "2", "3"], key="sex_sel")
+        dcf = st.text_input("DCF (Reference No)", "PEJQ04N96")
 
     st.divider()
 
-    # ================= STEP 3 =================
+    # =========================
+    # STEP 3
+    # =========================
     st.markdown(f"### {t['step3']}")
 
-    with st.expander("Barcode Settings"):
+    with st.expander("Barcode Settings (Advanced)"):
 
-        unit = st.selectbox("Unit", ["Pixel", "mm", "mils"], index=1)
-        module_width = st.number_input("Module width", 0.1, 1.0, 0.38)
-        dpi = st.slider("DPI", 72, 600, 600)
-        img_format = st.selectbox("Format", ["SVG", "PNG"])
+        colA, colB = st.columns(2)
 
-        quiet_zone = st.number_input("Padding", 0.0, 50.0, 3.0)
+        with colA:
+            unit = st.selectbox("Unit width", ["Pixel", "mm", "mils"], index=1)
+            module_width = st.number_input("Module width", 0.1, 1.0, 0.38, 0.01)
+            dpi = st.slider("DPI", 72, 600, 600)
+            img_format = st.selectbox("Format", ["SVG", "PNG"])
+
+        with colB:
+            quiet_zone = st.number_input("Padding", 0.0, 50.0, 3.0)
 
     if st.button(t["generate"], use_container_width=True):
 
@@ -130,70 +157,94 @@ def show_identity_gen(lang="EN"):
 
         st.success(t["success"])
 
-        col_out1, col_out2 = st.columns(2)
+        col1, col2 = st.columns(2)
 
-        with col_out1:
+        with col1:
             st.code(raw_data.replace("\n", "\\n"))
 
-        codes = encode(raw_data, columns=10)
+        try:
+            codes = encode(raw_data, columns=10)
 
-        # SCALE
-        dpi_factor = dpi / 25.4
-        scale = max(1, module_width * dpi_factor)
+            ppm = dpi / 25.4
 
-        with col_out2:
-            if img_format == "PNG":
-
-                img = render_image(codes, scale=int(scale), padding=int(quiet_zone))
-
-                buf = io.BytesIO()
-                img.save(buf, format="PNG", dpi=(dpi, dpi))
-
-                st.image(buf.getvalue())
-
-                st.download_button(
-                    "Download PNG",
-                    buf.getvalue(),
-                    f"{dcs}.png",
-                    "image/png"
-                )
-
+            if unit == "mm":
+                scale = module_width * ppm
+            elif unit == "mils":
+                scale = (module_width / 1000) * dpi
             else:
-                # ================= SVG REAL (NO padding bug) =================
-                from reportlab.graphics.shapes import Drawing, Rect
-                from reportlab.graphics import renderSVG
-                from reportlab.lib import colors
+                scale = module_width
 
-                mod = scale
-                h = mod * 3
+            scale = max(1, float(scale))
+            pad = int(quiet_zone)
 
-                rows = len(codes)
-                cols = len(codes[0])
+            with col2:
+                st.markdown(f"### {t['preview']}")
 
-                width = cols * mod
-                height = rows * h
+                # =========================
+                # PNG EXPORT (600 DPI réel)
+                # =========================
+                if img_format == "PNG":
+                    img = render_image(codes, scale=int(scale), padding=pad)
+                    buf = io.BytesIO()
+                    img.save(buf, format="PNG", dpi=(dpi, dpi))
 
-                d = Drawing(width, height)
+                    st.image(buf.getvalue())
 
-                d.add(Rect(0, 0, width, height, fillColor=colors.white))
+                    st.download_button(
+                        "Download PNG",
+                        buf.getvalue(),
+                        file_name=f"pdf417_{dcs}.png",
+                        mime="image/png"
+                    )
 
-                for r, row in enumerate(codes):
-                    for c, bit in enumerate(row):
-                        if bit:
-                            x = c * mod
-                            y = height - (r * h)
-                            d.add(Rect(x, y, mod, h, fillColor=colors.black))
+                # =========================
+                # SVG EXPORT (CORRIGÉ 100%)
+                # =========================
+                else:
+                    from reportlab.graphics.shapes import Drawing, Rect
+                    from reportlab.graphics import renderSVG
+                    from reportlab.lib import colors
 
-                svg = renderSVG.drawToString(d)
+                    w = len(codes[0])
+                    h = len(codes)
 
-                st.markdown(
-                    f'<div style="background:white;padding:10px">{svg}</div>',
-                    unsafe_allow_html=True
-                )
+                    mw = scale
+                    mh = scale * 3
 
-                st.download_button(
-                    "Download SVG",
-                    svg,
-                    f"{dcs}.svg",
-                    "image/svg+xml"
-                )
+                    pad = pad * mw
+
+                    dw = (w * mw) + (2 * pad)
+                    dh = (h * mh) + (2 * pad)
+
+                    d = Drawing(dw, dh)
+                    d.add(Rect(0, 0, dw, dh, fillColor=colors.white))
+
+                    for y, row in enumerate(codes):
+                        for x, bit in enumerate(row):
+                            if bit:
+                                d.add(Rect(
+                                    pad + x * mw,
+                                    dh - pad - (y + 1) * mh,
+                                    mw,
+                                    mh,
+                                    fillColor=colors.black
+                                ))
+
+                    svg = renderSVG.drawToString(d)
+                    if isinstance(svg, bytes):
+                        svg = svg.decode()
+
+                    st.components.v1.html(
+                        f"<div style='background:white;padding:10px'>{svg}</div>",
+                        height=400
+                    )
+
+                    st.download_button(
+                        "Download SVG 600 DPI",
+                        svg,
+                        file_name=f"pdf417_{dcs}.svg",
+                        mime="image/svg+xml"
+                    )
+
+        except Exception as e:
+            st.error(f"Erreur : {str(e)}")
