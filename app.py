@@ -40,22 +40,38 @@ def apply_custom_style(dark_mode=True):
         card = "#F5F5F5"
 
     st.markdown(f"""
-        <style>
-            .stApp {{
-                background-color: {bg};
-                color: {text};
-            }}
+    <style>
+        .stApp {{
+            background-color: {bg};
+            color: {text};
+        }}
 
-            section[data-testid="stSidebar"] {{
-                background-color: {card};
-            }}
+        section[data-testid="stSidebar"] {{
+            background-color: {card};
+        }}
 
-            div[data-testid="stButton"] > button {{
-                border-radius: 8px;
-                width: 100%;
-            }}
-        </style>
-    """, unsafe_allow_html=True)
+        div[data-testid="stButton"] > button {{
+            border-radius: 8px;
+            width: 100%;
+        }}
+
+        /* 🔒 DISABLE TYPING IN SELECTBOX (IMPORTANT) */
+        div[data-baseweb="select"] input {{
+            pointer-events: none !important;
+            caret-color: transparent !important;
+        }}
+
+        /* ❌ Cache le curseur */
+        div[data-baseweb="select"] input:focus {{
+            outline: none !important;
+        }}
+
+        /* 🧹 Optionnel: empêche highlight texte */
+        div[data-baseweb="select"] input::selection {{
+            background: transparent;
+        }}
+    </style>
+""", unsafe_allow_html=True)
 
 
 def main():
