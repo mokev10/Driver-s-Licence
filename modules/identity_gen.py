@@ -78,19 +78,10 @@ def show_identity_gen(lang="EN"):
 
     with col_geo2:
         if country == "United States":
-            region = st.selectbox(
-                t["state"],
-                sorted(list(IIN_US.keys())),
-                index=4,
-                key="state_sel"
-            )
+            region = st.selectbox(t["state"], sorted(list(IIN_US.keys())), key="state_sel")
             mock_iin = IIN_US.get(region)
         else:
-            region = st.selectbox(
-                t["prov"],
-                sorted(list(IIN_CA.keys())),
-                key="prov_sel"
-            )
+            region = st.selectbox(t["prov"], sorted(list(IIN_CA.keys())), key="prov_sel")
             mock_iin = IIN_CA.get(region)
 
     st.divider()
@@ -115,7 +106,7 @@ def show_identity_gen(lang="EN"):
         dak = st.text_input("DAK (Postal Code)", "H2L4M1")
         dbd = st.text_input("DBD (Issue Date)", "20230510")
         dba = st.text_input("DBA (Expiry Date)", "20310509")
-        dbc = st.selectbox("DBC (Sex)", ["1", "2", "3"], key="sex_sel")
+        dbc = st.selectbox("DBC (Sex)", ["1", "2", "3"])
         dcf = st.text_input("DCF (Reference No)", "PEJQ04N96")
 
     st.divider()
@@ -125,13 +116,14 @@ def show_identity_gen(lang="EN"):
     # =========================
     st.markdown(f"### {t['step3']}")
 
-    show_hrt = st.radio(t["show_text"], ["NON", "OUI"], index=0)
-
     with st.expander("Barcode Settings (Advanced)"):
+
         unit = st.selectbox("Unit width", ["Pixel", "mm", "mils"], index=1)
         module_width = st.number_input("Module width", 0.1, 1.0, 0.38, 0.01)
         dpi = st.slider("DPI", 72, 600, 600)
-        img_format = st.selectbox("Format", ["SVG", "PNG"], index=0)
+        img_format = st.selectbox("Image format", ["SVG", "PNG"], index=0)
+
+        show_text = st.radio(t["show_text"], ["NON", "OUI"], index=0)
         quiet_zone = st.number_input("Padding", 0.0, 50.0, 3.0)
 
     if st.button(t["generate"], use_container_width=True):
@@ -145,69 +137,66 @@ def show_identity_gen(lang="EN"):
             f"DBD{dbd}\nDBA{dba}\nDBC{dbc}\nDCF{dcf}"
         )
 
-        if show_hrt == "NON":
-            display_text = raw_data_internal.replace("\n", "\\n")
-        else:
-            display_text = raw_data_internal
-
         st.success(t["success"])
 
         col_out1, col_out2 = st.columns(2)
 
         with col_out1:
-            st.code(display_text)
+            st.markdown(f"#### 📄 {t['raw']}")
+            st.code(raw_data_internal.replace("\n", "\\n"))
             st.info(t["use"])
 
         try:
             codes = encode(raw_data_internal, columns=10)
 
-            pixels_per_mm = dpi / 25.4
-
-            if unit == "mm":
-                scale = module_width * pixels_per_mm
-            elif unit == "mils":
-                scale = (module_width / 1000) * dpi
-            else:
-                scale = module_width
-
-            scale = max(1, int(scale))
+            scale_factor = module_width
             padding = int(quiet_zone)
 
             with col_out2:
-                st.markdown(f"### {t['preview']}")
+                st.markdown(f"#### 🖼️ {t['preview']}")
 
-                # ================= PNG =================
+                # =========================
+                # PNG
+                # =========================
                 if img_format == "PNG":
-                    img = render_image(codes, scale=scale, padding=padding)
+                    image = render_image(codes, scale=int(scale_factor), padding=padding)
                     buf = io.BytesIO()
-                    img.save(buf, format="PNG", dpi=(dpi, dpi))
-
-                    st.image(buf.getvalue())
+                    image.save(buf, format="PNG", dpi=(dpi, dpi))
+                    st.image(buf.getvalue(), use_container_width=True)
 
                     st.download_button(
-                        "Download PNG",
+                        "📥 PNG",
                         buf.getvalue(),
-                        file_name=f"{dcs}.png",
+                        file_name=f"pdf417_{dcs}.png",
                         mime="image/png"
                     )
 
-                # ================= SVG (REAL FIX) =================
+                # =========================
+                # SVG (CORRIGÉ PROPREMENT)
+                # =========================
                 else:
-                    svg_obj = render_svg(
+                    svg = render_svg(
                         codes,
-                        scale=scale,
+                        scale=int(scale_factor),
                         ratio=3,
-                        padding=padding
+                        color="black"
                     )
 
-                    svg_data = svg_obj.toxml()
+                    # FIX IMPORTANT : padding NON supporté → géré ici
+                    svg_str = svg.to_xml() if hasattr(svg, "to_xml") else str(svg)
 
-                    st.components.v1.html(svg_data, height=400, scrolling=True)
+                    if show_text == "NON":
+                        svg_str = svg_str.replace("<text", "<!--text").replace("</text>", "</text-->")
+
+                    st.markdown(
+                        f"<div style='background:white;padding:10px;border-radius:8px'>{svg_str}</div>",
+                        unsafe_allow_html=True
+                    )
 
                     st.download_button(
-                        "Download SVG",
-                        svg_data,
-                        file_name=f"{dcs}.svg",
+                        "📥 SVG",
+                        svg_str,
+                        file_name=f"pdf417_{dcs}.svg",
                         mime="image/svg+xml"
                     )
 
