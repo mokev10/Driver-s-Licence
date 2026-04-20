@@ -1,83 +1,97 @@
 """
-Tool: Image to SVG Vector Converter
-----------------------------------
-This script converts raster images (PNG, JPG, JPEG) into
-black & white SVG vector files using OpenCV and Potrace.
-
-Workflow:
-1. Read image
-2. Convert to grayscale
-3. Convert to pure black & white
-4. Save as PBM (temporary)
-5. Convert PBM to SVG using Potrace
-6. Clean up temporary files
-
-Author: Farrukh Ali Khan
+Image → SVG Batch Converter (OpenCV + Potrace)
+----------------------------------------------
+Standalone CLI tool (no Streamlit)
 """
 
-import streamlit as st
-import datetime
-from utils.constants import IIN_US, IIN_CA
-from pdf417gen import encode, render_image
-import io
 import os
 import cv2
 import subprocess
+import shutil
 
-# -------------------------------------------------
-# IMPORTANT:
-# Replace the path below with the FULL path
-# to potrace.exe on your own system
-# Example (Windows):
-# r"C:\path\to\potrace\potrace.exe"
-# -------------------------------------------------
+# =========================
+# CONFIGURATION
+# =========================
+
 potrace_path = r"PUT_YOUR_POTRACE_EXE_PATH_HERE"
 
-# Supported image formats to process
 input_extensions = (".png", ".jpg", ".jpeg")
 
-# Folder where generated SVG files will be saved
 output_folder = "svg_vector_output"
+temp_folder = "_temp_pbm"
 
-# Create output folder if it does not already exist
+THRESHOLD = 200
+
 os.makedirs(output_folder, exist_ok=True)
+os.makedirs(temp_folder, exist_ok=True)
 
-# Loop through all files in the current directory
-for file in os.listdir("."):
+# =========================
+# PROCESS IMAGE
+# =========================
 
-    # Process only supported image files
-    if file.lower().endswith(input_extensions):
+def convert_to_svg(file_path):
 
-        # Extract file name without extension
-        name = os.path.splitext(file)[0]
+    name = os.path.splitext(os.path.basename(file_path))[0]
 
-        # Read the image in grayscale mode
-        img = cv2.imread(file, cv2.IMREAD_GRAYSCALE)
+    img = cv2.imread(file_path, cv2.IMREAD_GRAYSCALE)
 
-        # Convert grayscale image to pure black & white
-        # Pixels above threshold become white, below become black
-        _, bw = cv2.threshold(img, 200, 255, cv2.THRESH_BINARY)
+    if img is None:
+        print(f"[ERROR] Cannot read {file_path}")
+        return
 
-        # Temporary PBM file name (required by Potrace)
-        pbm_file = f"{name}.pbm"
+    # Binarisation
+    _, bw = cv2.threshold(img, THRESHOLD, 255, cv2.THRESH_BINARY)
 
-        # Save black & white image as PBM
-        cv2.imwrite(pbm_file, bw)
+    pbm_path = os.path.join(temp_folder, f"{name}.pbm")
+    svg_path = os.path.join(output_folder, f"{name}.svg")
 
-        # Output SVG file path
-        svg_path = os.path.join(output_folder, f"{name}.svg")
+    cv2.imwrite(pbm_path, bw)
 
-        # Run Potrace to convert PBM file into SVG vector
-        subprocess.run([
-            potrace_path,   # Path to potrace executable
-            pbm_file,       # Input PBM file
-            "-s",           # Output format: SVG
-            "-o",
-            svg_path        # Output SVG file
-        ], check=True)
+    try:
+        subprocess.run(
+            [
+                potrace_path,
+                pbm_path,
+                "-s",
+                "-o",
+                svg_path
+            ],
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
 
-        # Delete temporary PBM file after conversion
-        os.remove(pbm_file)
+        print(f"[OK] {svg_path}")
 
-        # Print success message
-        print(f"Vector SVG created: {svg_path}")
+    except Exception as e:
+        print(f"[FAIL] {file_path} → {e}")
+
+    finally:
+        if os.path.exists(pbm_path):
+            os.remove(pbm_path)
+
+# =========================
+# MAIN LOOP
+# =========================
+
+def main():
+
+    files = [
+        f for f in os.listdir(".")
+        if f.lower().endswith(input_extensions)
+    ]
+
+    if not files:
+        print("No images found.")
+        return
+
+    print(f"{len(files)} images found")
+
+    for f in files:
+        convert_to_svg(f)
+
+    print("Done.")
+
+
+if __name__ == "__main__":
+    main()
