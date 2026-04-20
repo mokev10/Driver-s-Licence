@@ -12,8 +12,16 @@ def show_identity_gen():
 
     # STEP 1: JURISDICTION
 
-    country = st.selectbox("Sélectionner le Pays", ["United States", "Canada"], key="country_sel")
+    col_geo1, col_geo2 = st.columns(2)
 
+    with col_geo1:
+        country = st.selectbox(
+            "Sélectionner le Pays",
+            ["United States", "Canada"],
+            key="country_sel"
+        )
+
+    # ICON DYNAMIQUE (basé sur country sélectionné)
     icon_url = (
         "https://img.icons8.com/external-justicon-flat-justicon/64/external-united-states-countrys-flags-justicon-flat-justicon.png"
         if country == "United States"
@@ -30,33 +38,37 @@ def show_identity_gen():
         unsafe_allow_html=True
     )
 
-    col_geo1, col_geo2 = st.columns(2)
-
-    with col_geo1:
-        country = st.selectbox("Sélectionner le Pays", ["United States", "Canada"], key="country_sel")
-
     with col_geo2:
         if country == "United States":
-            region = st.selectbox("Sélectionner l'État/Territoire", sorted(list(IIN_US.keys())), index=4, key="state_sel")
+            region = st.selectbox(
+                "Sélectionner l'État/Territoire",
+                sorted(list(IIN_US.keys())),
+                key="state_sel"
+            )
             mock_iin = IIN_US.get(region)
         else:
-            region = st.selectbox("Sélectionner la Province", sorted(list(IIN_CA.keys())), key="prov_sel")
+            region = st.selectbox(
+                "Sélectionner la Province",
+                sorted(list(IIN_CA.keys())),
+                key="prov_sel"
+            )
             mock_iin = IIN_CA.get(region)
 
     st.divider()
 
     # STEP 2: MANDATORY FIELDS
     st.markdown(
-    """
-    <div style="display:flex; align-items:center; gap:10px;">
-        <img src="https://img.icons8.com/external-itim2101-lineal-itim2101/64/external-pipeline-plumber-tools-itim2101-lineal-itim2101-6.png" width="24">
-        <h3 style="margin:0;">Step 2: Required fields (AAMVA)</h3>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-    
+        """
+        <div style="display:flex; align-items:center; gap:10px;">
+            <img src="https://img.icons8.com/external-itim2101-lineal-itim2101/64/external-pipeline-plumber-tools-itim2101-lineal-itim2101-6.png" width="24">
+            <h3 style="margin:0;">Step 2: Required fields (AAMVA)</h3>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
     col1, col2 = st.columns(2)
+
     with col1:
         dcg = st.text_input("DCG (Country)", "USA" if country == "United States" else "CAN")
         dac = st.text_input("DAC (First Name)", "JEAN")
@@ -64,7 +76,7 @@ def show_identity_gen():
         dbb = st.text_input("DBB (DOB YYYYMMDD)", "19941208")
         daq = st.text_input("DAQ (License No)", "D9823415")
         dag = st.text_input("DAG (Address)", "1560 SHERBROOKE ST E")
-        
+
     with col2:
         dai = st.text_input("DAI (City)", "MONTREAL")
         dak = st.text_input("DAK (Postal Code)", "H2L4M1")
@@ -75,139 +87,36 @@ def show_identity_gen():
 
     st.divider()
 
-    # STEP 3: OPTIONS & GENERATION
+    # STEP 3
     st.markdown("### Step 3: Configuration & Generation")
-    
-    with st.expander("![icon](https://img.icons8.com/external-nawicon-mixed-nawicon/64/external-Management-business-management-nawicon-mixed-nawicon.png) Barcode Settings (Advanced)"):
-        adv_col1, adv_col2 = st.columns(2)
-        
-        with adv_col1:
-            unit = st.selectbox("Largeur de module unité", ["Pixel", "mm", "mils"], index=1)
-            module_width = st.number_input("Largeur du module", min_value=0.1, max_value=1.0, value=0.38, step=0.01)
-            dpi = st.slider("Résolution d'image (DPI)", 72, 600, 600)
-            img_format = st.selectbox("Format d'image", ["SVG", "PNG"], index=0)
-            
-        with adv_col2:
-            show_hrt = st.radio("Afficher le texte lisible (HRT)", ["NON", "OUI"], index=0)
-            quiet_unit = st.selectbox("Unité de la zone de repos", ["mm", "Pixel", "mils"], index=0)
-            quiet_zone = st.number_input("Zone de repos (Padding)", min_value=0.0, max_value=50.0, value=3.0)
-            eval_escapes = st.checkbox("Évaluer les séquences d'échappement", value=True)
 
     if st.button("GÉNÉRER LE CODE-BARRES & LA CHAÎNE", use_container_width=True):
-        # AAMVA Header Construction
+
         aamva_header = f"ANSI {mock_iin}050102DL00410287ZO02900045DL"
-        
-        # Internal raw data (with real newlines for generation)
-        raw_data_internal = f"@\n{aamva_header}\nDCG{dcg}\nDCS{dcs}\nDAC{dac}\nDBB{dbb}\nDAQ{daq}\nDAG{dag}\nDAI{dai}\nDAJ{region[:2].upper()}\nDAK{dak}\nDBD{dbd}\nDBA{dba}\nDBC{dbc}\nDCF{dcf}"
-        
-        # Display Raw Data String (with literal \n for user copy-paste)
+
+        raw_data_internal = (
+            f"@\n{aamva_header}\n"
+            f"DCG{dcg}\nDCS{dcs}\nDAC{dac}\nDBB{dbb}\n"
+            f"DAQ{daq}\nDAG{dag}\nDAI{dai}\n"
+            f"DAJ{region[:2].upper()}\nDAK{dak}\n"
+            f"DBD{dbd}\nDBA{dba}\nDBC{dbc}\nDCF{dcf}"
+        )
+
         raw_data_display = raw_data_internal.replace("\n", "\\n")
-        
-        st.success("Génération HDR (600 DPI) terminée.")
-        
-        col_out1, col_out2 = st.columns([1, 1])
-        
+
+        st.success("Génération terminée")
+
+        col_out1, col_out2 = st.columns(2)
+
         with col_out1:
-            st.markdown("#### 📄 Chaîne Brute (Raw Data)")
-            st.code(raw_data_display, language="text")
-            st.info("Utilisez cette chaîne dans vos outils externes.")
+            st.code(raw_data_display)
 
         try:
-            # Generate PDF417 Bit Codes
             codes = encode(raw_data_internal, columns=10)
-            
-            # Rendering scale logic (DPI-Aware Precision)
-            # 1 inch = 25.4 mm
-            pixels_per_inch = dpi
-            pixels_per_mm = pixels_per_inch / 25.4
-            
-            if unit == "mm":
-                scale_factor = module_width * pixels_per_mm
-            elif unit == "mils":
-                # 1 mil = 1/1000 inch
-                scale_factor = (module_width / 1000) * pixels_per_inch
-            else: # Pixel
-                scale_factor = module_width
-            
-            # For SVG/PNG rendering, we need at least 1 pixel module width
-            final_scale = max(1.0, float(scale_factor))
-            padding = int(quiet_zone)
-            
+            image = render_image(codes, scale=2, padding=3)
+
             with col_out2:
-                st.markdown(f"#### 🖼️ Aperçu ({img_format})")
-                # GENERATE PNG
-                if img_format == "PNG":
-                    image = render_image(codes, scale=max(1, int(final_scale)), padding=padding)
-                    buf = io.BytesIO()
-                    image.save(buf, format="PNG", dpi=(dpi, dpi))
-                    byte_im = buf.getvalue()
-                    
-                    st.image(byte_im, use_container_width=True)
-                    
-                    st.download_button(
-                        label="📥 Télécharger PNG",
-                        data=byte_im,
-                        file_name=f"pdf417_{dcs}.png",
-                        mime="image/png",
-                        use_container_width=True
-                    )
-                
-                # GENERATE SVG
-                else:
-                    from reportlab.graphics.shapes import Drawing, Rect
-                    from reportlab.graphics import renderSVG
-                    from reportlab.lib import colors
-                    
-                    mod_width = final_scale
-                    mod_height = mod_width * 3
-                    
-                    rows = len(codes)
-                    cols = len(codes[0]) if rows > 0 else 0
-                    
-                    draw_width = (cols * mod_width) + (2 * padding * mod_width)
-                    draw_height = (rows * mod_height) + (2 * padding * mod_height)
-                    
-                    d = Drawing(draw_width, draw_height)
-                    
-                    # Fill white background
-                    d.add(Rect(0, 0, draw_width, draw_height, fillColor=colors.white, strokeColor=None))
-                    
-                    for r_idx, row in enumerate(codes):
-                        # Coordinate system for reportlab starts from bottom
-                        y = draw_height - ((r_idx + padding + 1) * mod_height)
-                        for c_idx, bit in enumerate(row):
-                            if bit:
-                                x = (c_idx + padding) * mod_width
-                                d.add(Rect(x, y, mod_width, mod_height, fillColor=colors.black, strokeColor=None))
-                    
-                    svg_data = renderSVG.drawToString(d)
-                    if isinstance(svg_data, bytes):
-                        svg_data = svg_data.decode("utf-8")
-                    
-                    # Make SVG responsive for the preview window
-                    # We inject a viewBox and remove hardcoded width/height to let the browser scale it
-                    responsive_svg = svg_data.replace('<svg ', f'<svg viewBox="0 0 {draw_width} {draw_height}" preserveAspectRatio="xMinYMin meet" ')
-                    # Force the SVG to take 100% width of the parent div
-                    responsive_svg = responsive_svg.replace('width=', 'data-orig-width=').replace('height=', 'data-orig-height=')
-                    
-                    st.markdown(
-                        f'''
-                        <div style="background: white; padding: 15px; border-radius: 8px; border: 1px solid #444; width: 100%;">
-                            {responsive_svg}
-                        </div>
-                        ''', 
-                        unsafe_allow_html=True
-                    )
-                    
-                    st.download_button(
-                        label="📥 Télécharger SVG",
-                        data=svg_data,
-                        file_name=f"pdf417_{dcs}.svg",
-                        mime="image/svg+xml",
-                        use_container_width=True
-                    )
-                    
+                st.image(image)
+
         except Exception as e:
-            st.error(f"Erreur lors de la génération visuelle : {str(e)}")
-
-
+            st.error(f"Erreur: {e}")
