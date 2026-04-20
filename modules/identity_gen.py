@@ -5,7 +5,7 @@ from pdf417gen import encode, render_image
 import io
 
 def show_identity_gen():
-    st.title("🪪 AAMVA Raw Data Generator")
+    st.title("AAMVA Raw Data Generator")
     st.write("Advanced tool for generating forensic-quality AAMVA raw data strings")
     st.divider()
 
@@ -27,7 +27,7 @@ def show_identity_gen():
     st.divider()
 
     # STEP 2: MANDATORY FIELDS
-    st.markdown("### ✍️ Étape 2 : Champs obligatoires (AAMVA)")
+    st.markdown("### Step 2: Required fields (AAMVA)")
     
     col1, col2 = st.columns(2)
     with col1:
@@ -49,9 +49,9 @@ def show_identity_gen():
     st.divider()
 
     # STEP 3: OPTIONS & GENERATION
-    st.markdown("### 🚀 Étape 3 : Configuration & Génération")
+    st.markdown("### Step 3: Configuration & Generation")
     
-    with st.expander("🛠️ Paramètres du Code-barres (Avancé)", expanded=True):
+    with st.expander("![icon](https://img.icons8.com/external-nawicon-detailed-outline-nawicon/24/external-Management-business-management-nawicon-detailed-outline-nawicon.png) Barcode Settings (Advanced)"):
         adv_col1, adv_col2 = st.columns(2)
         
         with adv_col1:
