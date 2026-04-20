@@ -47,7 +47,7 @@ def main():
     if "dark_mode" not in st.session_state:
         st.session_state.dark_mode = True
 
-    # 🔘 Top bar (bouton theme uniquement)
+    # 🔘 Top bar
     col1, col2 = st.columns([12, 1])
 
     with col2:
@@ -56,6 +56,7 @@ def main():
             key="theme_toggle"
         ):
             st.session_state.dark_mode = not st.session_state.dark_mode
+            st.rerun()  # ✅ IMPORTANT pour update immédiat
 
     # 🎨 Apply theme
     apply_custom_style(st.session_state.dark_mode)
