@@ -1,220 +1,121 @@
 import streamlit as st
-import datetime
-from utils.constants import IIN_US, IIN_CA
-from pdf417gen import encode, render_image
-import io
+import os
+
+st.set_page_config(
+    page_title="AI Generator PDF417",
+    page_icon="https://img.icons8.com/external-inipagistudio-mixed-inipagistudio/24/external-ai-web-programmer-inipagistudio-mixed-inipagistudio.png",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
+
+from utils.helpers import header_component
+from modules.identity_gen import show_identity_gen
 
 
-def show_identity_gen(lang="EN"):
-    st.title("AAMVA Raw Data Generator")
-    st.write("Advanced tool for generating forensic-quality AAMVA raw data strings")
-    st.divider()
+# 🌍 Traductions globales
+TEXTS = {
+    "EN": {
+        "theme_dark": "🌙 Dark",
+        "theme_light": "☀️ Light",
+        "sidebar_title": "🪪 Identity Gen",
+        "sidebar_info": "Identity generation module is active.",
+    },
+    "FR": {
+        "theme_dark": "🌙 Sombre",
+        "theme_light": "☀️ Clair",
+        "sidebar_title": "🪪 Générateur d'identité",
+        "sidebar_info": "Module de génération actif.",
+    }
+}
 
-    # STEP 1: JURISDICTION
 
-    col_geo1, col_geo2 = st.columns(2)
+def apply_custom_style(dark_mode=True):
+    if dark_mode:
+        bg = "#0E1117"
+        text = "#FAFAFA"
+        card = "#161B22"
+    else:
+        bg = "#FFFFFF"
+        text = "#000000"
+        card = "#F5F5F5"
 
-    with col_geo1:
-        country = st.selectbox(
-            "Sélectionner le Pays",
-            ["United States", "Canada"],
-            key="country_sel"
-        )
+    st.markdown(f"""
+        <style>
+            .stApp {{
+                background-color: {bg};
+                color: {text};
+            }}
 
-    icon_url = (
-        "https://img.icons8.com/external-justicon-flat-justicon/64/external-united-states-countrys-flags-justicon-flat-justicon.png"
-        if country == "United States"
-        else "https://img.icons8.com/external-justicon-flat-justicon/64/external-canada-countrys-flags-justicon-flat-justicon.png"
-    )
+            section[data-testid="stSidebar"] {{
+                background-color: {card};
+            }}
 
-    st.markdown(
-        f"""
-        <div style="display:flex; align-items:center; gap:10px;">
-            <img src="{icon_url}" width="24">
-            <h3 style="margin:0;">Step 1: Select the country and state or province</h3>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+            div[data-testid="stButton"] > button {{
+                border-radius: 8px;
+                width: 100%;
+            }}
+        </style>
+    """, unsafe_allow_html=True)
 
-    with col_geo2:
-        if country == "United States":
-            region = st.selectbox(
-                "Sélectionner l'État/Territoire",
-                sorted(list(IIN_US.keys())),
-                index=4,
-                key="state_sel"
-            )
-            mock_iin = IIN_US.get(region)
-        else:
-            region = st.selectbox(
-                "Sélectionner la Province",
-                sorted(list(IIN_CA.keys())),
-                key="prov_sel"
-            )
-            mock_iin = IIN_CA.get(region)
 
-    st.divider()
+def main():
 
-    # STEP 2: MANDATORY FIELDS
-    st.markdown(
-        """
-        <div style="display:flex; align-items:center; gap:10px;">
-            <img src="https://img.icons8.com/external-itim2101-lineal-itim2101/64/external-pipeline-plumber-tools-itim2101-lineal-itim2101-6.png" width="24">
-            <h3 style="margin:0;">Step 2: Required fields (AAMVA)</h3>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    # 🔘 Init states
+    if "dark_mode" not in st.session_state:
+        st.session_state.dark_mode = True
 
-    col1, col2 = st.columns(2)
+    if "lang" not in st.session_state:
+        st.session_state.lang = "EN"
 
-    with col1:
-        dcg = st.text_input("DCG (Country)", "USA" if country == "United States" else "CAN")
-        dac = st.text_input("DAC (First Name)", "JEAN")
-        dcs = st.text_input("DCS (Last Name)", "NICOLAS")
-        dbb = st.text_input("DBB (DOB YYYYMMDD)", "19941208")
-        daq = st.text_input("DAQ (License No)", "D9823415")
-        dag = st.text_input("DAG (Address)", "1560 SHERBROOKE ST E")
+    t = TEXTS[st.session_state.lang]
 
+    # 🔘 Top bar
+    col1, col2, col3 = st.columns([10, 1, 1])
+
+    # 🌙 Theme button
     with col2:
-        dai = st.text_input("DAI (City)", "MONTREAL")
-        dak = st.text_input("DAK (Postal Code)", "H2L4M1")
-        dbd = st.text_input("DBD (Issue Date)", "20230510")
-        dba = st.text_input("DBA (Expiry Date)", "20310509")
-        dbc = st.selectbox("DBC (Sex)", ["1", "2", "3"])
-        dcf = st.text_input("DCF (Reference No)", "PEJQ04N96")
+        if st.button(
+            t["theme_dark"] if st.session_state.dark_mode else t["theme_light"],
+            key="theme_toggle"
+        ):
+            st.session_state.dark_mode = not st.session_state.dark_mode
+            st.rerun()
 
-    st.divider()
+    # 🌍 Language dropdown avec icône intégrée
+    with col3:
 
-    # STEP 3: OPTIONS & GENERATION
-    st.markdown("### Step 3: Configuration & Generation")
+        LANG_OPTIONS = {
+            "EN": "🇺🇸 EN",
+            "FR": "🇫🇷 FR"
+        }
 
-    with st.expander(
-        "![icon](https://img.icons8.com/external-nawicon-mixed-nawicon/64/external-Management-business-management-nawicon-mixed-nawicon.png) Barcode Settings (Advanced)"
-    ):
-        adv_col1, adv_col2 = st.columns(2)
-
-        with adv_col1:
-            unit = st.selectbox("Largeur de module unité", ["Pixel", "mm", "mils"], index=1)
-            module_width = st.number_input("Largeur du module", min_value=0.1, max_value=1.0, value=0.38, step=0.01)
-            dpi = st.slider("Résolution d'image (DPI)", 72, 600, 600)
-            img_format = st.selectbox("Format d'image", ["SVG", "PNG"], index=0)
-
-        with adv_col2:
-            show_hrt = st.radio("Afficher le texte lisible (HRT)", ["NON", "OUI"], index=0)
-            quiet_unit = st.selectbox("Unité de la zone de repos", ["mm", "Pixel", "mils"], index=0)
-            quiet_zone = st.number_input("Zone de repos (Padding)", min_value=0.0, max_value=50.0, value=3.0)
-            eval_escapes = st.checkbox("Évaluer les séquences d'échappement", value=True)
-
-    if st.button("GÉNÉRER LE CODE-BARRES & LA CHAÎNE", use_container_width=True):
-
-        aamva_header = f"ANSI {mock_iin}050102DL00410287ZO02900045DL"
-
-        raw_data_internal = (
-            f"@\n{aamva_header}\n"
-            f"DCG{dcg}\nDCS{dcs}\nDAC{dac}\nDBB{dbb}\nDAQ{daq}\n"
-            f"DAG{dag}\nDAI{dai}\nDAJ{region[:2].upper()}\nDAK{dak}\n"
-            f"DBD{dbd}\nDBA{dba}\nDBC{dbc}\nDCF{dcf}"
+        lang = st.selectbox(
+            "",
+            options=list(LANG_OPTIONS.keys()),
+            index=0 if st.session_state.lang == "EN" else 1,
+            format_func=lambda x: LANG_OPTIONS[x],
+            key="lang_select",
+            label_visibility="collapsed"
         )
 
-        raw_data_display = raw_data_internal.replace("\n", "\\n")
+        if lang != st.session_state.lang:
+            st.session_state.lang = lang
+            st.rerun()
 
-        st.success("Génération HDR (600 DPI) terminée.")
+    # 🎨 Apply theme
+    apply_custom_style(st.session_state.dark_mode)
 
-        col_out1, col_out2 = st.columns([1, 1])
+    # 📌 Sidebar
+    with st.sidebar:
+        st.markdown(f"### {t['sidebar_title']}")
+        st.info(t["sidebar_info"])
 
-        with col_out1:
-            st.markdown("#### 📄 Chaîne Brute (Raw Data)")
-            st.code(raw_data_display, language="text")
-            st.info("Utilisez cette chaîne dans vos outils externes.")
+    # 🧠 Header
+    header_component()
 
-        try:
-            codes = encode(raw_data_internal, columns=10)
-
-            pixels_per_inch = dpi
-            pixels_per_mm = pixels_per_inch / 25.4
-
-            if unit == "mm":
-                scale_factor = module_width * pixels_per_mm
-            elif unit == "mils":
-                scale_factor = (module_width / 1000) * pixels_per_inch
-            else:
-                scale_factor = module_width
-
-            final_scale = max(1.0, float(scale_factor))
-            padding = int(quiet_zone)
-
-            with col_out2:
-                st.markdown(f"#### 🖼️ Aperçu ({img_format})")
-
-                if img_format == "PNG":
-                    image = render_image(
-                        codes,
-                        scale=max(1, int(final_scale)),
-                        padding=padding
-                    )
-                    buf = io.BytesIO()
-                    image.save(buf, format="PNG", dpi=(dpi, dpi))
-                    byte_im = buf.getvalue()
-
-                    st.image(byte_im, use_container_width=True)
-
-                    st.download_button(
-                        label="📥 Télécharger PNG",
-                        data=byte_im,
-                        file_name=f"pdf417_{dcs}.png",
-                        mime="image/png",
-                        use_container_width=True
-                    )
-
-                else:
-                    from reportlab.graphics.shapes import Drawing, Rect
-                    from reportlab.graphics import renderSVG
-                    from reportlab.lib import colors
-
-                    mod_width = final_scale
-                    mod_height = mod_width * 3
-
-                    rows = len(codes)
-                    cols = len(codes[0]) if rows > 0 else 0
-
-                    draw_width = (cols * mod_width) + (2 * padding * mod_width)
-                    draw_height = (rows * mod_height) + (2 * padding * mod_height)
-
-                    d = Drawing(draw_width, draw_height)
-                    d.add(Rect(0, 0, draw_width, draw_height, fillColor=colors.white))
-
-                    for r_idx, row in enumerate(codes):
-                        y = draw_height - ((r_idx + padding + 1) * mod_height)
-                        for c_idx, bit in enumerate(row):
-                            if bit:
-                                x = (c_idx + padding) * mod_width
-                                d.add(Rect(x, y, mod_width, mod_height, fillColor=colors.black))
-
-                    svg_data = renderSVG.drawToString(d)
-                    if isinstance(svg_data, bytes):
-                        svg_data = svg_data.decode("utf-8")
-
-                    responsive_svg = svg_data.replace(
-                        "<svg ",
-                        f'<svg viewBox="0 0 {draw_width} {draw_height}" preserveAspectRatio="xMinYMin meet" '
-                    )
-
-                    st.markdown(
-                        f'<div style="background:white;padding:15px;border-radius:8px;">{responsive_svg}</div>',
-                        unsafe_allow_html=True
-                    )
-
-                    st.download_button(
-                        label="📥 Télécharger SVG",
-                        data=svg_data,
-                        file_name=f"pdf417_{dcs}.svg",
-                        mime="image/svg+xml",
-                        use_container_width=True
-                    )
-
-        except Exception as e:
-            st.error(f"Erreur lors de la génération visuelle : {str(e)}")
+    # 📄 Main content
+    show_identity_gen(st.session_state.lang)
 
 
+if __name__ == "__main__":
+    main()
