@@ -6,21 +6,62 @@ import io
 
 
 def show_identity_gen(lang="EN"):
-    st.title("AAMVA Raw Data Generator")
-    st.write("Advanced tool for generating forensic-quality AAMVA raw data strings")
+
+    # 🌍 TEXTES MULTILINGUES
+    TEXT = {
+        "EN": {
+            "title": "AAMVA Raw Data Generator",
+            "desc": "Advanced tool for generating forensic-quality AAMVA raw data strings",
+            "step1": "Step 1: Select the country and state or province",
+            "country": "Select Country",
+            "state": "Select State/Territory",
+            "prov": "Select Province",
+            "step2": "Step 2: Required fields (AAMVA)",
+            "step3": "Step 3: Configuration & Generation",
+            "generate": "GENERATE BARCODE & STRING",
+            "success": "HDR generation (600 DPI) completed.",
+            "raw": "Raw Data String",
+            "use": "Use this string in external tools.",
+            "preview": "Preview"
+        },
+        "FR": {
+            "title": "Générateur de données AAMVA",
+            "desc": "Outil avancé pour générer des chaînes AAMVA",
+            "step1": "Étape 1 : Choisir le pays et la région",
+            "country": "Sélectionner le Pays",
+            "state": "Sélectionner l'État/Territoire",
+            "prov": "Sélectionner la Province",
+            "step2": "Étape 2 : Champs obligatoires (AAMVA)",
+            "step3": "Étape 3 : Configuration & Génération",
+            "generate": "GÉNÉRER LE CODE-BARRES & LA CHAÎNE",
+            "success": "Génération HDR (600 DPI) terminée.",
+            "raw": "Chaîne brute",
+            "use": "Utilisez cette chaîne dans vos outils externes.",
+            "preview": "Aperçu"
+        }
+    }
+
+    t = TEXT.get(lang, TEXT["EN"])
+
+    # 🎯 HEADER
+    st.title(t["title"])
+    st.write(t["desc"])
     st.divider()
 
-    # STEP 1: JURISDICTION
+    # =========================
+    # STEP 1
+    # =========================
 
     col_geo1, col_geo2 = st.columns(2)
 
     with col_geo1:
         country = st.selectbox(
-            "Sélectionner le Pays",
+            t["country"],
             ["United States", "Canada"],
             key="country_sel"
         )
 
+    # 🌐 ICON dynamique
     icon_url = (
         "https://img.icons8.com/external-justicon-flat-justicon/64/external-united-states-countrys-flags-justicon-flat-justicon.png"
         if country == "United States"
@@ -31,7 +72,7 @@ def show_identity_gen(lang="EN"):
         f"""
         <div style="display:flex; align-items:center; gap:10px;">
             <img src="{icon_url}" width="24">
-            <h3 style="margin:0;">Step 1: Select the country and state or province</h3>
+            <h3 style="margin:0;">{t["step1"]}</h3>
         </div>
         """,
         unsafe_allow_html=True
@@ -40,7 +81,7 @@ def show_identity_gen(lang="EN"):
     with col_geo2:
         if country == "United States":
             region = st.selectbox(
-                "Sélectionner l'État/Territoire",
+                t["state"],
                 sorted(list(IIN_US.keys())),
                 index=4,
                 key="state_sel"
@@ -48,7 +89,7 @@ def show_identity_gen(lang="EN"):
             mock_iin = IIN_US.get(region)
         else:
             region = st.selectbox(
-                "Sélectionner la Province",
+                t["prov"],
                 sorted(list(IIN_CA.keys())),
                 key="prov_sel"
             )
@@ -56,12 +97,15 @@ def show_identity_gen(lang="EN"):
 
     st.divider()
 
-    # STEP 2: MANDATORY FIELDS
+    # =========================
+    # STEP 2
+    # =========================
+
     st.markdown(
-        """
+        f"""
         <div style="display:flex; align-items:center; gap:10px;">
             <img src="https://img.icons8.com/external-itim2101-lineal-itim2101/64/external-pipeline-plumber-tools-itim2101-lineal-itim2101-6.png" width="24">
-            <h3 style="margin:0;">Step 2: Required fields (AAMVA)</h3>
+            <h3 style="margin:0;">{t["step2"]}</h3>
         </div>
         """,
         unsafe_allow_html=True
@@ -82,13 +126,16 @@ def show_identity_gen(lang="EN"):
         dak = st.text_input("DAK (Postal Code)", "H2L4M1")
         dbd = st.text_input("DBD (Issue Date)", "20230510")
         dba = st.text_input("DBA (Expiry Date)", "20310509")
-        dbc = st.selectbox("DBC (Sex)", ["1", "2", "3"])
+        dbc = st.selectbox("DBC (Sex)", ["1", "2", "3"], key="sex_sel")
         dcf = st.text_input("DCF (Reference No)", "PEJQ04N96")
 
     st.divider()
 
-    # STEP 3: OPTIONS & GENERATION
-    st.markdown("### Step 3: Configuration & Generation")
+    # =========================
+    # STEP 3
+    # =========================
+
+    st.markdown(f"### {t['step3']}")
 
     with st.expander(
         "![icon](https://img.icons8.com/external-nawicon-mixed-nawicon/64/external-Management-business-management-nawicon-mixed-nawicon.png) Barcode Settings (Advanced)"
@@ -96,18 +143,18 @@ def show_identity_gen(lang="EN"):
         adv_col1, adv_col2 = st.columns(2)
 
         with adv_col1:
-            unit = st.selectbox("Largeur de module unité", ["Pixel", "mm", "mils"], index=1)
-            module_width = st.number_input("Largeur du module", min_value=0.1, max_value=1.0, value=0.38, step=0.01)
-            dpi = st.slider("Résolution d'image (DPI)", 72, 600, 600)
-            img_format = st.selectbox("Format d'image", ["SVG", "PNG"], index=0)
+            unit = st.selectbox("Unit width", ["Pixel", "mm", "mils"], index=1, key="unit_sel")
+            module_width = st.number_input("Module width", min_value=0.1, max_value=1.0, value=0.38, step=0.01)
+            dpi = st.slider("DPI", 72, 600, 600)
+            img_format = st.selectbox("Image format", ["SVG", "PNG"], index=0, key="format_sel")
 
         with adv_col2:
-            show_hrt = st.radio("Afficher le texte lisible (HRT)", ["NON", "OUI"], index=0)
-            quiet_unit = st.selectbox("Unité de la zone de repos", ["mm", "Pixel", "mils"], index=0)
-            quiet_zone = st.number_input("Zone de repos (Padding)", min_value=0.0, max_value=50.0, value=3.0)
-            eval_escapes = st.checkbox("Évaluer les séquences d'échappement", value=True)
+            show_hrt = st.radio("Show text", ["NON", "OUI"], index=0)
+            quiet_unit = st.selectbox("Quiet zone unit", ["mm", "Pixel", "mils"], index=0, key="quiet_sel")
+            quiet_zone = st.number_input("Padding", min_value=0.0, max_value=50.0, value=3.0)
+            eval_escapes = st.checkbox("Evaluate escapes", value=True)
 
-    if st.button("GÉNÉRER LE CODE-BARRES & LA CHAÎNE", use_container_width=True):
+    if st.button(t["generate"], use_container_width=True):
 
         aamva_header = f"ANSI {mock_iin}050102DL00410287ZO02900045DL"
 
@@ -120,14 +167,14 @@ def show_identity_gen(lang="EN"):
 
         raw_data_display = raw_data_internal.replace("\n", "\\n")
 
-        st.success("Génération HDR (600 DPI) terminée.")
+        st.success(t["success"])
 
         col_out1, col_out2 = st.columns([1, 1])
 
         with col_out1:
-            st.markdown("#### 📄 Chaîne Brute (Raw Data)")
+            st.markdown(f"#### 📄 {t['raw']}")
             st.code(raw_data_display, language="text")
-            st.info("Utilisez cette chaîne dans vos outils externes.")
+            st.info(t["use"])
 
         try:
             codes = encode(raw_data_internal, columns=10)
@@ -146,14 +193,10 @@ def show_identity_gen(lang="EN"):
             padding = int(quiet_zone)
 
             with col_out2:
-                st.markdown(f"#### 🖼️ Aperçu ({img_format})")
+                st.markdown(f"#### 🖼️ {t['preview']} ({img_format})")
 
                 if img_format == "PNG":
-                    image = render_image(
-                        codes,
-                        scale=max(1, int(final_scale)),
-                        padding=padding
-                    )
+                    image = render_image(codes, scale=max(1, int(final_scale)), padding=padding)
                     buf = io.BytesIO()
                     image.save(buf, format="PNG", dpi=(dpi, dpi))
                     byte_im = buf.getvalue()
@@ -161,7 +204,7 @@ def show_identity_gen(lang="EN"):
                     st.image(byte_im, use_container_width=True)
 
                     st.download_button(
-                        label="📥 Télécharger PNG",
+                        label="📥 PNG",
                         data=byte_im,
                         file_name=f"pdf417_{dcs}.png",
                         mime="image/png",
@@ -193,21 +236,14 @@ def show_identity_gen(lang="EN"):
                                 d.add(Rect(x, y, mod_width, mod_height, fillColor=colors.black))
 
                     svg_data = renderSVG.drawToString(d)
-                    if isinstance(svg_data, bytes):
-                        svg_data = svg_data.decode("utf-8")
-
-                    responsive_svg = svg_data.replace(
-                        "<svg ",
-                        f'<svg viewBox="0 0 {draw_width} {draw_height}" preserveAspectRatio="xMinYMin meet" '
-                    )
 
                     st.markdown(
-                        f'<div style="background:white;padding:15px;border-radius:8px;">{responsive_svg}</div>',
+                        f'<div style="background:white;padding:15px;border-radius:8px;">{svg_data}</div>',
                         unsafe_allow_html=True
                     )
 
                     st.download_button(
-                        label="📥 Télécharger SVG",
+                        label="📥 SVG",
                         data=svg_data,
                         file_name=f"pdf417_{dcs}.svg",
                         mime="image/svg+xml",
@@ -215,4 +251,4 @@ def show_identity_gen(lang="EN"):
                     )
 
         except Exception as e:
-            st.error(f"Erreur lors de la génération visuelle : {str(e)}")
+            st.error(f"Erreur : {str(e)}")
