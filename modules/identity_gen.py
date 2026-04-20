@@ -5,7 +5,7 @@ from pdf417gen import encode, render_image
 import io
 
 
-def show_identity_gen():
+def show_identity_gen(lang="EN"):
     st.title("AAMVA Raw Data Generator")
     st.write("Advanced tool for generating forensic-quality AAMVA raw data strings")
     st.divider()
