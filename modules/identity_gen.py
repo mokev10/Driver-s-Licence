@@ -9,7 +9,8 @@ def show_identity_gen():
     st.write("Advanced tool for generating forensic-quality AAMVA raw data strings")
     st.divider()
 
-    # STEP 1: JURISDICTION
+   # STEP 1: JURISDICTION
+
 icon_url = (
     "https://img.icons8.com/external-justicon-flat-justicon/64/external-united-states-countrys-flags-justicon-flat-justicon.png"
     if country == "United States"
