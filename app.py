@@ -51,9 +51,23 @@ def main():
     # 🔘 Top bar with toggle (RIGHT aligned)
     col1, col2 = st.columns([12, 1])
 
-    with col2:
-        if st.button("🌙" if st.session_state.dark_mode else "☀️"):
-            st.session_state.dark_mode = not st.session_state.dark_mode
+   with col2:
+    icon = "https://img.icons8.com/external-regular-kawalan-studio/28/external-dark-mode-user-interface-regular-kawalan-studio.png" if st.session_state.dark_mode else "https://img.icons8.com/external-flatart-icons-solid-flatarticons/28/external-sun-nature-flatart-icons-solid-flatarticons-2.png"
+
+    st.markdown(
+        f"""
+        <div style="text-align:center; cursor:pointer;">
+            <img src="{icon}" width="28" id="theme-toggle">
+        </div>
+
+        <script>
+            document.getElementById("theme-toggle").onclick = function() {{
+                window.parent.postMessage({{"type": "streamlit:setComponentValue", "value": "toggle"}}, "*");
+            }}
+        </script>
+        """,
+        unsafe_allow_html=True
+    )
 
     # 🎨 Apply theme AFTER toggle
     apply_custom_style(st.session_state.dark_mode)
