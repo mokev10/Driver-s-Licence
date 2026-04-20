@@ -87,36 +87,124 @@ def show_identity_gen():
 
     st.divider()
 
-    # STEP 3
-    st.markdown("### Step 3: Configuration & Generation")
+   # STEP 3: OPTIONS & GENERATION
+st.markdown("### Step 3: Configuration & Generation")
 
-    if st.button("GÉNÉRER LE CODE-BARRES & LA CHAÎNE", use_container_width=True):
+with st.expander("![icon](https://img.icons8.com/external-nawicon-mixed-nawicon/64/external-Management-business-management-nawicon-mixed-nawicon.png) Barcode Settings (Advanced)"):
 
-        aamva_header = f"ANSI {mock_iin}050102DL00410287ZO02900045DL"
+    adv_col1, adv_col2 = st.columns(2)
 
-        raw_data_internal = (
-            f"@\n{aamva_header}\n"
-            f"DCG{dcg}\nDCS{dcs}\nDAC{dac}\nDBB{dbb}\n"
-            f"DAQ{daq}\nDAG{dag}\nDAI{dai}\n"
-            f"DAJ{region[:2].upper()}\nDAK{dak}\n"
-            f"DBD{dbd}\nDBA{dba}\nDBC{dbc}\nDCF{dcf}"
-        )
+    with adv_col1:
+        unit = st.selectbox("Largeur de module unité", ["Pixel", "mm", "mils"], index=1)
+        module_width = st.number_input("Largeur du module", min_value=0.1, max_value=1.0, value=0.38, step=0.01)
+        dpi = st.slider("Résolution d'image (DPI)", 72, 600, 600)
+        img_format = st.selectbox("Format d'image", ["SVG", "PNG"], index=0)
 
-        raw_data_display = raw_data_internal.replace("\n", "\\n")
+    with adv_col2:
+        show_hrt = st.radio("Afficher le texte lisible (HRT)", ["NON", "OUI"], index=0)
+        quiet_unit = st.selectbox("Unité de la zone de repos", ["mm", "Pixel", "mils"], index=0)
+        quiet_zone = st.number_input("Zone de repos (Padding)", min_value=0.0, max_value=50.0, value=3.0)
+        eval_escapes = st.checkbox("Évaluer les séquences d'échappement", value=True)
 
-        st.success("Génération terminée")
+if st.button("GÉNÉRER LE CODE-BARRES & LA CHAÎNE", use_container_width=True):
 
-        col_out1, col_out2 = st.columns(2)
+    aamva_header = f"ANSI {mock_iin}050102DL00410287ZO02900045DL"
 
-        with col_out1:
-            st.code(raw_data_display)
+    raw_data_internal = f"@\n{aamva_header}\nDCG{dcg}\nDCS{dcs}\nDAC{dac}\nDBB{dbb}\nDAQ{daq}\nDAG{dag}\nDAI{dai}\nDAJ{region[:2].upper()}\nDAK{dak}\nDBD{dbd}\nDBA{dba}\nDBC{dbc}\nDCF{dcf}"
 
-        try:
-            codes = encode(raw_data_internal, columns=10)
-            image = render_image(codes, scale=2, padding=3)
+    raw_data_display = raw_data_internal.replace("\n", "\\n")
 
-            with col_out2:
-                st.image(image)
+    st.success("Génération HDR (600 DPI) terminée.")
 
-        except Exception as e:
-            st.error(f"Erreur: {e}")
+    col_out1, col_out2 = st.columns([1, 1])
+
+    with col_out1:
+        st.markdown("#### 📄 Chaîne Brute (Raw Data)")
+        st.code(raw_data_display, language="text")
+        st.info("Utilisez cette chaîne dans vos outils externes.")
+
+    try:
+        codes = encode(raw_data_internal, columns=10)
+
+        pixels_per_inch = dpi
+        pixels_per_mm = pixels_per_inch / 25.4
+
+        if unit == "mm":
+            scale_factor = module_width * pixels_per_mm
+        elif unit == "mils":
+            scale_factor = (module_width / 1000) * pixels_per_inch
+        else:
+            scale_factor = module_width
+
+        final_scale = max(1.0, float(scale_factor))
+        padding = int(quiet_zone)
+
+        with col_out2:
+            st.markdown(f"#### 🖼️ Aperçu ({img_format})")
+
+            if img_format == "PNG":
+                image = render_image(codes, scale=max(1, int(final_scale)), padding=padding)
+                buf = io.BytesIO()
+                image.save(buf, format="PNG", dpi=(dpi, dpi))
+                byte_im = buf.getvalue()
+
+                st.image(byte_im, use_container_width=True)
+
+                st.download_button(
+                    label="📥 Télécharger PNG",
+                    data=byte_im,
+                    file_name=f"pdf417_{dcs}.png",
+                    mime="image/png",
+                    use_container_width=True
+                )
+
+            else:
+                from reportlab.graphics.shapes import Drawing, Rect
+                from reportlab.graphics import renderSVG
+                from reportlab.lib import colors
+
+                mod_width = final_scale
+                mod_height = mod_width * 3
+
+                rows = len(codes)
+                cols = len(codes[0]) if rows > 0 else 0
+
+                draw_width = (cols * mod_width) + (2 * padding * mod_width)
+                draw_height = (rows * mod_height) + (2 * padding * mod_height)
+
+                d = Drawing(draw_width, draw_height)
+                d.add(Rect(0, 0, draw_width, draw_height, fillColor=colors.white, strokeColor=None))
+
+                for r_idx, row in enumerate(codes):
+                    y = draw_height - ((r_idx + padding + 1) * mod_height)
+                    for c_idx, bit in enumerate(row):
+                        if bit:
+                            x = (c_idx + padding) * mod_width
+                            d.add(Rect(x, y, mod_width, mod_height, fillColor=colors.black, strokeColor=None))
+
+                svg_data = renderSVG.drawToString(d)
+                if isinstance(svg_data, bytes):
+                    svg_data = svg_data.decode("utf-8")
+
+                responsive_svg = svg_data.replace(
+                    '<svg ',
+                    f'<svg viewBox="0 0 {draw_width} {draw_height}" preserveAspectRatio="xMinYMin meet" '
+                )
+
+                responsive_svg = responsive_svg.replace('width=', 'data-orig-width=').replace('height=', 'data-orig-height=')
+
+                st.markdown(
+                    f'<div style="background:white;padding:15px;border-radius:8px;border:1px solid #444;width:100%;">{responsive_svg}</div>',
+                    unsafe_allow_html=True
+                )
+
+                st.download_button(
+                    label="📥 Télécharger SVG",
+                    data=svg_data,
+                    file_name=f"pdf417_{dcs}.svg",
+                    mime="image/svg+xml",
+                    use_container_width=True
+                )
+
+    except Exception as e:
+        st.error(f"Erreur lors de la génération visuelle : {str(e)}")
