@@ -9,12 +9,10 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# Import local modules
 from utils.helpers import header_component
 from modules.identity_gen import show_identity_gen
 
 
-# 🎨 Dynamic theme function
 def apply_custom_style(dark_mode=True):
     if dark_mode:
         bg = "#0E1117"
@@ -44,32 +42,35 @@ def apply_custom_style(dark_mode=True):
 
 
 def main():
+
     # 🔘 Init state
     if "dark_mode" not in st.session_state:
         st.session_state.dark_mode = True
 
-    # 🔘 Top bar with toggle (RIGHT aligned)
+    # 🔘 Top bar
     col1, col2 = st.columns([12, 1])
 
-   with col2:
-    icon = "https://img.icons8.com/external-regular-kawalan-studio/28/external-dark-mode-user-interface-regular-kawalan-studio.png" if st.session_state.dark_mode else "https://img.icons8.com/external-flatart-icons-solid-flatarticons/28/external-sun-nature-flatart-icons-solid-flatarticons-2.png"
+    # ✅ FIX: indentation correcte ici
+    with col2:
+        icon = (
+            "https://img.icons8.com/external-regular-kawalan-studio/28/external-dark-mode-user-interface-regular-kawalan-studio.png"
+            if st.session_state.dark_mode
+            else "https://img.icons8.com/external-flatart-icons-solid-flatarticons/28/external-sun-nature-flatart-icons-solid-flatarticons-2.png"
+        )
 
-    st.markdown(
-        f"""
-        <div style="text-align:center; cursor:pointer;">
-            <img src="{icon}" width="28" id="theme-toggle">
-        </div>
+        if st.button("🌓"):
+            st.session_state.dark_mode = not st.session_state.dark_mode
 
-        <script>
-            document.getElementById("theme-toggle").onclick = function() {{
-                window.parent.postMessage({{"type": "streamlit:setComponentValue", "value": "toggle"}}, "*");
-            }}
-        </script>
-        """,
-        unsafe_allow_html=True
-    )
+        st.markdown(
+            f"""
+            <div style="text-align:center;">
+                <img src="{icon}" width="28">
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
-    # 🎨 Apply theme AFTER toggle
+    # 🎨 Apply theme
     apply_custom_style(st.session_state.dark_mode)
 
     # 📌 Sidebar
