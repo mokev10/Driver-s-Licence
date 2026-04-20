@@ -1,7 +1,6 @@
 import streamlit as st
 import os
 
-# Set page config
 st.set_page_config(
     page_title="AI Generator PDF417",
     page_icon="https://img.icons8.com/external-inipagistudio-mixed-inipagistudio/24/external-ai-web-programmer-inipagistudio-mixed-inipagistudio.png",
@@ -50,25 +49,25 @@ def main():
     # 🔘 Top bar
     col1, col2 = st.columns([12, 1])
 
-    # ✅ FIX: indentation correcte ici
-   with col2:
-    icon_url = (
-        "https://img.icons8.com/external-regular-kawalan-studio/28/external-dark-mode-user-interface-regular-kawalan-studio.png"
-        if st.session_state.dark_mode
-        else "https://img.icons8.com/external-flatart-icons-solid-flatarticons/28/external-sun-nature-flatart-icons-solid-flatarticons-2.png"
-    )
+    # ✅ FIX INDENTATION (IMPORTANT)
+    with col2:
+        icon_url = (
+            "https://img.icons8.com/external-regular-kawalan-studio/28/external-dark-mode-user-interface-regular-kawalan-studio.png"
+            if st.session_state.dark_mode
+            else "https://img.icons8.com/external-flatart-icons-solid-flatarticons/28/external-sun-nature-flatart-icons-solid-flatarticons-2.png"
+        )
 
-    st.markdown(
-        f"""
-        <div style="text-align:center;">
-            <img src="{icon_url}" width="28" style="opacity:0.9;">
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+        st.markdown(
+            f"""
+            <div style="text-align:center;">
+                <img src="{icon_url}" width="28" style="opacity:0.9;">
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
-    if st.button("Toggle theme", key="theme_toggle"):
-        st.session_state.dark_mode = not st.session_state.dark_mode
+        if st.button("Toggle theme", key="theme_toggle"):
+            st.session_state.dark_mode = not st.session_state.dark_mode
 
     # 🎨 Apply theme
     apply_custom_style(st.session_state.dark_mode)
