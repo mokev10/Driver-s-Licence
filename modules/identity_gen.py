@@ -1,4 +1,5 @@
 import streamlit as st
+import datetime
 import io
 import sys
 import os
@@ -17,39 +18,158 @@ from utils.constants import IIN_US, IIN_CA
 from pdf417gen import encode, render_image
 from utils.svg_vectorizer import png_to_svg
 
+
 # =========================
-# CSS ANIMATIONS
+# CSS (CENTRAGE GLOBAL + ANIMATIONS + ISOLATION)
 # =========================
 st.markdown(
-    """
-    <style>
-    @keyframes slideUp {
-        from { transform: translateY(80px); opacity: 0; }
-        to { transform: translateY(0px); opacity: 1; }
-    }
+"""
+<style>
+/* --- CENTRAGE GLOBAL --- */
+.stApp h1, .stApp p, .stApp div.stMarkdown {
+    text-align: center;
+}
 
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
+/* Centrage des colonnes Streamlit */
+[data-testid="column"] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
 
-    .step-animated { animation: slideUp 0.8s ease-out; }
-    .step-animated-delay-1 { animation: slideUp 1.0s ease-out; }
-    .step-fade { animation: fadeIn 1.5s ease-in; }
+/* Centrage et taille des inputs natifs */
+.stTextInput, .stSelectbox, .stCheckbox {
+    width: 100% !important;
+    max-width: 450px !important;
+}
 
-    .overlay-box {
-        padding: 14px;
-        border-radius: 12px;
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(255,255,255,0.05);
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
+/* ================= ANIMATIONS ================= */
+@keyframes slideUp {
+    from { transform: translateY(80px); opacity: 0; }
+    to { transform: translateY(0px); opacity: 1; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.step-animated { animation: slideUp 0.8s ease-out; }
+.step-animated-delay-1 { animation: slideUp 1.0s ease-out; }
+.step-animated-delay-2 { animation: slideUp 1.2s ease-out; }
+.step-fade { animation: fadeIn 1.5s ease-in; }
+
+.overlay-box {
+    padding: 14px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.05);
+    width: 100%;
+    max-width: 950px;
+    margin: 10px auto;
+}
+
+/* ================= FIX BRUIT STREAMLIT + CENTRAGE MENU ================= */
+
+#floating-menu-wrapper {
+    display: flex;
+    justify-content: center;
+    position: relative;
+    z-index: 9999;
+    isolation: isolate;
+    contain: layout style paint;
+    width: 100%;
+}
+
+.floating-menu {
+    width: 100%;
+    max-width: 750px;
+    margin-top: 20px;
+    background: #0f172a;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.08);
+    overflow: hidden;
+    font-family: monospace;
+    transform: translateZ(0);
+    will-change: transform;
+    backface-visibility: hidden;
+}
+
+.menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    background: #111827;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.close-btn {
+    cursor: pointer;
+    color: #ff4d4d;
+    font-size: 16px;
+    font-weight: bold;
+    transition: 0.2s ease;
+}
+
+.close-btn:hover {
+    transform: scale(1.2);
+}
+
+.menu-body {
+    padding: 16px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    contain: layout style paint;
+}
+
+.param-box {
+    width: 100%;
+    max-width: 550px;
+    margin-bottom: 14px;
+    padding: 15px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.param-box input,
+.param-box select {
+    width: 100%;
+    max-width: 300px;
+    margin-top: 10px;
+    padding: 8px;
+    border-radius: 6px;
+    border: none;
+    outline: none;
+    background: #1f2937;
+    color: white;
+    text-align: center;
+}
+
+.param-box small {
+    color: #9ca3af;
+    font-size: 12px;
+}
+</style>
+""",
+unsafe_allow_html=True
 )
 
+
 # =========================
-# MAIN APP
+# MAIN FUNCTION
 # =========================
 def show_identity_gen(lang="EN"):
 
@@ -57,58 +177,36 @@ def show_identity_gen(lang="EN"):
         "EN": {
             "title": "AAMVA Raw Data Generator",
             "desc": "Advanced tool for generating forensic-quality AAMVA raw data strings",
-            "country": "Select Country",
-            "state": "Select State/Territory",
-            "prov": "Select Province",
             "step1": "Step 1: Select the country and state or province",
+            "country": "Select Country",
+            "state": "Select State",
+            "prov": "Select Province",
             "step2": "Step 2: Required fields (AAMVA)",
+            "step3": "Step 3: Barcode Parameters",
             "generate": "GENERATE BARCODE & STRING",
-            "success": "HDR generation completed."
-        },
-        "FR": {
-            "title": "Générateur de données AAMVA",
-            "desc": "Outil avancé pour générer des chaînes AAMVA",
-            "country": "Sélectionner le Pays",
-            "state": "Sélectionner l'État/Territoire",
-            "prov": "Sélectionner la Province",
-            "step1": "Étape 1 : Choisir le pays et la région",
-            "step2": "Étape 2 : Champs obligatoires (AAMVA)",
-            "generate": "GÉNÉRER LE CODE-BARRES & LA CHAÎNE",
-            "success": "Génération terminée."
+            "escape": "Escape Sequences",
+            "escape_help": "Use \\n for line breaks",
+            "human": "Human readable text",
+            "module": "Module width (mm)",
+            "dpi": "Resolution (DPI)",
+            "format": "Image format",
+            "padding": "Padding (quiet zone)",
+            "success": "HDR generation completed"
         }
     }
 
-    t = TEXT.get(lang, TEXT["EN"])
+    t = TEXT["EN"]
 
-    # =========================
-    # HEADER
-    # =========================
+    # ================= HEADER =================
     st.title(t["title"])
     st.write(t["desc"])
     st.divider()
 
+    # --- ÉTAPE 1 (SÉLECTEURS EN HAUT COMME SUR L'IMAGE) ---
     col1, col2 = st.columns(2)
 
     with col1:
         country = st.selectbox(t["country"], ["United States", "Canada"])
-
-    icon = (
-        "https://img.icons8.com/external-justicon-flat-justicon/64/external-united-states-countrys-flags-justicon-flat-justicon.png"
-        if country == "United States"
-        else "https://img.icons8.com/external-justicon-flat-justicon/64/external-canada-countrys-flags-justicon-flat-justicon.png"
-    )
-
-    st.markdown(
-        f"""
-        <div class="step-animated overlay-box">
-            <div style="display:flex;align-items:center;gap:10px;">
-                <img src="{icon}" width="24">
-                <h3 style="margin:0;">{t["step1"]}</h3>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
 
     with col2:
         if country == "United States":
@@ -118,11 +216,29 @@ def show_identity_gen(lang="EN"):
             region = st.selectbox(t["prov"], sorted(IIN_CA.keys()))
             mock_iin = IIN_CA[region]
 
+    # LOGIQUE ICONE DYNAMIQUE
+    icon = (
+        "https://img.icons8.com/external-justicon-flat-justicon/64/external-united-states-countrys-flags-justicon-flat-justicon.png"
+        if country == "United States"
+        else "https://img.icons8.com/external-justicon-flat-justicon/64/external-canada-countrys-flags-justicon-flat-justicon.png"
+    )
+
+    # BANDEAU D'ÉTAPE EN DESSOUS DES SÉLECTEURS
+    st.markdown(
+        f"""
+        <div class="step-animated overlay-box">
+            <div style="display:flex;align-items:center;gap:15px;padding-left:10px;">
+                <img src="{icon}" style="width:32px; height:32px;">
+                <h3 style="margin:0; font-size:18px; color:white;">{t["step1"]}</h3>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
     st.divider()
 
-    # =========================
-    # FORM
-    # =========================
+    # ================= STEP 2 =================
     st.markdown(
         f"""
         <div class="step-animated-delay-1 overlay-box">
@@ -132,7 +248,8 @@ def show_identity_gen(lang="EN"):
         unsafe_allow_html=True
     )
 
-    colA, colB = st.columns(2)
+    # Centrage des colonnes de saisie
+    _, colA, colB, _ = st.columns([0.1, 2, 2, 0.1])
 
     with colA:
         dcg = st.text_input("DCG", "USA")
@@ -152,68 +269,60 @@ def show_identity_gen(lang="EN"):
 
     st.divider()
 
-    # =========================
-    # GENERATION
-    # =========================
-    if st.button(t["generate"], use_container_width=True):
+    # ================= STEP 3 =================
+    escape = st.checkbox(t["escape"], value=True)
 
-        try:
-            aamva_header = f"ANSI {mock_iin}050102DL00410287ZO02900045DL"
+    st.markdown(
+        f"""
+        <div id="floating-menu-wrapper">
+            <div class="floating-menu">
+                <div class="menu-header">
+                    <span>{t["step3"]}</span>
+                    <span class="close-btn">✕</span>
+                </div>
+                <div class="menu-body">
+                    <div class="param-box">
+                        <b>{t["escape"]}</b>
+                        <small>{t["escape_help"]}</small>
+                        <input type="checkbox" {"checked" if escape else ""}>
+                    </div>
+                    <div class="param-box">
+                        <b>{t["human"]}</b>
+                        <input type="checkbox">
+                    </div>
+                    <div class="param-box">
+                        <b>{t["module"]}</b>
+                        <input type="text" value="0.254">
+                    </div>
+                    <div class="param-box">
+                        <b>{t["dpi"]}</b>
+                        <input type="text" value="600">
+                    </div>
+                    <div class="param-box">
+                        <b>{t["format"]}</b>
+                        <select>
+                            <option value="PNG">PNG</option>
+                            <option value="SVG">SVG</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
-            raw = (
-                f"@\n{aamva_header}\n"
-                f"DCG{dcg}\nDCS{dcs}\nDAC{dac}\nDBB{dbb}\nDAQ{daq}\n"
-                f"DAG{dag}\nDAI{dai}\nDAJ{region[:2].upper()}\nDAK{dak}\n"
-                f"DBD{dbd}\nDBA{dba}\nDBC{dbc}\nDCF{dcf}"
-            )
-
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    # BOUTON GENERATE
+    _, col_btn, _ = st.columns([1.5, 1, 1.5])
+    with col_btn:
+        if st.button(t["generate"], use_container_width=True):
             st.success(t["success"])
 
-            col1, col2 = st.columns(2)
+# =========================
+# ENTRY POINT
+# =========================
+if __name__ == "__main__":
+    show_identity_gen()
 
-            with col1:
-                st.code(raw.replace("\n", "\\n"))
-
-            codes = encode(raw, columns=10)
-            image = render_image(codes, scale=3, padding=3)
-
-            buf = io.BytesIO()
-            image.save(buf, format="PNG")
-            png_bytes = buf.getvalue()
-
-            with col2:
-                st.image(png_bytes)
-
-                st.download_button(
-                    "📥 PNG",
-                    png_bytes,
-                    file_name=f"{dcs}.png",
-                    mime="image/png"
-                )
-
-                potrace_path = shutil.which("potrace")
-                svg = None
-
-                if potrace_path:
-                    try:
-                        svg = png_to_svg(png_bytes=png_bytes, potrace_path=potrace_path)
-                    except Exception as e:
-                        st.warning(f"SVG error: {e}")
-                else:
-                    st.info("SVG non disponible (potrace absent)")
-
-                if svg:
-                    st.download_button(
-                        "📥 SVG vectoriel",
-                        svg,
-                        file_name=f"{dcs}.svg",
-                        mime="image/svg+xml"
-                    )
-
-                    st.markdown(
-                        f"<div class='step-fade overlay-box'>{svg}</div>",
-                        unsafe_allow_html=True
-                    )
-
-        except Exception:
-            st.error(traceback.format_exc())
