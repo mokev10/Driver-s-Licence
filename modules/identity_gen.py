@@ -1,4 +1,5 @@
 import streamlit as st
+import datetime
 import io
 import sys
 import os
@@ -6,7 +7,7 @@ import shutil
 import traceback
 
 # =========================
-# PATH FIX
+# PATH FIX (important pour imports)
 # =========================
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
@@ -17,29 +18,51 @@ from utils.constants import IIN_US, IIN_CA
 from pdf417gen import encode, render_image
 from utils.svg_vectorizer import png_to_svg
 
+
 # =========================
-# CSS
+# ANIMATION CSS (AUGMENTÉE - NON SIMPLIFIÉE)
 # =========================
 st.markdown(
     """
     <style>
 
     @keyframes slideUp {
-        from { transform: translateY(80px); opacity: 0; }
-        to { transform: translateY(0px); opacity: 1; }
+        from {
+            transform: translateY(80px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0px);
+            opacity: 1;
+        }
     }
 
     @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
     }
 
-    .step-animated { animation: slideUp 0.8s ease-out; }
-    .step-animated-delay-1 { animation: slideUp 1.0s ease-out; }
-    .step-animated-delay-2 { animation: slideUp 1.2s ease-out; }
-    .step-fade { animation: fadeIn 1.5s ease-in; }
+    .step-animated {
+        animation: slideUp 0.8s ease-out;
+    }
 
-    .box {
+    .step-animated-delay-1 {
+        animation: slideUp 1.0s ease-out;
+    }
+
+    .step-animated-delay-2 {
+        animation: slideUp 1.2s ease-out;
+    }
+
+    .step-fade {
+        animation: fadeIn 1.5s ease-in;
+    }
+
+    .overlay-box {
         padding: 14px;
         border-radius: 12px;
         background: rgba(255,255,255,0.03);
@@ -51,27 +74,49 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+
 # =========================
-# MAIN APP
+# MAIN FUNCTION
 # =========================
 def show_identity_gen(lang="EN"):
 
     TEXT = {
         "EN": {
-            "title": "AAMVA PDF417 Generator",
-            "desc": "Forensic-grade PDF417 generator (TEC-IT style parameters)",
-            "step1": "Step 1: Country Selection",
-            "step2": "Step 2: Required Fields",
-            "step3": "Step 3: Barcode Parameters",
-            "generate": "GENERATE PDF417",
-            "success": "Generation completed"
+            "title": "AAMVA Raw Data Generator",
+            "desc": "Advanced tool for generating forensic-quality AAMVA raw data strings",
+            "step1": "Step 1: Select the country and state or province",
+            "country": "Select Country",
+            "state": "Select State/Territory",
+            "prov": "Select Province",
+            "step2": "Step 2: Required fields (AAMVA)",
+            "step3": "Step 3: Configuration & Generation",
+            "generate": "GENERATE BARCODE & STRING",
+            "success": "HDR generation completed.",
+            "raw": "Raw Data String",
+            "use": "Use this string in external tools.",
+            "preview": "Preview"
+        },
+        "FR": {
+            "title": "Générateur de données AAMVA",
+            "desc": "Outil avancé pour générer des chaînes AAMVA",
+            "step1": "Étape 1 : Choisir le pays et la région",
+            "country": "Sélectionner le Pays",
+            "state": "Sélectionner l'État/Territoire",
+            "prov": "Sélectionner la Province",
+            "step2": "Étape 2 : Champs obligatoires (AAMVA)",
+            "step3": "Étape 3 : Configuration & Génération",
+            "generate": "GÉNÉRER LE CODE-BARRES & LA CHAÎNE",
+            "success": "Génération terminée.",
+            "raw": "Chaîne brute",
+            "use": "Utilisez cette chaîne dans vos outils externes.",
+            "preview": "Aperçu"
         }
     }
 
     t = TEXT.get(lang, TEXT["EN"])
 
     # =========================
-    # HEADER
+    # HEADER (STEP 1 FIXED VISIBLE)
     # =========================
     st.title(t["title"])
     st.write(t["desc"])
@@ -80,23 +125,51 @@ def show_identity_gen(lang="EN"):
     col1, col2 = st.columns(2)
 
     with col1:
-        country = st.selectbox("Select Country", ["United States", "Canada"])
+        country = st.selectbox(t["country"], ["United States", "Canada"])
+
+    icon = (
+        "https://img.icons8.com/external-justicon-flat-justicon/64/external-united-states-countrys-flags-justicon-flat-justicon.png"
+        if country == "United States"
+        else "https://img.icons8.com/external-justicon-flat-justicon/64/external-canada-countrys-flags-justicon-flat-justicon.png"
+    )
+
+    st.markdown(
+        f"""
+        <div class="step-animated overlay-box">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <img src="{icon}" width="24">
+                <h3 style="margin:0;">{t["step1"]}</h3>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
     with col2:
         if country == "United States":
-            region = st.selectbox("State", sorted(IIN_US.keys()))
+            region = st.selectbox(t["state"], sorted(IIN_US.keys()))
             mock_iin = IIN_US[region]
         else:
-            region = st.selectbox("Province", sorted(IIN_CA.keys()))
+            region = st.selectbox(t["prov"], sorted(IIN_CA.keys()))
             mock_iin = IIN_CA[region]
 
     st.divider()
 
     # =========================
-    # STEP 2 INPUTS
+    # STEP 2 TITLE (ANIMATED LAYER)
     # =========================
-    st.markdown(f"<div class='step-animated-delay-1 box'><h3>{t['step2']}</h3></div>", unsafe_allow_html=True)
+    st.markdown(
+        f"""
+        <div class="step-animated-delay-1 overlay-box">
+            <h3>{t["step2"]}</h3>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
+    # =========================
+    # FORM INPUTS
+    # =========================
     colA, colB = st.columns(2)
 
     with colA:
@@ -118,83 +191,19 @@ def show_identity_gen(lang="EN"):
     st.divider()
 
     # =========================
-    # STEP 3 - FULL PARAMETERS
-    # =========================
-    st.markdown(f"<div class='step-animated-delay-2 box'><h3>{t['step3']}</h3></div>", unsafe_allow_html=True)
-
-    with st.expander("PDF417 Parameters (TEC-IT Style)", expanded=True):
-
-        # ✔ PARAMETRES EXACTS DEMANDÉS
-        code_type = st.selectbox("Type de code", ["PDF417"], index=0)
-
-        escape_sequences = st.checkbox(
-            "Séquences d'échappement (activé)",
-            value=True
-        )
-
-        eval_escape = st.checkbox(
-            "Évaluer les séquences d'évasion (\\n, \\t, \\F)",
-            value=True
-        )
-
-        show_human_readable = st.checkbox(
-            "Show Human Readable Text (OFF recommandé)",
-            value=False
-        )
-
-        module_width = st.number_input(
-            "Largeur de module (mm)",
-            value=0.254,
-            step=0.001
-        )
-
-        dpi = st.number_input(
-            "Résolution (DPI)",
-            value=600,
-            step=50
-        )
-
-        image_format = st.selectbox(
-            "Format d'image",
-            ["PNG", "SVG"]
-        )
-
-    st.divider()
-
-    # =========================
     # GENERATION
     # =========================
     if st.button(t["generate"], use_container_width=True):
 
         try:
-            header = f"ANSI {mock_iin}050102DL00410287ZO02900045DL"
-
-            # =========================
-            # ESCAPE ENGINE (REALISTIC)
-            # =========================
-            sep = "\n"
+            aamva_header = f"ANSI {mock_iin}050102DL00410287ZO02900045DL"
 
             raw = (
-                f"@{sep}"
-                f"{header}{sep}"
-                f"DCG{dcg}{sep}"
-                f"DCS{dcs}{sep}"
-                f"DAC{dac}{sep}"
-                f"DBB{dbb}{sep}"
-                f"DAQ{daq}{sep}"
-                f"DAG{dag}{sep}"
-                f"DAI{dai}{sep}"
-                f"DAJ{region[:2].upper()}{sep}"
-                f"DAK{dak}{sep}"
-                f"DBD{dbd}{sep}"
-                f"DBA{dba}{sep}"
-                f"DBC{dbc}{sep}"
-                f"DCF{dcf}"
+                f"@\n{aamva_header}\n"
+                f"DCG{dcg}\nDCS{dcs}\nDAC{dac}\nDBB{dbb}\nDAQ{daq}\n"
+                f"DAG{dag}\nDAI{dai}\nDAJ{region[:2].upper()}\nDAK{dak}\n"
+                f"DBD{dbd}\nDBA{dba}\nDBC{dbc}\nDCF{dcf}"
             )
-
-            # ✔ ESCAPE EVALUATION LOGIC (TEC-IT STYLE SIMULATION)
-            if eval_escape:
-                raw = raw.replace("\\n", "\n").replace("\\t", "\t").replace("\\F", "\x1c")
 
             st.success(t["success"])
 
@@ -204,15 +213,10 @@ def show_identity_gen(lang="EN"):
                 st.code(raw.replace("\n", "\\n"))
 
             # =========================
-            # PDF417 GENERATION
+            # BARCODE GENERATION
             # =========================
             codes = encode(raw, columns=10)
-
-            image = render_image(
-                codes,
-                scale=3,
-                padding=3
-            )
+            image = render_image(codes, scale=3, padding=3)
 
             buf = io.BytesIO()
             image.save(buf, format="PNG")
@@ -228,24 +232,41 @@ def show_identity_gen(lang="EN"):
                     mime="image/png"
                 )
 
-                svg = None
+                # =========================
+                # SVG GENERATION (SAFE + OPTIONAL)
+                # =========================
                 potrace_path = shutil.which("potrace")
+                svg = None
 
                 if potrace_path:
                     try:
-                        svg = png_to_svg(png_bytes=png_bytes, potrace_path=potrace_path)
+                        svg = png_to_svg(
+                            png_bytes=png_bytes,
+                            potrace_path=potrace_path
+                        )
                     except Exception as e:
                         st.warning(f"SVG error: {e}")
+                else:
+                    st.info("SVG non disponible (potrace absent)")
 
                 if svg:
                     st.download_button(
-                        "📥 SVG",
+                        "📥 SVG vectoriel",
                         svg,
                         file_name=f"{dcs}.svg",
                         mime="image/svg+xml"
                     )
 
-                    st.markdown(f"<div class='step-fade box'>{svg}</div>", unsafe_allow_html=True)
+                    st.markdown(
+                        f"""
+                        <div class="step-fade overlay-box">
+                            {svg}
+                        </div>
+                        """,
+                        unsafe_allow_html=True
+                    )
 
         except Exception:
             st.error(traceback.format_exc())
+
+
