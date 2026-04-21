@@ -20,127 +20,53 @@ from utils.svg_vectorizer import png_to_svg
 
 
 # =========================
-# UI FORENSIC / TERMINAL STYLE
+# ANIMATION CSS (AUGMENTÉE - NON SIMPLIFIÉE)
 # =========================
 st.markdown(
     """
     <style>
 
-    /* =========================
-       GLOBAL BACKGROUND (DARK SYSTEM)
-    ========================= */
-    .stApp {
-        background-color: #0d1117;
-    }
-
-    /* =========================
-       ANSI HEADER (FORENSIC TERMINAL)
-    ========================= */
-    .ansi-header {
-        background: linear-gradient(180deg, #161b22 0%, #0d1117 100%);
-        padding: 14px 16px;
-        border-radius: 10px;
-        border: 1px solid #30363d;
-        color: #7ee787;
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-        font-size: 13px;
-        letter-spacing: 0.4px;
-        white-space: nowrap;
-        overflow-x: auto;
-        box-shadow: inset 0 0 12px rgba(0,0,0,0.6);
-        position: relative;
-    }
-
-    /* SCAN LINE EFFECT */
-    .ansi-header::after {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: -50%;
-        width: 50%;
-        height: 100%;
-        background: linear-gradient(
-            90deg,
-            transparent,
-            rgba(126, 231, 135, 0.15),
-            transparent
-        );
-        animation: scan 3s infinite;
-    }
-
-    @keyframes scan {
-        0% { left: -50%; }
-        100% { left: 120%; }
-    }
-
-    /* =========================
-       ANIMATIONS EXISTANTES
-    ========================= */
     @keyframes slideUp {
-        from { transform: translateY(80px); opacity: 0; }
-        to { transform: translateY(0px); opacity: 1; }
+        from {
+            transform: translateY(80px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0px);
+            opacity: 1;
+        }
     }
 
     @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
     }
 
-    .step-animated { animation: slideUp 0.8s ease-out; }
-    .step-animated-delay-1 { animation: slideUp 1.0s ease-out; }
-    .step-animated-delay-2 { animation: slideUp 1.2s ease-out; }
-    .step-fade { animation: fadeIn 1.5s ease-in; }
+    .step-animated {
+        animation: slideUp 0.8s ease-out;
+    }
+
+    .step-animated-delay-1 {
+        animation: slideUp 1.0s ease-out;
+    }
+
+    .step-animated-delay-2 {
+        animation: slideUp 1.2s ease-out;
+    }
+
+    .step-fade {
+        animation: fadeIn 1.5s ease-in;
+    }
 
     .overlay-box {
         padding: 14px;
         border-radius: 12px;
         background: rgba(255,255,255,0.03);
         border: 1px solid rgba(255,255,255,0.05);
-    }
-
-    /* =========================
-       BARCODE ZONE (SCAN SAFE WHITE)
-    ========================= */
-    .barcode-box {
-        background: #ffffff;
-        padding: 22px;
-        border-radius: 12px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 320px;
-        box-shadow: 0 0 25px rgba(0,0,0,0.4);
-    }
-
-    /* =========================
-       DOWNLOAD BUTTONS (GREEN SYSTEM)
-    ========================= */
-    div.stDownloadButton > button {
-        background-color: #238636 !important;
-        color: white !important;
-        border-radius: 8px !important;
-        padding: 10px 14px !important;
-        font-weight: 600 !important;
-        border: 1px solid rgba(240,246,252,0.1) !important;
-        transition: all 0.2s ease-in-out !important;
-        width: 100% !important;
-        font-family: monospace !important;
-    }
-
-    div.stDownloadButton > button:hover {
-        background-color: #2ea043 !important;
-        transform: translateY(-1px);
-    }
-
-    /* =========================
-       GENERATE BUTTON (NEON STYLE)
-    ========================= */
-    div.stButton > button {
-        background: linear-gradient(135deg, #4facfe 0%, #a066ff 100%) !important;
-        color: white !important;
-        border-radius: 50px !important;
-        font-weight: bold !important;
-        box-shadow: 0 0 18px rgba(160, 102, 255, 0.45) !important;
     }
 
     </style>
@@ -157,53 +83,67 @@ def show_identity_gen(lang="EN"):
     TEXT = {
         "EN": {
             "title": "AAMVA Raw Data Generator",
-            "desc": "Advanced forensic-grade identity encoding system",
+            "desc": "Advanced tool for generating forensic-quality AAMVA raw data strings",
             "step1": "Step 1: Select the country and state or province",
             "country": "Select Country",
             "state": "Select State/Territory",
             "prov": "Select Province",
             "step2": "Step 2: Required fields (AAMVA)",
+            "step3": "Step 3: Configuration & Generation",
             "generate": "GENERATE BARCODE & STRING",
-            "success": "SYSTEM OUTPUT COMPLETE"
+            "success": "HDR generation completed.",
+            "raw": "Raw Data String",
+            "use": "Use this string in external tools.",
+            "preview": "Preview"
         },
         "FR": {
-            "title": "Générateur AAMVA",
-            "desc": "Système avancé d'encodage d'identité",
+            "title": "Générateur de données AAMVA",
+            "desc": "Outil avancé pour générer des chaînes AAMVA",
             "step1": "Étape 1 : Choisir le pays et la région",
             "country": "Sélectionner le Pays",
             "state": "Sélectionner l'État/Territoire",
             "prov": "Sélectionner la Province",
             "step2": "Étape 2 : Champs obligatoires (AAMVA)",
-            "generate": "GÉNÉRER CODE-BARRES & CHAÎNE",
-            "success": "SORTIE SYSTÈME TERMINÉE"
+            "step3": "Étape 3 : Configuration & Génération",
+            "generate": "GÉNÉRER LE CODE-BARRES & LA CHAÎNE",
+            "success": "Génération terminée.",
+            "raw": "Chaîne brute",
+            "use": "Utilisez cette chaîne dans vos outils externes.",
+            "preview": "Aperçu"
         }
     }
 
     t = TEXT.get(lang, TEXT["EN"])
 
     # =========================
-    # ANSI HEADER
+    # HEADER (STEP 1 FIXED VISIBLE)
     # =========================
-    st.markdown(
-        """
-        <div class="ansi-header">
-        ░ SYSTEM: AAMVA FORENSIC DATA STREAM ACTIVE ░ NODE: 636026 ░ STATUS: LIVE ░ VERIFY: TRUE ░
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
     st.title(t["title"])
     st.write(t["desc"])
     st.divider()
 
-    # =========================
-    # COUNTRY / REGION
-    # =========================
     col1, col2 = st.columns(2)
 
     with col1:
         country = st.selectbox(t["country"], ["United States", "Canada"])
+
+    icon = (
+        "https://img.icons8.com/external-justicon-flat-justicon/64/external-united-states-countrys-flags-justicon-flat-justicon.png"
+        if country == "United States"
+        else "https://img.icons8.com/external-justicon-flat-justicon/64/external-canada-countrys-flags-justicon-flat-justicon.png"
+    )
+
+    st.markdown(
+        f"""
+        <div class="step-animated overlay-box">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <img src="{icon}" width="24">
+                <h3 style="margin:0;">{t["step1"]}</h3>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
     with col2:
         if country == "United States":
@@ -214,6 +154,18 @@ def show_identity_gen(lang="EN"):
             mock_iin = IIN_CA[region]
 
     st.divider()
+
+    # =========================
+    # STEP 2 TITLE (ANIMATED LAYER)
+    # =========================
+    st.markdown(
+        f"""
+        <div class="step-animated-delay-1 overlay-box">
+            <h3>{t["step2"]}</h3>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
     # =========================
     # FORM INPUTS
@@ -255,55 +207,66 @@ def show_identity_gen(lang="EN"):
 
             st.success(t["success"])
 
-            left, right = st.columns([2, 1])
+            col1, col2 = st.columns(2)
+
+            with col1:
+                st.code(raw.replace("\n", "\\n"))
 
             # =========================
-            # BARCODE
+            # BARCODE GENERATION
             # =========================
-            with left:
-                st.markdown('<div class="barcode-box">', unsafe_allow_html=True)
+            codes = encode(raw, columns=10)
+            image = render_image(codes, scale=3, padding=3)
 
-                codes = encode(raw, columns=10)
-                image = render_image(codes, scale=3, padding=3)
+            buf = io.BytesIO()
+            image.save(buf, format="PNG")
+            png_bytes = buf.getvalue()
 
-                buf = io.BytesIO()
-                image.save(buf, format="PNG")
-                png_bytes = buf.getvalue()
-
+            with col2:
                 st.image(png_bytes)
 
-                st.markdown('</div>', unsafe_allow_html=True)
-
-            # =========================
-            # DOWNLOADS
-            # =========================
-            with right:
-
                 st.download_button(
-                    "⬇ PNG",
+                    "📥 PNG",
                     png_bytes,
                     file_name=f"{dcs}.png",
-                    mime="image/png",
-                    use_container_width=True
+                    mime="image/png"
                 )
 
+                # =========================
+                # SVG GENERATION (SAFE + OPTIONAL)
+                # =========================
                 potrace_path = shutil.which("potrace")
                 svg = None
 
                 if potrace_path:
                     try:
-                        svg = png_to_svg(png_bytes=png_bytes, potrace_path=potrace_path)
-                    except Exception:
-                        pass
+                        svg = png_to_svg(
+                            png_bytes=png_bytes,
+                            potrace_path=potrace_path
+                        )
+                    except Exception as e:
+                        st.warning(f"SVG error: {e}")
+                else:
+                    st.info("SVG non disponible (potrace absent)")
 
                 if svg:
                     st.download_button(
-                        "⬇ SVG",
+                        "📥 SVG vectoriel",
                         svg,
                         file_name=f"{dcs}.svg",
-                        mime="image/svg+xml",
-                        use_container_width=True
+                        mime="image/svg+xml"
+                    )
+
+                    st.markdown(
+                        f"""
+                        <div class="step-fade overlay-box">
+                            {svg}
+                        </div>
+                        """,
+                        unsafe_allow_html=True
                     )
 
         except Exception:
             st.error(traceback.format_exc())
+
+
