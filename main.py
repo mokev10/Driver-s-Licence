@@ -8,8 +8,6 @@ from modules.identity_gen import show_identity_gen
 # =========================
 
 st.set_page_config(
-    page_title="AI Generator PDF417",
-    page_icon="🧾",
     layout="wide",
     initial_sidebar_state="expanded",
 )
