@@ -79,6 +79,9 @@ def apply_custom_style(dark_mode=True):
 
 def main():
 
+    # =========================
+    # STATE INIT
+    # =========================
     if "dark_mode" not in st.session_state:
         st.session_state.dark_mode = True
 
@@ -87,6 +90,9 @@ def main():
 
     t = TEXTS[st.session_state.lang]
 
+    # =========================
+    # TOP BAR
+    # =========================
     col1, col2, col3 = st.columns([10, 1, 1])
 
     with col2:
@@ -95,20 +101,40 @@ def main():
             st.rerun()
 
     with col3:
-        lang = st.selectbox("", ["EN", "FR"], label_visibility="collapsed")
-        st.session_state.lang = lang
+        lang = st.selectbox(
+            "",
+            ["EN", "FR"],
+            index=0 if st.session_state.lang == "EN" else 1,
+            label_visibility="collapsed"
+        )
 
+        # ✅ FIX IMPORTANT (vient de main.py)
+        if lang != st.session_state.lang:
+            st.session_state.lang = lang
+            st.rerun()
+
+    # =========================
+    # APPLY STYLE
+    # =========================
     apply_custom_style(st.session_state.dark_mode)
 
+    # =========================
+    # SIDEBAR
+    # =========================
     with st.sidebar:
         st.markdown(f"### {t['sidebar_title']}")
         st.info(t["sidebar_info"])
 
+    # =========================
+    # HEADER
+    # =========================
     header_component()
 
+    # =========================
+    # MAIN MODULE
+    # =========================
     show_identity_gen(st.session_state.lang)
 
 
 if __name__ == "__main__":
     main()
-
