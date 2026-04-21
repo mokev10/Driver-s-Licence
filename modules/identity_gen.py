@@ -239,111 +239,52 @@ def show_identity_gen(lang="EN"):
 
     st.divider()
 
-    # ================= STEP 3 HTML (BRUIT FIX + FULL KEEP HTML) =================
+    # ================= STEP 3 HTML (FIXED & CLOSED) =================
     escape = st.checkbox(t["escape"], value=True)
 
     st.markdown(
         f"""
         <div id="floating-menu-wrapper">
-
             <div class="floating-menu">
-
                 <div class="menu-header">
                     <span>{t["step3"]}</span>
                     <span class="close-btn">✕</span>
                 </div>
-
                 <div class="menu-body">
-
                     <div class="param-box">
                         <b>{t["escape"]}</b><br>
                         <small>{t["escape_help"]}</small><br>
                         <input type="checkbox" {"checked" if escape else ""}>
                     </div>
-
                     <div class="param-box">
                         <b>{t["human"]}</b><br>
                         <input type="checkbox">
                     </div>
-
                     <div class="param-box">
                         <b>{t["module"]}</b><br>
                         <input type="text" value="0.254">
                     </div>
-
                     <div class="param-box">
                         <b>{t["dpi"]}</b><br>
                         <input type="text" value="600">
                     </div>
-
                     <div class="param-box">
                         <b>{t["format"]}</b><br>
                         <select>
-                            <option>PNG</option>
-                            <option>SVG</option>
+                            <option value="PNG">PNG</option>
+                            <option value="SVG">SVG</option>
                         </select>
                     </div>
-
-                    <div class="param-box">
-                        <b>{t["padding"]}</b><br>
-                        <input type="text" value="3">
-                    </div>
-
                 </div>
-
             </div>
-
         </div>
         """,
         unsafe_allow_html=True
     )
 
-    st.divider()
+    if st.button(t["generate"]):
+        st.success(t["success"])
 
-    # ================= GENERATION =================
-    if st.button(t["generate"], use_container_width=True):
-
-        try:
-            header = f"ANSI {mock_iin}050102DL00410287ZO02900045DL"
-
-            raw = (
-                f"@\n{header}\n"
-                f"DCG{dcg}\nDCS{dcs}\nDAC{dac}\nDBB{dbb}\nDAQ{daq}\n"
-                f"DAG{dag}\nDAI{dai}\nDAJ{region[:2].upper()}\nDAK{dak}\n"
-                f"DBD{dbd}\nDBA{dba}\nDBC{dbc}\nDCF{dcf}"
-            )
-
-            display_raw = raw.replace("\n", "\\n") if escape else raw
-
-            st.success(t["success"])
-
-            col1, col2 = st.columns(2)
-
-            with col1:
-                st.code(display_raw)
-
-            codes = encode(raw, columns=10)
-            image = render_image(codes, scale=3, padding=3)
-
-            buf = io.BytesIO()
-            image.save(buf, format="PNG")
-            png_bytes = buf.getvalue()
-
-            with col2:
-                st.image(png_bytes)
-                st.download_button("📥 PNG", png_bytes, file_name=f"{dcs}.png")
-
-                potrace_path = shutil.which("potrace")
-                svg = None
-
-                if potrace_path:
-                    try:
-                        svg = png_to_svg(png_bytes, potrace_path)
-                    except:
-                        pass
-
-                if svg:
-                    st.download_button("📥 SVG", svg, file_name=f"{dcs}.svg")
-
-        except Exception:
-            st.error(traceback.format_exc())
+# Exécution du script
+if __name__ == "__main__":
+    show_identity_gen()
