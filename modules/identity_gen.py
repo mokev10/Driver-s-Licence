@@ -7,41 +7,82 @@ import shutil
 import traceback
 
 # =========================
-# PATH FIX
+# PATH FIX (important pour imports)
 # =========================
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
+# =========================
+# IMPORTS
+# =========================
 from utils.constants import IIN_US, IIN_CA
 from pdf417gen import encode, render_image
 from utils.svg_vectorizer import png_to_svg
 
 
 # =========================
-# ANIMATION CSS
+# ANIMATION CSS (AUGMENTÉE - NON SIMPLIFIÉE)
 # =========================
-st.markdown("""
-<style>
+st.markdown(
+    """
+    <style>
 
-@keyframes slideUp {
-    from { transform: translateY(60px); opacity: 0; }
-    to { transform: translateY(0px); opacity: 1; }
-}
+    @keyframes slideUp {
+        from {
+            transform: translateY(80px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0px);
+            opacity: 1;
+        }
+    }
 
-.step-animated {
-    animation: slideUp 0.8s ease-out;
-}
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
 
-.step-animated-delay-1 {
-    animation: slideUp 1.0s ease-out;
-}
+    .step-animated {
+        animation: slideUp 0.8s ease-out;
+    }
 
-.overlay-box {
-    padding: 12px;
-    border-radius: 10px;
-}
+    .step-animated-delay-1 {
+        animation: slideUp 1.0s ease-out;
+    }
 
-</style>
-""", unsafe_allow_html=True)
+    .step-animated-delay-2 {
+        animation: slideUp 1.2s ease-out;
+    }
+
+    .step-fade {
+        animation: fadeIn 1.5s ease-in;
+    }
+
+    .overlay-box {
+        padding: 14px;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    /* =========================
+       CUSTOM BUTTON SIZE (AJOUT)
+    ========================= */
+    div.stButton > button {
+        height: 70px;
+        font-size: 20px;
+        font-weight: bold;
+        border-radius: 10px;
+    }
+
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 
 # =========================
@@ -58,8 +99,12 @@ def show_identity_gen(lang="EN"):
             "state": "Select State/Territory",
             "prov": "Select Province",
             "step2": "Step 2: Required fields (AAMVA)",
+            "step3": "Step 3: Configuration & Generation",
             "generate": "GENERATE BARCODE & STRING",
             "success": "HDR generation completed.",
+            "raw": "Raw Data String",
+            "use": "Use this string in external tools.",
+            "preview": "Preview"
         },
         "FR": {
             "title": "Générateur de données AAMVA",
@@ -69,37 +114,33 @@ def show_identity_gen(lang="EN"):
             "state": "Sélectionner l'État/Territoire",
             "prov": "Sélectionner la Province",
             "step2": "Étape 2 : Champs obligatoires (AAMVA)",
+            "step3": "Étape 3 : Configuration & Génération",
             "generate": "GÉNÉRER LE CODE-BARRES & LA CHAÎNE",
             "success": "Génération terminée.",
+            "raw": "Chaîne brute",
+            "use": "Utilisez cette chaîne dans vos outils externes.",
+            "preview": "Aperçu"
         }
     }
 
     t = TEXT.get(lang, TEXT["EN"])
 
     # =========================
-    # HEADER
+    # HEADER (STEP 1 FIXED VISIBLE)
     # =========================
     st.title(t["title"])
     st.write(t["desc"])
     st.divider()
 
-    # =========================
-    # STEP 1
-    # =========================
     col1, col2 = st.columns(2)
 
     with col1:
         country = st.selectbox(t["country"], ["United States", "Canada"])
 
-    # =========================
-    # 🔥 LIAISON AUTOMATIQUE COUNTRY → DCG
-    # =========================
-    dcg_auto = "USA" if country == "United States" else "CAN"
-
     icon = (
-        "https://img.icons8.com/external-justicon-flat-justicon/80/external-united-states-countrys-flags-justicon-flat-justicon.png"
+        "https://img.icons8.com/external-justicon-flat-justicon/64/external-united-states-countrys-flags-justicon-flat-justicon.png"
         if country == "United States"
-        else "https://img.icons8.com/external-justicon-flat-justicon/80/external-canada-countrys-flags-justicon-flat-justicon.png"
+        else "https://img.icons8.com/external-justicon-flat-justicon/64/external-canada-countrys-flags-justicon-flat-justicon.png"
     )
 
     st.markdown(
@@ -125,22 +166,24 @@ def show_identity_gen(lang="EN"):
     st.divider()
 
     # =========================
-    # STEP 2
+    # STEP 2 TITLE (ANIMATED LAYER)
     # =========================
-    st.markdown(f"""
+    st.markdown(
+        f"""
         <div class="step-animated-delay-1 overlay-box">
             <h3>{t["step2"]}</h3>
         </div>
-    """, unsafe_allow_html=True)
+        """,
+        unsafe_allow_html=True
+    )
 
+    # =========================
+    # FORM INPUTS
+    # =========================
     colA, colB = st.columns(2)
 
     with colA:
-        # =========================
-        # 🔥 DCG AUTO-SYNCÉ AVEC COUNTRY
-        # =========================
-        dcg = st.text_input("DCG", value=dcg_auto, disabled=True)
-
+        dcg = st.text_input("DCG", "USA")
         dac = st.text_input("DAC", "JEAN")
         dcs = st.text_input("DCS", "NICOLAS")
         dbb = st.text_input("DBB", "19941208")
@@ -179,6 +222,9 @@ def show_identity_gen(lang="EN"):
             with col1:
                 st.code(raw.replace("\n", "\\n"))
 
+            # =========================
+            # BARCODE GENERATION
+            # =========================
             codes = encode(raw, columns=10)
             image = render_image(codes, scale=3, padding=3)
 
@@ -196,14 +242,22 @@ def show_identity_gen(lang="EN"):
                     mime="image/png"
                 )
 
+                # =========================
+                # SVG GENERATION (SAFE + OPTIONAL)
+                # =========================
                 potrace_path = shutil.which("potrace")
                 svg = None
 
                 if potrace_path:
                     try:
-                        svg = png_to_svg(png_bytes=png_bytes, potrace_path=potrace_path)
+                        svg = png_to_svg(
+                            png_bytes=png_bytes,
+                            potrace_path=potrace_path
+                        )
                     except Exception as e:
                         st.warning(f"SVG error: {e}")
+                else:
+                    st.info("SVG non disponible (potrace absent)")
 
                 if svg:
                     st.download_button(
@@ -213,7 +267,14 @@ def show_identity_gen(lang="EN"):
                         mime="image/svg+xml"
                     )
 
+                    st.markdown(
+                        f"""
+                        <div class="step-fade overlay-box">
+                            {svg}
+                        </div>
+                        """,
+                        unsafe_allow_html=True
+                    )
+
         except Exception:
             st.error(traceback.format_exc())
-
-
