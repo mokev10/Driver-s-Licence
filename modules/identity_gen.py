@@ -20,12 +20,13 @@ from utils.svg_vectorizer import png_to_svg
 
 
 # =========================
-# CSS (FULL + FIX STREAMLIT BRUIT + ISOLATION HTML)
+# CSS (FULL FIX RENDER + ISOLATION HTML + ANTI BRUIT STREAMLIT)
 # =========================
 st.markdown(
 """
 <style>
 
+/* ================= ANIMATIONS ================= */
 @keyframes slideUp {
     from { transform: translateY(80px); opacity: 0; }
     to { transform: translateY(0px); opacity: 1; }
@@ -48,9 +49,16 @@ st.markdown(
     border: 1px solid rgba(255,255,255,0.05);
 }
 
-/* =========================
-   FIX BRUIT STREAMLIT + HTML STABILITY
-========================= */
+/* ================= FIX BRUIT STREAMLIT + ISOLATION TOTAL ================= */
+
+#floating-menu-wrapper {
+    position: relative;
+    z-index: 9999;
+
+    /* IMPORTANT STREAMLIT FIX */
+    isolation: isolate;
+    contain: layout style paint;
+}
 
 .floating-menu {
     width: 100%;
@@ -65,11 +73,8 @@ st.markdown(
     overflow: hidden;
     font-family: monospace;
 
-    /* FIX IMPORTANT STREAMLIT BRUIT */
-    position: relative;
-    z-index: 9999;
-    isolation: isolate;
-    transform: translate3d(0,0,0);
+    /* ANTI STREAMLIT REPAINT BRUIT */
+    transform: translateZ(0);
     will-change: transform;
     backface-visibility: hidden;
 }
@@ -102,8 +107,8 @@ st.markdown(
     padding: 16px;
     color: white;
 
-    /* FIX STREAMLIT REPAINT BRUIT */
-    contain: layout paint style;
+    /* FIX IMPORTANT: STABILISE DOM RENDER */
+    contain: layout style paint;
 }
 
 .param-box {
@@ -153,7 +158,6 @@ def show_identity_gen(lang="EN"):
             "step2": "Step 2: Required fields (AAMVA)",
             "step3": "Step 3: Barcode Parameters",
             "generate": "GENERATE BARCODE & STRING",
-
             "escape": "Escape Sequences",
             "escape_help": "Use \\n for line breaks",
             "human": "Human readable text",
@@ -161,33 +165,11 @@ def show_identity_gen(lang="EN"):
             "dpi": "Resolution (DPI)",
             "format": "Image format",
             "padding": "Padding (quiet zone)",
-
             "success": "HDR generation completed"
-        },
-        "FR": {
-            "title": "Générateur AAMVA",
-            "desc": "Outil avancé de génération de données forensic",
-            "step1": "Étape 1 : Sélection pays et région",
-            "country": "Pays",
-            "state": "État",
-            "prov": "Province",
-            "step2": "Étape 2 : Champs obligatoires",
-            "step3": "Étape 3 : Paramètres du code-barres",
-            "generate": "GÉNÉRER CODE & CHAÎNE",
-
-            "escape": "Séquences d'échappement",
-            "escape_help": "Utiliser \\n pour retour ligne",
-            "human": "Texte lisible",
-            "module": "Largeur module (mm)",
-            "dpi": "Résolution (DPI)",
-            "format": "Format image",
-            "padding": "Zone de silence",
-
-            "success": "Génération terminée"
         }
     }
 
-    t = TEXT.get(lang, TEXT["EN"])
+    t = TEXT["EN"]
 
     # ================= HEADER =================
     st.title(t["title"])
@@ -257,52 +239,56 @@ def show_identity_gen(lang="EN"):
 
     st.divider()
 
-    # ================= STEP 3 FLOATING MENU (FIX BRUIT) =================
+    # ================= STEP 3 HTML (BRUIT FIX + FULL KEEP HTML) =================
     escape = st.checkbox(t["escape"], value=True)
 
     st.markdown(
         f"""
-        <div class="floating-menu">
+        <div id="floating-menu-wrapper">
 
-            <div class="menu-header">
-                <span>{t["step3"]}</span>
-                <span class="close-btn">✕</span>
-            </div>
+            <div class="floating-menu">
 
-            <div class="menu-body">
-
-                <div class="param-box">
-                    <b>{t["escape"]}</b><br>
-                    <small>{t["escape_help"]}</small><br>
-                    <input type="checkbox" {"checked" if escape else ""}>
+                <div class="menu-header">
+                    <span>{t["step3"]}</span>
+                    <span class="close-btn">✕</span>
                 </div>
 
-                <div class="param-box">
-                    <b>{t["human"]}</b><br>
-                    <input type="checkbox">
-                </div>
+                <div class="menu-body">
 
-                <div class="param-box">
-                    <b>{t["module"]}</b><br>
-                    <input type="text" value="0.254">
-                </div>
+                    <div class="param-box">
+                        <b>{t["escape"]}</b><br>
+                        <small>{t["escape_help"]}</small><br>
+                        <input type="checkbox" {"checked" if escape else ""}>
+                    </div>
 
-                <div class="param-box">
-                    <b>{t["dpi"]}</b><br>
-                    <input type="text" value="600">
-                </div>
+                    <div class="param-box">
+                        <b>{t["human"]}</b><br>
+                        <input type="checkbox">
+                    </div>
 
-                <div class="param-box">
-                    <b>{t["format"]}</b><br>
-                    <select>
-                        <option>PNG</option>
-                        <option>SVG</option>
-                    </select>
-                </div>
+                    <div class="param-box">
+                        <b>{t["module"]}</b><br>
+                        <input type="text" value="0.254">
+                    </div>
 
-                <div class="param-box">
-                    <b>{t["padding"]}</b><br>
-                    <input type="text" value="3">
+                    <div class="param-box">
+                        <b>{t["dpi"]}</b><br>
+                        <input type="text" value="600">
+                    </div>
+
+                    <div class="param-box">
+                        <b>{t["format"]}</b><br>
+                        <select>
+                            <option>PNG</option>
+                            <option>SVG</option>
+                        </select>
+                    </div>
+
+                    <div class="param-box">
+                        <b>{t["padding"]}</b><br>
+                        <input type="text" value="3">
+                    </div>
+
                 </div>
 
             </div>
