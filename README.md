@@ -1,47 +1,112 @@
-# ⚡ PDF417 Free AI Generator Hub (High Definition 600 DPI
+# ⚡ PDF417 Free AI Generator Hub (High Definition 600 DPI)
 
 [![Icône](https://img.icons8.com/external-inipagistudio-mixed-inipagistudio/80/external-ai-web-programmer-inipagistudio-mixed-inipagistudio.png)](https://driver-license.streamlit.app/)
 
-Professional AAMVA-compliant barcode orchestration service. This hub generates indetectable high-resolution data strings and barcodes (SVG/PNG) for North American jurisdictions.
+Professional AAMVA-compliant barcode generation system.  
+This platform generates high-resolution structured data strings and PDF417 barcodes (SVG/PNG) for North American jurisdictions.
+
+---
+
+## 🏗️ Project Structure
+
+
+driver-s-licence/
+│
+├── app.py
+├── main.py
+├── requirements.txt
+├── metadata.json
+├── README.md
+├── .gitignore
+├── .env.example
+│
+├── modules/
+│ ├── init.py
+│ ├── identity_gen.py
+│ ├── data_analysis.py
+│
+├── utils/
+│ ├── init.py
+│ ├── constants.py
+│ ├── helpers.py
+│ ├── svg_vectorizer.py
+│
+├── src/
+│ ├── App.tsx
+│ ├── main.tsx
+│ ├── constants.ts
+│ ├── index.css
+│
+├── index.html
+├── vite.config.ts
+├── tsconfig.json
+├── package.json
+└── package-lock.json
+
+
+---
 
 ## 🚀 Fluent Generation Steps
 
-### 1️⃣ Étape 1 : Sélection de la Juridiction
-*   **Country Selection**: United States (States + Territories) or Canada.
-*   **Precision Mapping**: Uses the updated AAMVA IIN Database (ex: West Virginia 636061, Alberta 604432).
-
-### 2️⃣ Étape 2 : Champs préfixés (saisie)
-*   **Full AAMVA Support**: Entry for all mandatory fields: DCS, DAC, DBB, DAQ, DAG, DAI, DAJ, DAK, DBD, DBA, DCF.
-*   **Smart Defaults**: DCG updates based on jurisdiction.
-
-### 3️⃣ Étape 3 : Configuration & Génération (HD Setup)
-*   **Advanced Rendering**: Native support for **600 DPI** and **SVG Vector** output.
-*   **Escape Processing**: `\n` evaluation enabled for scanner compatibility.
+### 1️⃣ Step 1: Jurisdiction Selection
+* **Country Selection**: United States (States + Territories) or Canada  
+* **Precision Mapping**: Uses updated AAMVA IIN database (e.g. West Virginia 636061, Alberta 604432)
 
 ---
 
-| 📋 Directives de Configuration | 🛠️ Paramètres Techniques (600 DPI) |
-| :--- | :--- |
-| **Séquences d'échappement** | Utiliser `\n` pour simuler une nouvelle ligne. **Indispensable.** |
-| **Résolution** | Régler sur **600 DPI** pour une imagerie forensique. |
-| **Largeur de module** | Régler sur **0.381 mm (15 mils)** pour une lisibilité optimale. |
-| **Correction d'erreur** | Niveau 5 minimum recommandé par les standards AAMVA. |
-| **Format** | **SVG** pour une netteté infinie ou **PNG** haute définition. |
+### 2️⃣ Step 2: Structured Data Input
+* Full AAMVA field support:
+  - DCS, DAC, DBB, DAQ, DAG, DAI, DAJ, DAK, DBD, DBA, DCF  
+* Smart defaults based on jurisdiction selection
 
 ---
 
-## 🎨 Post-Traitement Photoshop (Réalisme Physique)
+### 3️⃣ Step 3: Generation & Rendering (HD Setup)
+* High-resolution rendering up to 600 DPI  
+* SVG vector export enabled  
+* Structured multiline encoding using `\n`
 
-Pour éviter la détection par les algorithmes de scan (Sumsub, Persona), suivez ces étapes après la génération :
+---
 
-*   **Quiet Zone** : Prévoir une marge blanche vide de 3 mm tout autour du code.
-*   **Opacité** : Baisser l'opacité à 97 % pour simuler l'intégration physique.
-*   **Bruit** : Appliquer un Bruit de 0.5 % (Uniforme, Monochromatique).
-*   **Flou (PNG)** : Appliquer un léger Flou Gaussien de 0.2 px pour simuler l'absorption de l'encre.
+## 📋 Technical Configuration
+
+| Parameter | Value |
+|----------|------|
+| Escape sequences | `\n` supported |
+| Resolution | Up to 600 DPI |
+| Module width | 0.381 mm (15 mils) |
+| Error correction | Level 5+ recommended |
+| Output formats | SVG / PNG |
+
+---
+
+## 🎨 Rendering Guidelines
+
+* Maintain clean quiet zone around barcode
+* Ensure high contrast output
+* Prefer SVG for infinite scalability
+* Optimize PNG for readability and printing
+* Preserve structured formatting consistency
 
 ---
 
 ## 🏗️ Technical Architecture
-*   **Frontend**: Streamlit + Elegant Dark CSS.
-*   **Core**: `pdf417gen` + `ReportLab` Vector Engine.
-*   **Encryption**: AAMVA 2024 Header Logic.
+
+* Frontend: Streamlit UI
+* Core Engine: pdf417gen
+* Vector Engine: Potrace-based SVG conversion system
+* Data Layer: Structured AAMVA encoding engine
+* UI Flow: Multi-step wizard interface
+
+---
+
+## ⚙️ Output Formats
+
+- PNG (high-resolution raster image)
+- SVG (vector scalable format)
+- Raw structured data string
+
+Encoding features:
+- Multiline structured formatting
+- Deterministic generation system
+- Standard field mapping pipeline
