@@ -69,6 +69,20 @@ st.markdown(
         border: 1px solid rgba(255,255,255,0.05);
     }
 
+    /* =========================
+       ANSI FIX (IMPORTANT)
+    ========================= */
+    .ansi-box {
+        background: #0d1117;
+        color: #7ee787;
+        padding: 14px;
+        border-radius: 10px;
+        border: 1px solid #30363d;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 13px;
+        white-space: pre-wrap;
+    }
+
     </style>
     """,
     unsafe_allow_html=True
@@ -93,8 +107,6 @@ def show_identity_gen(lang="EN"):
             "generate": "GENERATE BARCODE & STRING",
             "success": "HDR generation completed.",
             "raw": "Raw Data String",
-            "use": "Use this string in external tools.",
-            "preview": "Preview"
         },
         "FR": {
             "title": "Générateur de données AAMVA",
@@ -108,15 +120,13 @@ def show_identity_gen(lang="EN"):
             "generate": "GÉNÉRER LE CODE-BARRES & LA CHAÎNE",
             "success": "Génération terminée.",
             "raw": "Chaîne brute",
-            "use": "Utilisez cette chaîne dans vos outils externes.",
-            "preview": "Aperçu"
         }
     }
 
     t = TEXT.get(lang, TEXT["EN"])
 
     # =========================
-    # HEADER (STEP 1 FIXED VISIBLE)
+    # HEADER
     # =========================
     st.title(t["title"])
     st.write(t["desc"])
@@ -155,21 +165,6 @@ def show_identity_gen(lang="EN"):
 
     st.divider()
 
-    # =========================
-    # STEP 2 TITLE (ANIMATED LAYER)
-    # =========================
-    st.markdown(
-        f"""
-        <div class="step-animated-delay-1 overlay-box">
-            <h3>{t["step2"]}</h3>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-    # =========================
-    # FORM INPUTS
-    # =========================
     colA, colB = st.columns(2)
 
     with colA:
@@ -190,9 +185,6 @@ def show_identity_gen(lang="EN"):
 
     st.divider()
 
-    # =========================
-    # GENERATION
-    # =========================
     if st.button(t["generate"], use_container_width=True):
 
         try:
@@ -209,12 +201,17 @@ def show_identity_gen(lang="EN"):
 
             col1, col2 = st.columns(2)
 
+            # =========================
+            # 🔥 FIX IMPORTANT ICI
+            # =========================
             with col1:
-                st.code(raw.replace("\n", "\\n"))
+                st.markdown(
+                    f"""
+                    <div class="ansi-box">{raw}</div>
+                    """,
+                    unsafe_allow_html=True
+                )
 
-            # =========================
-            # BARCODE GENERATION
-            # =========================
             codes = encode(raw, columns=10)
             image = render_image(codes, scale=3, padding=3)
 
@@ -232,22 +229,14 @@ def show_identity_gen(lang="EN"):
                     mime="image/png"
                 )
 
-                # =========================
-                # SVG GENERATION (SAFE + OPTIONAL)
-                # =========================
                 potrace_path = shutil.which("potrace")
                 svg = None
 
                 if potrace_path:
                     try:
-                        svg = png_to_svg(
-                            png_bytes=png_bytes,
-                            potrace_path=potrace_path
-                        )
-                    except Exception as e:
-                        st.warning(f"SVG error: {e}")
-                else:
-                    st.info("SVG non disponible (potrace absent)")
+                        svg = png_to_svg(png_bytes=png_bytes, potrace_path=potrace_path)
+                    except:
+                        svg = None
 
                 if svg:
                     st.download_button(
@@ -257,16 +246,5 @@ def show_identity_gen(lang="EN"):
                         mime="image/svg+xml"
                     )
 
-                    st.markdown(
-                        f"""
-                        <div class="step-fade overlay-box">
-                            {svg}
-                        </div>
-                        """,
-                        unsafe_allow_html=True
-                    )
-
         except Exception:
             st.error(traceback.format_exc())
-
-
