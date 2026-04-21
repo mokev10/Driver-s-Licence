@@ -20,15 +20,13 @@ from utils.svg_vectorizer import png_to_svg
 
 
 # =========================
-# CSS COMPLET
+# CSS COMPLET (NE PAS SIMPLIFIER)
 # =========================
 st.markdown(
 """
 <style>
 
-/* =========================
-   ANIMATIONS
-========================= */
+/* ANIMATIONS */
 @keyframes slideUp {
     from { transform: translateY(80px); opacity: 0; }
     to { transform: translateY(0px); opacity: 1; }
@@ -50,9 +48,7 @@ st.markdown(
     border: 1px solid rgba(255,255,255,0.05);
 }
 
-/* =========================
-   BUTTON STYLE
-========================= */
+/* BUTTON STYLE GLOBAL */
 .stButton > button {
     background: linear-gradient(135deg, #4facfe 0%, #a066ff 100%) !important;
     color: white !important;
@@ -69,16 +65,14 @@ st.markdown(
     box-shadow: 0 0 25px rgba(160, 102, 255, 0.8) !important;
 }
 
-/* =========================
-   FLOATING MENU
-========================= */
+/* FLOATING MENU */
 .floating-menu {
     margin-top: 20px;
     background: #111827;
     border-radius: 16px;
-    overflow: hidden;
     border: 1px solid #2a2f3a;
     box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+    overflow: hidden;
 }
 
 .menu-header {
@@ -101,13 +95,9 @@ st.markdown(
     padding:2px 10px;
     border-radius:8px;
     cursor:pointer;
-    color:white;
-    font-weight:bold;
 }
 
-/* =========================
-   ANSI DISPLAY
-========================= */
+/* ANSI BOX */
 .ansi-box {
     background:#1a1a1a;
     color:#00ff88;
@@ -132,22 +122,17 @@ def show_identity_gen(lang="EN"):
         "EN": {
             "title": "AAMVA Raw Data Generator",
             "desc": "Advanced forensic PDF417 generator",
-
-            "step1": "Step 1: Country selection",
+            "step1": "Step 1: Select country and region",
             "country": "Country",
             "state": "State",
             "prov": "Province",
-
             "step2": "Step 2: Required fields",
             "step3": "Step 3: PDF417 Parameters",
-
             "generate": "GENERATE BARCODE & STRING",
             "success": "Generation completed",
-
             "raw": "PDF417 noise data",
-
             "escape": "Escape Sequences",
-            "escape_desc": "Replace line breaks with \\n",
+            "escape_desc": "Convert line breaks to \\n",
             "hr": "Human readable text",
             "module": "Module width (mm)",
             "dpi": "Resolution (DPI)",
@@ -156,7 +141,7 @@ def show_identity_gen(lang="EN"):
         }
     }
 
-    t = TEXT.get(lang, TEXT["EN"])
+    t = TEXT[lang]
 
     # =========================
     # HEADER
@@ -190,7 +175,7 @@ def show_identity_gen(lang="EN"):
     st.divider()
 
     # =========================
-    # INPUT FIELDS
+    # INPUTS (NE PAS MODIFIER STRUCTURE)
     # =========================
     colA, colB = st.columns(2)
 
@@ -213,7 +198,7 @@ def show_identity_gen(lang="EN"):
     st.divider()
 
     # =========================
-    # FLOATING MENU (FULL PARAMETERS)
+    # FLOATING MENU (FULL STRUCTURE FIXED)
     # =========================
     st.markdown(f"""
     <div class="floating-menu">
@@ -232,20 +217,20 @@ def show_identity_gen(lang="EN"):
             <b>{t["hr"]}</b><br>
             <input type="checkbox"><br><br>
 
-            <b>{t["module"]}</b>
+            <b>{t["module"]}</b><br>
             <input type="text" value="0.254 mm"><br><br>
 
-            <b>{t["dpi"]}</b>
+            <b>{t["dpi"]}</b><br>
             <input type="text" value="600 DPI"><br><br>
 
-            <b>{t["format"]}</b>
+            <b>{t["format"]}</b><br>
             <select>
                 <option>PNG</option>
                 <option>SVG</option>
             </select><br><br>
 
             <b>{t["padding"]}</b><br>
-            <small>Quiet zone for scan reliability</small><br>
+            <small>Quiet zone around barcode for scan reliability</small><br>
             <input type="text" value="3">
 
         </div>
@@ -254,7 +239,7 @@ def show_identity_gen(lang="EN"):
     """, unsafe_allow_html=True)
 
     # =========================
-    # GENERATE
+    # GENERATE (RAW STRICT IDENTICAL)
     # =========================
     if st.button(t["generate"], use_container_width=True):
 
@@ -289,7 +274,10 @@ def show_identity_gen(lang="EN"):
             st.image(png_bytes)
             st.download_button("PNG", png_bytes, file_name=f"{dcs}.png", mime="image/png")
 
-            potrace_path = shutil.which("potrace")
-            if potrace_path:
-                svg = png_to_svg(png_bytes, potrace_path)
-                st.download_button("SVG", svg, file_name=f"{dcs}.svg", mime="image/svg+xml")
+            try:
+                potrace_path = shutil.which("potrace")
+                if potrace_path:
+                    svg = png_to_svg(png_bytes, potrace_path)
+                    st.download_button("SVG", svg, file_name=f"{dcs}.svg", mime="image/svg+xml")
+            except:
+                pass
