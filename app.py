@@ -1,7 +1,33 @@
 import streamlit as st
+import os
+import sys
 
-from modules.identity_gen import show_identity_gen
-from utils.helpers import header_component
+# =========================
+# FORCE ROOT PATH
+# =========================
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, BASE_DIR)
+
+# =========================
+# IMPORTS SAFE (NO PACKAGE IMPORT)
+# =========================
+import importlib.util
+
+# Load utils/helpers.py
+helpers_path = os.path.join(BASE_DIR, "utils", "helpers.py")
+spec_helpers = importlib.util.spec_from_file_location("helpers", helpers_path)
+helpers = importlib.util.module_from_spec(spec_helpers)
+spec_helpers.loader.exec_module(helpers)
+
+header_component = helpers.header_component
+
+# Load modules/identity_gen.py
+identity_path = os.path.join(BASE_DIR, "modules", "identity_gen.py")
+spec_identity = importlib.util.spec_from_file_location("identity_gen", identity_path)
+identity_gen = importlib.util.module_from_spec(spec_identity)
+spec_identity.loader.exec_module(identity_gen)
+
+show_identity_gen = identity_gen.show_identity_gen
 
 
 # =========================
@@ -9,11 +35,10 @@ from utils.helpers import header_component
 # =========================
 st.set_page_config(
     page_title="AI Generator PDF417",
-    page_icon="🧾",
+    page_icon="https://img.icons8.com/external-inipagistudio-mixed-inipagistudio/24/external-ai-web-programmer-inipagistudio-mixed-inipagistudio.png",
     layout="wide",
     initial_sidebar_state="expanded",
 )
-
 
 # =========================
 # TEXTS
@@ -34,9 +59,6 @@ TEXTS = {
 }
 
 
-# =========================
-# STYLE
-# =========================
 def apply_custom_style(dark_mode=True):
     bg = "#0E1117" if dark_mode else "#FFFFFF"
     text = "#FAFAFA" if dark_mode else "#000000"
@@ -55,12 +77,8 @@ def apply_custom_style(dark_mode=True):
     """, unsafe_allow_html=True)
 
 
-# =========================
-# MAIN APP
-# =========================
 def main():
 
-    # STATE INIT
     if "dark_mode" not in st.session_state:
         st.session_state.dark_mode = True
 
@@ -69,7 +87,6 @@ def main():
 
     t = TEXTS[st.session_state.lang]
 
-    # TOP BAR
     col1, col2, col3 = st.columns([10, 1, 1])
 
     with col2:
@@ -81,23 +98,17 @@ def main():
         lang = st.selectbox("", ["EN", "FR"], label_visibility="collapsed")
         st.session_state.lang = lang
 
-    # APPLY STYLE
     apply_custom_style(st.session_state.dark_mode)
 
-    # SIDEBAR
     with st.sidebar:
         st.markdown(f"### {t['sidebar_title']}")
         st.info(t["sidebar_info"])
 
-    # HEADER
     header_component()
 
-    # MAIN MODULE
     show_identity_gen(st.session_state.lang)
 
 
-# =========================
-# ENTRYPOINT
-# =========================
 if __name__ == "__main__":
     main()
+
