@@ -60,33 +60,32 @@ TEXTS = {
 
 
 # =========================
-# BUTTON FIX (ADAPTIVE)
+# BUTTON STYLE (TON DESIGN)
 # =========================
 st.markdown("""
 <style>
-
-/* Bouton principal robuste dark/light */
-div.stButton > button {
-    height: 70px;
-    font-size: 20px;
-    font-weight: bold;
-    border-radius: 10px;
-
-    background-color: #2563EB; /* bleu stable */
-    color: white;
-    border: none;
+.stButton > button {
+    background: linear-gradient(135deg, #4facfe 0%, #a066ff 100%) !important;
+    color: white !important;
+    border: none !important;
+    padding: 10px 25px !important;
+    border-radius: 50px !important;
+    font-weight: bold !important;
+    box-shadow: 0 0 15px rgba(160, 102, 255, 0.5) !important;
+    transition: all 0.3s ease !important;
+    height: auto !important;
+    width: auto !important;
 }
 
-/* Hover */
-div.stButton > button:hover {
-    background-color: #1E4ED8;
+.stButton > button:hover {
+    box-shadow: 0 0 25px rgba(160, 102, 255, 0.8) !important;
+    transform: scale(1.02) !important;
+    color: white !important;
 }
 
-/* Click */
-div.stButton > button:active {
-    transform: scale(0.98);
+.stButton > button:active {
+    transform: scale(0.98) !important;
 }
-
 </style>
 """, unsafe_allow_html=True)
 
