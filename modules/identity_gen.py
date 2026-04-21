@@ -54,8 +54,6 @@ st.markdown(
 #floating-menu-wrapper {
     position: relative;
     z-index: 9999;
-
-    /* IMPORTANT STREAMLIT FIX */
     isolation: isolate;
     contain: layout style paint;
 }
@@ -64,16 +62,12 @@ st.markdown(
     width: 100%;
     max-width: 750px;
     margin-top: 20px;
-
     background: #0f172a;
     border-radius: 16px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     border: 1px solid rgba(255,255,255,0.08);
-
     overflow: hidden;
     font-family: monospace;
-
-    /* ANTI STREAMLIT REPAINT BRUIT */
     transform: translateZ(0);
     will-change: transform;
     backface-visibility: hidden;
@@ -106,34 +100,50 @@ st.markdown(
 .menu-body {
     padding: 16px;
     color: white;
-
-    /* FIX IMPORTANT: STABILISE DOM RENDER */
     contain: layout style paint;
 }
 
+/* ================= MODIFICATION POUR CENTRER ================= */
 .param-box {
     margin-bottom: 14px;
-    padding: 10px;
+    padding: 15px;
     border-radius: 10px;
     background: rgba(255,255,255,0.05);
     border: 1px solid rgba(255,255,255,0.06);
+    
+    /* Centrage du contenu */
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    text-align: center;
 }
 
 .param-box input,
 .param-box select {
     width: 100%;
-    margin-top: 6px;
-    padding: 6px;
+    max-width: 300px; /* Limite la largeur pour un meilleur aspect centré */
+    margin-top: 10px;
+    padding: 8px;
     border-radius: 6px;
     border: none;
     outline: none;
     background: #1f2937;
     color: white;
+    text-align: center; /* Centre le texte à l'intérieur des inputs */
+}
+
+/* Style spécifique pour les checkboxes pour les garder centrées */
+.param-box input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
 }
 
 .param-box small {
     color: #9ca3af;
     font-size: 12px;
+    display: block;
+    margin-top: 4px;
 }
 
 </style>
@@ -182,15 +192,15 @@ def show_identity_gen(lang="EN"):
         country = st.selectbox(t["country"], ["United States", "Canada"])
 
     icon = (
-        "https://img.icons8.com/external-justicon-flat-justicon/64/external-united-states-countrys-flags-justicon-flat-justicon.png"
+        "https://icons8.com"
         if country == "United States"
-        else "https://img.icons8.com/external-justicon-flat-justicon/64/external-canada-countrys-flags-justicon-flat-justicon.png"
+        else "https://icons8.com"
     )
 
     st.markdown(
         f"""
         <div class="step-animated overlay-box">
-            <div style="display:flex;align-items:center;gap:10px;">
+            <div style="display:flex;align-items:center;gap:10px;justify-content:center;">
                 <img src="{icon}" width="24">
                 <h3 style="margin:0;">{t["step1"]}</h3>
             </div>
@@ -212,7 +222,7 @@ def show_identity_gen(lang="EN"):
     # ================= STEP 2 =================
     st.markdown(
         f"""
-        <div class="step-animated-delay-1 overlay-box">
+        <div class="step-animated-delay-1 overlay-box" style="text-align:center;">
             <h3>{t["step2"]}</h3>
         </div>
         """,
@@ -239,7 +249,7 @@ def show_identity_gen(lang="EN"):
 
     st.divider()
 
-    # ================= STEP 3 HTML (FIXED & CLOSED) =================
+    # ================= STEP 3 HTML (FIXED & CENTERED) =================
     escape = st.checkbox(t["escape"], value=True)
 
     st.markdown(
@@ -252,24 +262,24 @@ def show_identity_gen(lang="EN"):
                 </div>
                 <div class="menu-body">
                     <div class="param-box">
-                        <b>{t["escape"]}</b><br>
-                        <small>{t["escape_help"]}</small><br>
+                        <b>{t["escape"]}</b>
+                        <small>{t["escape_help"]}</small>
                         <input type="checkbox" {"checked" if escape else ""}>
                     </div>
                     <div class="param-box">
-                        <b>{t["human"]}</b><br>
+                        <b>{t["human"]}</b>
                         <input type="checkbox">
                     </div>
                     <div class="param-box">
-                        <b>{t["module"]}</b><br>
+                        <b>{t["module"]}</b>
                         <input type="text" value="0.254">
                     </div>
                     <div class="param-box">
-                        <b>{t["dpi"]}</b><br>
+                        <b>{t["dpi"]}</b>
                         <input type="text" value="600">
                     </div>
                     <div class="param-box">
-                        <b>{t["format"]}</b><br>
+                        <b>{t["format"]}</b>
                         <select>
                             <option value="PNG">PNG</option>
                             <option value="SVG">SVG</option>
@@ -282,9 +292,10 @@ def show_identity_gen(lang="EN"):
         unsafe_allow_html=True
     )
 
+    st.markdown("<br>", unsafe_allow_html=True)
     if st.button(t["generate"]):
         st.success(t["success"])
 
-# Exécution du script
+# Exécution
 if __name__ == "__main__":
     show_identity_gen()
