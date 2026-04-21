@@ -49,6 +49,7 @@ st.markdown(
 }
 
 /* ================= FLOATING MENU ================= */
+
 .floating-menu {
     width: 100%;
     max-width: 750px;
@@ -58,33 +59,44 @@ st.markdown(
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     border: 1px solid rgba(255,255,255,0.08);
     overflow: hidden;
+    font-family: monospace;
 }
 
 .menu-header {
     display: flex;
     justify-content: space-between;
-    padding: 14px;
+    align-items: center;
+    padding: 14px 16px;
     background: #111827;
-    color: white;
+    color: #ffffff;
     font-weight: bold;
+    font-size: 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 
 .close-btn {
     cursor: pointer;
     color: #ff4d4d;
+    font-size: 16px;
+    font-weight: bold;
+    transition: 0.2s ease;
+}
+
+.close-btn:hover {
+    transform: scale(1.2);
 }
 
 .menu-body {
     padding: 16px;
     color: white;
-    font-family: monospace;
 }
 
 .param-box {
-    margin-bottom: 12px;
+    margin-bottom: 14px;
     padding: 10px;
     border-radius: 10px;
     background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.06);
 }
 
 .param-box input,
@@ -94,15 +106,64 @@ st.markdown(
     padding: 6px;
     border-radius: 6px;
     border: none;
+    outline: none;
     background: #1f2937;
     color: white;
 }
 
 .param-box small {
     color: #9ca3af;
+    font-size: 12px;
 }
 
 </style>
+
+<div class="floating-menu">
+
+    <div class="menu-header">
+        <span>Step 3: Barcode Parameters</span>
+        <span class="close-btn">✕</span>
+    </div>
+
+    <div class="menu-body">
+
+        <div class="param-box">
+            <b>Escape Sequences</b><br>
+            <small>Use \n for line breaks</small><br>
+            <input type="checkbox" checked>
+        </div>
+
+        <div class="param-box">
+            <b>Human readable text</b><br>
+            <input type="checkbox">
+        </div>
+
+        <div class="param-box">
+            <b>Module width (mm)</b><br>
+            <input type="text" value="0.254">
+        </div>
+
+        <div class="param-box">
+            <b>Resolution (DPI)</b><br>
+            <input type="text" value="600">
+        </div>
+
+        <div class="param-box">
+            <b>Image format</b><br>
+            <select>
+                <option>PNG</option>
+                <option>SVG</option>
+            </select>
+        </div>
+
+        <div class="param-box">
+            <b>Padding (quiet zone)</b><br>
+            <input type="text" value="3">
+        </div>
+
+    </div>
+
+</div>
 """,
 unsafe_allow_html=True
 )
