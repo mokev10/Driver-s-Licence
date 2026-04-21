@@ -19,47 +19,26 @@ from pdf417gen import encode, render_image
 from utils.svg_vectorizer import png_to_svg
 
 # =========================
-# ANIMATION CSS
+# CSS ANIMATION
 # =========================
 st.markdown(
     """
     <style>
 
     @keyframes slideUp {
-        from {
-            transform: translateY(80px);
-            opacity: 0;
-        }
-        to {
-            transform: translateY(0px);
-            opacity: 1;
-        }
+        from { transform: translateY(80px); opacity: 0; }
+        to { transform: translateY(0px); opacity: 1; }
     }
 
     @keyframes fadeIn {
-        from {
-            opacity: 0;
-        }
-        to {
-            opacity: 1;
-        }
+        from { opacity: 0; }
+        to { opacity: 1; }
     }
 
-    .step-animated {
-        animation: slideUp 0.8s ease-out;
-    }
-
-    .step-animated-delay-1 {
-        animation: slideUp 1.0s ease-out;
-    }
-
-    .step-animated-delay-2 {
-        animation: slideUp 1.2s ease-out;
-    }
-
-    .step-fade {
-        animation: fadeIn 1.5s ease-in;
-    }
+    .step-animated { animation: slideUp 0.8s ease-out; }
+    .step-animated-delay-1 { animation: slideUp 1.0s ease-out; }
+    .step-animated-delay-2 { animation: slideUp 1.2s ease-out; }
+    .step-fade { animation: fadeIn 1.5s ease-in; }
 
     .overlay-box {
         padding: 14px;
@@ -180,7 +159,7 @@ def show_identity_gen(lang="EN"):
     st.divider()
 
     # =========================
-    # STEP 3 (AJOUT COMPLET)
+    # STEP 3
     # =========================
     st.markdown(
         f"""
@@ -193,9 +172,11 @@ def show_identity_gen(lang="EN"):
 
     with st.expander("Barcode Parameters", expanded=True):
 
-        escape_sequences = st.checkbox("Escape Sequences (Use \\n for line breaks)", value=True)
-
-        human_readable = st.text_input("Human readable text", value=dcs)
+        # ✔ Human readable toggle (IMPORTANT)
+        show_human_readable = st.checkbox(
+            "Show Human Readable Text (under barcode)",
+            value=False
+        )
 
         col_p1, col_p2 = st.columns(2)
 
@@ -232,16 +213,11 @@ def show_identity_gen(lang="EN"):
         try:
             aamva_header = f"ANSI {mock_iin}050102DL00410287ZO02900045DL"
 
-            separator = "\\n" if escape_sequences else "\n"
-
             raw = (
-                f"@{separator}{aamva_header}{separator}"
-                f"DCG{dcg}{separator}DCS{dcs}{separator}DAC{dac}{separator}"
-                f"DBB{dbb}{separator}DAQ{daq}{separator}"
-                f"DAG{dag}{separator}DAI{dai}{separator}"
-                f"DAJ{region[:2].upper()}{separator}DAK{dak}{separator}"
-                f"DBD{dbd}{separator}DBA{dba}{separator}"
-                f"DBC{dbc}{separator}DCF{dcf}"
+                f"@\n{aamva_header}\n"
+                f"DCG{dcg}\nDCS{dcs}\nDAC{dac}\nDBB{dbb}\nDAQ{daq}\n"
+                f"DAG{dag}\nDAI{dai}\nDAJ{region[:2].upper()}\nDAK{dak}\n"
+                f"DBD{dbd}\nDBA{dba}\nDBC{dbc}\nDCF{dcf}"
             )
 
             st.success(t["success"])
@@ -251,6 +227,9 @@ def show_identity_gen(lang="EN"):
             with col1:
                 st.code(raw.replace("\n", "\\n"))
 
+            # =========================
+            # BARCODE GENERATION
+            # =========================
             codes = encode(raw, columns=10)
             image = render_image(codes, scale=3, padding=3)
 
