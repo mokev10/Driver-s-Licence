@@ -118,6 +118,9 @@ def main():
 
     t = TEXTS[st.session_state.lang]
 
+    # =========================
+    # TOP BAR
+    # =========================
     col1, col2, col3 = st.columns([10, 1, 1])
 
     with col2:
@@ -145,7 +148,15 @@ def main():
 
     header_component()
 
-    show_identity_gen(st.session_state.lang)
+    # =========================
+    # MODULE CENTER (IDENTITY GEN)
+    # =========================
+
+    # 👉 CENTRAGE PROPRE
+    left, center, right = st.columns([1, 2, 1])
+
+    with center:
+        show_identity_gen(st.session_state.lang)
 
 
 if __name__ == "__main__":
