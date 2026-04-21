@@ -20,7 +20,7 @@ from utils.svg_vectorizer import png_to_svg
 
 
 # =========================
-# CSS (UNCHANGED + FIX ISOLATION)
+# CSS (FULL + FIX STREAMLIT BRUIT + ISOLATION HTML)
 # =========================
 st.markdown(
 """
@@ -48,18 +48,30 @@ st.markdown(
     border: 1px solid rgba(255,255,255,0.05);
 }
 
-/* FIX IMPORTANT : ISOLATION DU FLOATING MENU */
+/* =========================
+   FIX BRUIT STREAMLIT + HTML STABILITY
+========================= */
+
 .floating-menu {
-    position: relative;
     width: 100%;
     max-width: 750px;
     margin-top: 20px;
+
     background: #0f172a;
     border-radius: 16px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     border: 1px solid rgba(255,255,255,0.08);
+
     overflow: hidden;
     font-family: monospace;
+
+    /* FIX IMPORTANT STREAMLIT BRUIT */
+    position: relative;
+    z-index: 9999;
+    isolation: isolate;
+    transform: translate3d(0,0,0);
+    will-change: transform;
+    backface-visibility: hidden;
 }
 
 .menu-header {
@@ -79,11 +91,19 @@ st.markdown(
     color: #ff4d4d;
     font-size: 16px;
     font-weight: bold;
+    transition: 0.2s ease;
+}
+
+.close-btn:hover {
+    transform: scale(1.2);
 }
 
 .menu-body {
     padding: 16px;
     color: white;
+
+    /* FIX STREAMLIT REPAINT BRUIT */
+    contain: layout paint style;
 }
 
 .param-box {
@@ -235,7 +255,9 @@ def show_identity_gen(lang="EN"):
         dbc = st.selectbox("DBC", ["1", "2", "3"])
         dcf = st.text_input("DCF", "REF001")
 
-    # ================= STEP 3 (HTML FIXED ONLY) =================
+    st.divider()
+
+    # ================= STEP 3 FLOATING MENU (FIX BRUIT) =================
     escape = st.checkbox(t["escape"], value=True)
 
     st.markdown(
@@ -284,6 +306,7 @@ def show_identity_gen(lang="EN"):
                 </div>
 
             </div>
+
         </div>
         """,
         unsafe_allow_html=True
