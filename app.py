@@ -2,9 +2,33 @@ import streamlit as st
 import os
 import sys
 
-# ✅ FIX IMPORT PATH (IMPORTANT pour Streamlit Cloud)
+# =========================
+# FORCE ROOT PATH
+# =========================
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(BASE_DIR)
+sys.path.insert(0, BASE_DIR)
+
+# =========================
+# IMPORTS SAFE (NO PACKAGE IMPORT)
+# =========================
+import importlib.util
+
+# Load utils/helpers.py
+helpers_path = os.path.join(BASE_DIR, "utils", "helpers.py")
+spec_helpers = importlib.util.spec_from_file_location("helpers", helpers_path)
+helpers = importlib.util.module_from_spec(spec_helpers)
+spec_helpers.loader.exec_module(helpers)
+
+header_component = helpers.header_component
+
+# Load modules/identity_gen.py
+identity_path = os.path.join(BASE_DIR, "modules", "identity_gen.py")
+spec_identity = importlib.util.spec_from_file_location("identity_gen", identity_path)
+identity_gen = importlib.util.module_from_spec(spec_identity)
+spec_identity.loader.exec_module(identity_gen)
+
+show_identity_gen = identity_gen.show_identity_gen
+
 
 # =========================
 # STREAMLIT CONFIG
@@ -17,13 +41,7 @@ st.set_page_config(
 )
 
 # =========================
-# IMPORTS LOCAUX
-# =========================
-from utils.helpers import header_component
-from modules.identity_gen import show_identity_gen
-
-# =========================
-# TEXTES MULTILINGUES
+# TEXTS
 # =========================
 TEXTS = {
     "EN": {
@@ -40,18 +58,11 @@ TEXTS = {
     }
 }
 
-# =========================
-# STYLE PERSONNALISÉ
-# =========================
+
 def apply_custom_style(dark_mode=True):
-    if dark_mode:
-        bg = "#0E1117"
-        text = "#FAFAFA"
-        card = "#161B22"
-    else:
-        bg = "#FFFFFF"
-        text = "#000000"
-        card = "#F5F5F5"
+    bg = "#0E1117" if dark_mode else "#FFFFFF"
+    text = "#FAFAFA" if dark_mode else "#000000"
+    card = "#161B22" if dark_mode else "#F5F5F5"
 
     st.markdown(f"""
         <style>
@@ -59,25 +70,15 @@ def apply_custom_style(dark_mode=True):
                 background-color: {bg};
                 color: {text};
             }}
-
             section[data-testid="stSidebar"] {{
                 background-color: {card};
-            }}
-
-            div[data-testid="stButton"] > button {{
-                border-radius: 8px;
-                width: 100%;
             }}
         </style>
     """, unsafe_allow_html=True)
 
 
-# =========================
-# MAIN APP
-# =========================
 def main():
 
-    # 🔘 STATE INIT
     if "dark_mode" not in st.session_state:
         st.session_state.dark_mode = True
 
@@ -86,60 +87,25 @@ def main():
 
     t = TEXTS[st.session_state.lang]
 
-    # =========================
-    # TOP BAR
-    # =========================
     col1, col2, col3 = st.columns([10, 1, 1])
 
-    # 🌙 THEME TOGGLE
     with col2:
-        if st.button(
-            t["theme_dark"] if st.session_state.dark_mode else t["theme_light"],
-            key="theme_toggle"
-        ):
+        if st.button("🌙" if st.session_state.dark_mode else "☀️"):
             st.session_state.dark_mode = not st.session_state.dark_mode
             st.rerun()
 
-    # 🌍 LANGUAGE SELECT
     with col3:
-        LANG_OPTIONS = {
-            "EN": "🇺🇸 EN",
-            "FR": "🇫🇷 FR"
-        }
+        lang = st.selectbox("", ["EN", "FR"], label_visibility="collapsed")
+        st.session_state.lang = lang
 
-        lang = st.selectbox(
-            "",
-            options=list(LANG_OPTIONS.keys()),
-            index=0 if st.session_state.lang == "EN" else 1,
-            format_func=lambda x: LANG_OPTIONS[x],
-            key="lang_select",
-            label_visibility="collapsed"
-        )
-
-        if lang != st.session_state.lang:
-            st.session_state.lang = lang
-            st.rerun()
-
-    # =========================
-    # APPLY STYLE
-    # =========================
     apply_custom_style(st.session_state.dark_mode)
 
-    # =========================
-    # SIDEBAR
-    # =========================
     with st.sidebar:
         st.markdown(f"### {t['sidebar_title']}")
         st.info(t["sidebar_info"])
 
-    # =========================
-    # HEADER
-    # =========================
     header_component()
 
-    # =========================
-    # MAIN MODULE
-    # =========================
     show_identity_gen(st.session_state.lang)
 
 
