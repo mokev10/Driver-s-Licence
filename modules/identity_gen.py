@@ -7,35 +7,72 @@ import shutil
 import traceback
 
 # =========================
-# PATH FIX
+# PATH FIX (important pour imports)
 # =========================
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
+# =========================
+# IMPORTS
+# =========================
 from utils.constants import IIN_US, IIN_CA
 from pdf417gen import encode, render_image
 from utils.svg_vectorizer import png_to_svg
 
 
 # =========================
-# CSS (OPTIONNEL VISUEL)
+# ANIMATION CSS (AUGMENTÉE - NON SIMPLIFIÉE)
 # =========================
-st.markdown("""
-<style>
+st.markdown(
+    """
+    <style>
 
-.field-help {
-    font-size: 12px;
-    opacity: 0.65;
-    margin-top: -8px;
-    margin-bottom: 8px;
-}
+    @keyframes slideUp {
+        from {
+            transform: translateY(80px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0px);
+            opacity: 1;
+        }
+    }
 
-.group-box {
-    padding: 10px;
-    border-radius: 10px;
-}
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
 
-</style>
-""", unsafe_allow_html=True)
+    .step-animated {
+        animation: slideUp 0.8s ease-out;
+    }
+
+    .step-animated-delay-1 {
+        animation: slideUp 1.0s ease-out;
+    }
+
+    .step-animated-delay-2 {
+        animation: slideUp 1.2s ease-out;
+    }
+
+    .step-fade {
+        animation: fadeIn 1.5s ease-in;
+    }
+
+    .overlay-box {
+        padding: 14px;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 
 # =========================
@@ -51,9 +88,13 @@ def show_identity_gen(lang="EN"):
             "country": "Select Country",
             "state": "Select State/Territory",
             "prov": "Select Province",
-            "step2": "Step 2: Required AAMVA Fields",
+            "step2": "Step 2: Required fields (AAMVA)",
+            "step3": "Step 3: Configuration & Generation",
             "generate": "GENERATE BARCODE & STRING",
             "success": "HDR generation completed.",
+            "raw": "Raw Data String",
+            "use": "Use this string in external tools.",
+            "preview": "Preview"
         },
         "FR": {
             "title": "Générateur de données AAMVA",
@@ -62,30 +103,47 @@ def show_identity_gen(lang="EN"):
             "country": "Sélectionner le Pays",
             "state": "Sélectionner l'État/Territoire",
             "prov": "Sélectionner la Province",
-            "step2": "Étape 2 : Champs AAMVA requis",
+            "step2": "Étape 2 : Champs obligatoires (AAMVA)",
+            "step3": "Étape 3 : Configuration & Génération",
             "generate": "GÉNÉRER LE CODE-BARRES & LA CHAÎNE",
             "success": "Génération terminée.",
+            "raw": "Chaîne brute",
+            "use": "Utilisez cette chaîne dans vos outils externes.",
+            "preview": "Aperçu"
         }
     }
 
     t = TEXT.get(lang, TEXT["EN"])
 
     # =========================
-    # HEADER
+    # HEADER (STEP 1 FIXED VISIBLE)
     # =========================
     st.title(t["title"])
     st.write(t["desc"])
     st.divider()
 
-    # =========================
-    # STEP 1
-    # =========================
     col1, col2 = st.columns(2)
 
     with col1:
         country = st.selectbox(t["country"], ["United States", "Canada"])
 
-    dcg_auto = "USA" if country == "United States" else "CAN"
+    icon = (
+        "https://img.icons8.com/external-justicon-flat-justicon/64/external-united-states-countrys-flags-justicon-flat-justicon.png"
+        if country == "United States"
+        else "https://img.icons8.com/external-justicon-flat-justicon/64/external-canada-countrys-flags-justicon-flat-justicon.png"
+    )
+
+    st.markdown(
+        f"""
+        <div class="step-animated overlay-box">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <img src="{icon}" width="24">
+                <h3 style="margin:0;">{t["step1"]}</h3>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
     with col2:
         if country == "United States":
@@ -98,67 +156,37 @@ def show_identity_gen(lang="EN"):
     st.divider()
 
     # =========================
-    # STEP 2 TITLE
+    # STEP 2 TITLE (ANIMATED LAYER)
     # =========================
-    st.markdown(f"### {t['step2']}")
+    st.markdown(
+        f"""
+        <div class="step-animated-delay-1 overlay-box">
+            <h3>{t["step2"]}</h3>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
+    # =========================
+    # FORM INPUTS
+    # =========================
     colA, colB = st.columns(2)
 
     with colA:
-
-        # =========================
-        # DCG
-        # =========================
-        dcg = st.text_input("DCG (Country Code)", dcg_auto, disabled=True)
-        st.markdown(
-            "<div class='field-help'>"
-            "DCG = Country Code (ISO / jurisdiction identifier). "
-            "Auto-generated based on selected country."
-            "</div>",
-            unsafe_allow_html=True
-        )
-
-        # =========================
-        # DCS
-        # =========================
-        dcs = st.text_input("DCS (Family Name)", "NICOLAS")
-        st.markdown(
-            "<div class='field-help'>"
-            "DCS = Family Name / Last Name (surname of holder)."
-            "</div>",
-            unsafe_allow_html=True
-        )
-
-        # =========================
-        # DAC
-        # =========================
-        dac = st.text_input("DAC (First Name)", "JEAN")
-        st.markdown(
-            "<div class='field-help'>"
-            "DAC = First Name / Given Name."
-            "</div>",
-            unsafe_allow_html=True
-        )
-
-        dbb = st.text_input("DBB (Date of Birth)", "19941208")
-        daq = st.text_input("DAQ (License Number)", "D9823415")
-        dag = st.text_input("DAG (Address Line)", "1560 STREET")
+        dcg = st.text_input("DCG", "USA")
+        dac = st.text_input("DAC", "JEAN")
+        dcs = st.text_input("DCS", "NICOLAS")
+        dbb = st.text_input("DBB", "19941208")
+        daq = st.text_input("DAQ", "D9823415")
+        dag = st.text_input("DAG", "1560 STREET")
 
     with colB:
-
-        dai = st.text_input("DAI (City)", "CITY")
-        dak = st.text_input("DAK (Postal Code)", "POSTAL")
-        dbd = st.text_input("DBD (Issue Date)", "20230510")
-        dba = st.text_input("DBA (Expiry Date)", "20310509")
-        dbc = st.selectbox("DBC (Gender Code)", ["1", "2", "3"])
-        dcf = st.text_input("DCF (Document Discriminator)", "REF001")
-
-        st.markdown(
-            "<div class='field-help'>"
-            "DBC = Gender Code | DCF = Document unique identifier"
-            "</div>",
-            unsafe_allow_html=True
-        )
+        dai = st.text_input("DAI", "CITY")
+        dak = st.text_input("DAK", "POSTAL")
+        dbd = st.text_input("DBD", "20230510")
+        dba = st.text_input("DBA", "20310509")
+        dbc = st.selectbox("DBC", ["1", "2", "3"])
+        dcf = st.text_input("DCF", "REF001")
 
     st.divider()
 
@@ -184,6 +212,9 @@ def show_identity_gen(lang="EN"):
             with col1:
                 st.code(raw.replace("\n", "\\n"))
 
+            # =========================
+            # BARCODE GENERATION
+            # =========================
             codes = encode(raw, columns=10)
             image = render_image(codes, scale=3, padding=3)
 
@@ -201,14 +232,22 @@ def show_identity_gen(lang="EN"):
                     mime="image/png"
                 )
 
+                # =========================
+                # SVG GENERATION (SAFE + OPTIONAL)
+                # =========================
                 potrace_path = shutil.which("potrace")
                 svg = None
 
                 if potrace_path:
                     try:
-                        svg = png_to_svg(png_bytes=png_bytes, potrace_path=potrace_path)
+                        svg = png_to_svg(
+                            png_bytes=png_bytes,
+                            potrace_path=potrace_path
+                        )
                     except Exception as e:
                         st.warning(f"SVG error: {e}")
+                else:
+                    st.info("SVG non disponible (potrace absent)")
 
                 if svg:
                     st.download_button(
@@ -216,6 +255,15 @@ def show_identity_gen(lang="EN"):
                         svg,
                         file_name=f"{dcs}.svg",
                         mime="image/svg+xml"
+                    )
+
+                    st.markdown(
+                        f"""
+                        <div class="step-fade overlay-box">
+                            {svg}
+                        </div>
+                        """,
+                        unsafe_allow_html=True
                     )
 
         except Exception:
