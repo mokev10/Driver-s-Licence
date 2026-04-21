@@ -20,7 +20,7 @@ from utils.svg_vectorizer import png_to_svg
 
 
 # =========================
-# CSS (CENTRAGE GLOBAL + ANIMATIONS + ISOLATION)
+# CSS (CENTRAGE + ANIMATIONS + BANDEAU STEP 1)
 # =========================
 st.markdown(
 """
@@ -38,7 +38,7 @@ st.markdown(
     justify-content: center;
 }
 
-/* Centrage et taille des inputs natifs */
+/* Taille des inputs natifs */
 .stTextInput, .stSelectbox, .stCheckbox {
     width: 100% !important;
     max-width: 450px !important;
@@ -50,17 +50,22 @@ st.markdown(
     to { transform: translateY(0px); opacity: 1; }
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+.step-animated { animation: slideUp 0.8s ease-out; }
+
+/* BANDEAU STYLE IMAGE (SOMBRE ET LARGE) */
+.step-banner {
+    padding: 20px;
+    border-radius: 10px;
+    background: #111418;
+    border: 1px solid #1E2227;
+    width: 100%;
+    margin: 15px 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* Aligné à gauche comme l'image */
 }
 
-.step-animated { animation: slideUp 0.8s ease-out; }
-.step-animated-delay-1 { animation: slideUp 1.0s ease-out; }
-.step-animated-delay-2 { animation: slideUp 1.2s ease-out; }
-.step-fade { animation: fadeIn 1.5s ease-in; }
-
-.overlay-box {
+.overlay-box-step2 {
     padding: 14px;
     border-radius: 12px;
     background: rgba(255,255,255,0.03);
@@ -70,31 +75,24 @@ st.markdown(
     margin: 10px auto;
 }
 
-/* ================= FIX BRUIT STREAMLIT + CENTRAGE MENU ================= */
-
+/* ================= MENU PARAMÈTRES STEP 3 ================= */
 #floating-menu-wrapper {
     display: flex;
     justify-content: center;
+    width: 100%;
     position: relative;
     z-index: 9999;
-    isolation: isolate;
-    contain: layout style paint;
-    width: 100%;
 }
 
 .floating-menu {
     width: 100%;
     max-width: 750px;
-    margin-top: 20px;
     background: #0f172a;
     border-radius: 16px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     border: 1px solid rgba(255,255,255,0.08);
     overflow: hidden;
     font-family: monospace;
-    transform: translateZ(0);
-    will-change: transform;
-    backface-visibility: hidden;
 }
 
 .menu-header {
@@ -103,31 +101,14 @@ st.markdown(
     align-items: center;
     padding: 14px 16px;
     background: #111827;
-    color: #ffffff;
-    font-weight: bold;
-    font-size: 14px;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-}
-
-.close-btn {
-    cursor: pointer;
-    color: #ff4d4d;
-    font-size: 16px;
-    font-weight: bold;
-    transition: 0.2s ease;
-}
-
-.close-btn:hover {
-    transform: scale(1.2);
+    color: white;
 }
 
 .menu-body {
     padding: 16px;
-    color: white;
     display: flex;
     flex-direction: column;
     align-items: center;
-    contain: layout style paint;
 }
 
 .param-box {
@@ -137,30 +118,22 @@ st.markdown(
     padding: 15px;
     border-radius: 10px;
     background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.06);
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
 }
 
-.param-box input,
-.param-box select {
+.param-box input, .param-box select {
     width: 100%;
     max-width: 300px;
     margin-top: 10px;
     padding: 8px;
-    border-radius: 6px;
-    border: none;
-    outline: none;
     background: #1f2937;
     color: white;
     text-align: center;
-}
-
-.param-box small {
-    color: #9ca3af;
-    font-size: 12px;
+    border-radius: 6px;
+    border: none;
 }
 </style>
 """,
@@ -168,9 +141,6 @@ unsafe_allow_html=True
 )
 
 
-# =========================
-# MAIN FUNCTION
-# =========================
 def show_identity_gen(lang="EN"):
 
     TEXT = {
@@ -190,23 +160,28 @@ def show_identity_gen(lang="EN"):
             "module": "Module width (mm)",
             "dpi": "Resolution (DPI)",
             "format": "Image format",
-            "padding": "Padding (quiet zone)",
             "success": "HDR generation completed"
         }
     }
-
     t = TEXT["EN"]
 
-    # ================= HEADER =================
+    # --- TITRES ---
     st.title(t["title"])
     st.write(t["desc"])
     st.divider()
 
-    # --- ÉTAPE 1 (SÉLECTEURS EN HAUT COMME SUR L'IMAGE) ---
+    # --- ÉTAPE 1 : SÉLECTEURS EN HAUT ---
     col1, col2 = st.columns(2)
 
     with col1:
         country = st.selectbox(t["country"], ["United States", "Canada"])
+
+    # LOGIQUE ICONE (TES LIENS)
+    icon = (
+        "https://icons8.com"
+        if country == "United States"
+        else "https://icons8.com"
+    )
 
     with col2:
         if country == "United States":
@@ -216,21 +191,14 @@ def show_identity_gen(lang="EN"):
             region = st.selectbox(t["prov"], sorted(IIN_CA.keys()))
             mock_iin = IIN_CA[region]
 
-    # LOGIQUE ICONE DYNAMIQUE
-    icon = (
-        "https://icons8.com"
-        if country == "United States"
-        else "https://icons8.com"
-    )
-
-    # BANDEAU D'ÉTAPE EN DESSOUS DES SÉLECTEURS
+    # BANDEAU D'ÉTAPE EN DESSOUS (COMME TON IMAGE)
     st.markdown(
         f"""
-        <div class="step-animated overlay-box">
-            <div style="display:flex;align-items:center;gap:15px;padding-left:10px;">
-                <img src="{icon}" style="width:32px; height:32px;">
-                <h3 style="margin:0; font-size:18px; color:white;">{t["step1"]}</h3>
-            </div>
+        <div class="step-animated step-banner">
+            <img src="{icon}" width="35" height="35" style="margin-right: 15px; vertical-align: middle;">
+            <span style="font-size: 20px; font-weight: bold; color: #FFFFFF; font-family: sans-serif;">
+                {t["step1"]}
+            </span>
         </div>
         """,
         unsafe_allow_html=True
@@ -238,19 +206,10 @@ def show_identity_gen(lang="EN"):
 
     st.divider()
 
-    # ================= STEP 2 =================
-    st.markdown(
-        f"""
-        <div class="step-animated-delay-1 overlay-box">
-            <h3>{t["step2"]}</h3>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-    # Centrage des colonnes de saisie
+    # --- ÉTAPE 2 ---
+    st.markdown(f'<div class="overlay-box-step2"><h3>{t["step2"]}</h3></div>', unsafe_allow_html=True)
+    
     _, colA, colB, _ = st.columns([0.1, 2, 2, 0.1])
-
     with colA:
         dcg = st.text_input("DCG", "USA")
         dac = st.text_input("DAC", "JEAN")
@@ -258,7 +217,6 @@ def show_identity_gen(lang="EN"):
         dbb = st.text_input("DBB", "19941208")
         daq = st.text_input("DAQ", "D9823415")
         dag = st.text_input("DAG", "1560 STREET")
-
     with colB:
         dai = st.text_input("DAI", "CITY")
         dak = st.text_input("DAK", "POSTAL")
@@ -269,16 +227,15 @@ def show_identity_gen(lang="EN"):
 
     st.divider()
 
-    # ================= STEP 3 =================
+    # --- ÉTAPE 3 ---
     escape = st.checkbox(t["escape"], value=True)
-
     st.markdown(
         f"""
         <div id="floating-menu-wrapper">
             <div class="floating-menu">
                 <div class="menu-header">
                     <span>{t["step3"]}</span>
-                    <span class="close-btn">✕</span>
+                    <span style="color:#ff4d4d; cursor:pointer; font-weight:bold;">✕</span>
                 </div>
                 <div class="menu-body">
                     <div class="param-box">
@@ -300,10 +257,7 @@ def show_identity_gen(lang="EN"):
                     </div>
                     <div class="param-box">
                         <b>{t["format"]}</b>
-                        <select>
-                            <option value="PNG">PNG</option>
-                            <option value="SVG">SVG</option>
-                        </select>
+                        <select><option>PNG</option><option>SVG</option></select>
                     </div>
                 </div>
             </div>
@@ -313,15 +267,10 @@ def show_identity_gen(lang="EN"):
     )
 
     st.markdown("<br>", unsafe_allow_html=True)
-    
-    # BOUTON GENERATE
-    _, col_btn, _ = st.columns([1.5, 1, 1.5])
+    _, col_btn, _ = st.columns([1, 1, 1])
     with col_btn:
         if st.button(t["generate"], use_container_width=True):
             st.success(t["success"])
 
-# =========================
-# ENTRY POINT
-# =========================
 if __name__ == "__main__":
     show_identity_gen()
