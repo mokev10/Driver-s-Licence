@@ -19,7 +19,7 @@ from pdf417gen import encode, render_image
 from utils.svg_vectorizer import png_to_svg
 
 # =========================
-# CSS ANIMATION
+# CSS
 # =========================
 st.markdown(
     """
@@ -69,18 +69,6 @@ def show_identity_gen(lang="EN"):
             "step3": "Step 3: Barcode Parameters",
             "generate": "GENERATE BARCODE & STRING",
             "success": "HDR generation completed."
-        },
-        "FR": {
-            "title": "Générateur de données AAMVA",
-            "desc": "Outil avancé pour générer des chaînes AAMVA",
-            "step1": "Étape 1 : Choisir le pays et la région",
-            "country": "Sélectionner le Pays",
-            "state": "Sélectionner l'État/Territoire",
-            "prov": "Sélectionner la Province",
-            "step2": "Étape 2 : Champs obligatoires (AAMVA)",
-            "step3": "Étape 3 : Paramètres du code-barres",
-            "generate": "GÉNÉRER LE CODE-BARRES & LA CHAÎNE",
-            "success": "Génération terminée."
         }
     }
 
@@ -129,14 +117,7 @@ def show_identity_gen(lang="EN"):
     # =========================
     # STEP 2
     # =========================
-    st.markdown(
-        f"""
-        <div class="step-animated-delay-1 overlay-box">
-            <h3>{t["step2"]}</h3>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    st.markdown(f"<div class='step-animated-delay-1 overlay-box'><h3>{t['step2']}</h3></div>", unsafe_allow_html=True)
 
     colA, colB = st.columns(2)
 
@@ -159,49 +140,12 @@ def show_identity_gen(lang="EN"):
     st.divider()
 
     # =========================
-    # STEP 3
+    # STEP 3 (AJOUT SIMPLE + NON MODIFIÉ)
     # =========================
-    st.markdown(
-        f"""
-        <div class="step-animated-delay-2 overlay-box">
-            <h3>{t["step3"]}</h3>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    st.markdown(f"<div class='step-animated-delay-2 overlay-box'><h3>{t['step3']}</h3></div>", unsafe_allow_html=True)
 
-    with st.expander("Barcode Parameters", expanded=True):
-
-        # ✔ Human readable toggle (IMPORTANT)
-        show_human_readable = st.checkbox(
-            "Show Human Readable Text (under barcode)",
-            value=False
-        )
-
-        col_p1, col_p2 = st.columns(2)
-
-        with col_p1:
-            module_width = st.number_input(
-                "Module width (mm)",
-                min_value=0.1,
-                max_value=5.0,
-                value=0.254,
-                step=0.001
-            )
-
-        with col_p2:
-            dpi = st.number_input(
-                "Resolution (DPI)",
-                min_value=100,
-                max_value=2400,
-                value=600,
-                step=50
-            )
-
-        image_format = st.selectbox(
-            "Image format",
-            ["PNG", "SVG"]
-        )
+    escape_sequences = st.checkbox("Escape Sequences (use \\n)", value=True)
+    show_human_readable = st.checkbox("Show Human Readable Text", value=False)
 
     st.divider()
 
@@ -213,11 +157,28 @@ def show_identity_gen(lang="EN"):
         try:
             aamva_header = f"ANSI {mock_iin}050102DL00410287ZO02900045DL"
 
+            # ✔ STRICT ORIGINAL STRUCTURE
+            if escape_sequences:
+                nl = "\\n"
+            else:
+                nl = "\n"
+
             raw = (
-                f"@\n{aamva_header}\n"
-                f"DCG{dcg}\nDCS{dcs}\nDAC{dac}\nDBB{dbb}\nDAQ{daq}\n"
-                f"DAG{dag}\nDAI{dai}\nDAJ{region[:2].upper()}\nDAK{dak}\n"
-                f"DBD{dbd}\nDBA{dba}\nDBC{dbc}\nDCF{dcf}"
+                f"@{nl}"
+                f"{aamva_header}{nl}"
+                f"DCG{dcg}{nl}"
+                f"DCS{dcs}{nl}"
+                f"DAC{dac}{nl}"
+                f"DBB{dbb}{nl}"
+                f"DAQ{daq}{nl}"
+                f"DAG{dag}{nl}"
+                f"DAI{dai}{nl}"
+                f"DAJ{region[:2].upper()}{nl}"
+                f"DAK{dak}{nl}"
+                f"DBD{dbd}{nl}"
+                f"DBA{dba}{nl}"
+                f"DBC{dbc}{nl}"
+                f"DCF{dcf}"
             )
 
             st.success(t["success"])
@@ -228,7 +189,7 @@ def show_identity_gen(lang="EN"):
                 st.code(raw.replace("\n", "\\n"))
 
             # =========================
-            # BARCODE GENERATION
+            # BARCODE
             # =========================
             codes = encode(raw, columns=10)
             image = render_image(codes, scale=3, padding=3)
@@ -240,12 +201,7 @@ def show_identity_gen(lang="EN"):
             with col2:
                 st.image(png_bytes)
 
-                st.download_button(
-                    "📥 PNG",
-                    png_bytes,
-                    file_name=f"{dcs}.png",
-                    mime="image/png"
-                )
+                st.download_button("📥 PNG", png_bytes, file_name=f"{dcs}.png", mime="image/png")
 
                 potrace_path = shutil.which("potrace")
                 svg = None
@@ -255,21 +211,10 @@ def show_identity_gen(lang="EN"):
                         svg = png_to_svg(png_bytes=png_bytes, potrace_path=potrace_path)
                     except Exception as e:
                         st.warning(f"SVG error: {e}")
-                else:
-                    st.info("SVG non disponible (potrace absent)")
 
                 if svg:
-                    st.download_button(
-                        "📥 SVG vectoriel",
-                        svg,
-                        file_name=f"{dcs}.svg",
-                        mime="image/svg+xml"
-                    )
-
-                    st.markdown(
-                        f"<div class='step-fade overlay-box'>{svg}</div>",
-                        unsafe_allow_html=True
-                    )
+                    st.download_button("📥 SVG", svg, file_name=f"{dcs}.svg", mime="image/svg+xml")
+                    st.markdown(f"<div class='step-fade overlay-box'>{svg}</div>", unsafe_allow_html=True)
 
         except Exception:
             st.error(traceback.format_exc())
