@@ -46,7 +46,6 @@ st.markdown(
         border-radius: 12px;
         background: rgba(255,255,255,0.03);
         border: 1px solid rgba(255,255,255,0.05);
-        font-family: monospace;
     }
 
     </style>
@@ -64,46 +63,46 @@ def show_identity_gen(lang="EN"):
         "EN": {
             "title": "AAMVA Raw Data Generator",
             "desc": "Advanced tool for generating forensic-quality AAMVA raw data strings",
-            "step1": "Step 1: Select the country and state or province",
-            "country": "Select Country",
-            "state": "Select State/Territory",
-            "prov": "Select Province",
-            "step2": "Step 2: Required fields (AAMVA)",
-            "step3": "Step 3: Configuration & Barcode Settings",
+            "step1": "Step 1: Select country / region",
+            "country": "Country",
+            "state": "State",
+            "prov": "Province",
+            "step2": "Step 2: Required fields",
+            "step3": "Step 3: PDF417 Settings",
             "generate": "GENERATE BARCODE & STRING",
-            "success": "HDR generation completed.",
-            "barcode_settings": "Barcode Parameters",
-            "escape": "Escape Sequences",
-            "columns": "PDF417 Columns",
-            "scale": "Resolution (scale)",
-            "padding": "Padding",
+            "success": "Generation completed",
 
-            # NEW LABEL
-            "raw_label": "PDF417 noise data"
+            "settings": "PDF417 Settings",
+            "escape": "Escape sequences",
+            "dpi": "Resolution (DPI)",
+            "preview": "PDF417 noise data (display only)",
+
+            "png": "Download PNG",
+            "svg": "Download SVG"
         },
         "FR": {
-            "title": "Générateur de données AAMVA",
-            "desc": "Outil avancé pour générer des chaînes AAMVA",
-            "step1": "Étape 1 : Choisir le pays et la région",
-            "country": "Sélectionner le Pays",
-            "state": "Sélectionner l'État/Territoire",
-            "prov": "Sélectionner la Province",
-            "step2": "Étape 2 : Champs obligatoires (AAMVA)",
-            "step3": "Étape 3 : Configuration & Paramètres du code-barres",
-            "generate": "GÉNÉRER LE CODE-BARRES & LA CHAÎNE",
-            "success": "Génération terminée.",
-            "barcode_settings": "Paramètres du code-barres",
-            "escape": "Séquences d'échappement",
-            "columns": "Colonnes PDF417",
-            "scale": "Résolution (échelle)",
-            "padding": "Espacement (padding)",
+            "title": "Générateur AAMVA",
+            "desc": "Outil avancé de génération de données AAMVA",
+            "step1": "Étape 1 : Pays / région",
+            "country": "Pays",
+            "state": "État",
+            "prov": "Province",
+            "step2": "Étape 2 : Champs obligatoires",
+            "step3": "Étape 3 : Paramètres PDF417",
+            "generate": "GÉNÉRER LE CODE-BARRES & CHAÎNE",
+            "success": "Génération terminée",
 
-            # NEW LABEL
-            "raw_label": "Données brutes du PDF417"
+            "settings": "Paramètres PDF417",
+            "escape": "Séquences d'échappement",
+            "dpi": "Résolution (DPI)",
+            "preview": "Données brutes du PDF417 (affichage)",
+
+            "png": "Télécharger PNG",
+            "svg": "Télécharger SVG"
         }
     }
 
-    t = TEXT.get(lang, TEXT["EN"])
+    t = TEXT[lang]
 
     # =========================
     # HEADER
@@ -123,18 +122,6 @@ def show_identity_gen(lang="EN"):
         else "https://img.icons8.com/external-justicon-flat-justicon/64/external-canada-countrys-flags-justicon-flat-justicon.png"
     )
 
-    st.markdown(
-        f"""
-        <div class="step-animated overlay-box">
-            <div style="display:flex;align-items:center;gap:10px;">
-                <img src="{icon}" width="24">
-                <h3 style="margin:0;">{t["step1"]}</h3>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
     with col2:
         if country == "United States":
             region = st.selectbox(t["state"], sorted(IIN_US.keys()))
@@ -142,6 +129,26 @@ def show_identity_gen(lang="EN"):
         else:
             region = st.selectbox(t["prov"], sorted(IIN_CA.keys()))
             mock_iin = IIN_CA[region]
+
+    st.markdown(
+        f"""
+        <div class="step-animated overlay-box">
+            <img src="{icon}" width="24">
+            <h3>{t["step1"]}</h3>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.divider()
+
+    # =========================
+    # PDF417 SETTINGS
+    # =========================
+    st.markdown(f"### {t['settings']}")
+
+    escape_sequences = st.checkbox(t["escape"], value=True)
+    dpi = st.number_input(t["dpi"], min_value=72, max_value=1200, value=600, step=50)
 
     st.divider()
 
@@ -169,27 +176,13 @@ def show_identity_gen(lang="EN"):
     st.divider()
 
     # =========================
-    # BARCODE SETTINGS
-    # =========================
-    st.markdown(f"### ⚙️ {t['barcode_settings']}")
-
-    escape_mode = st.checkbox(t["escape"], value=True)
-
-    columns = st.slider(t["columns"], 5, 30, 10)
-    scale = st.slider(t["scale"], 2, 8, 3)
-    padding = st.slider(t["padding"], 0, 10, 3)
-
-    st.divider()
-
-    # =========================
-    # GENERATION
+    # GENERATE
     # =========================
     if st.button(t["generate"], use_container_width=True):
 
         try:
             aamva_header = f"ANSI {mock_iin}050102DL00410287ZO02900045DL"
 
-            # IMPORTANT: RAW NON MODIFIÉ (barcode)
             raw = (
                 f"@\n{aamva_header}\n"
                 f"DCG{dcg}\nDCS{dcs}\nDAC{dac}\nDBB{dbb}\nDAQ{daq}\n"
@@ -197,35 +190,32 @@ def show_identity_gen(lang="EN"):
                 f"DBD{dbd}\nDBA{dba}\nDBC{dbc}\nDCF{dcf}"
             )
 
-            # DISPLAY ONLY (escape mode)
-            display_raw = raw if escape_mode else raw.replace("\n", "\\n")
+            # escape mode
+            display_raw = raw.replace("\n", "\\n") if escape_sequences else raw
 
             st.success(t["success"])
 
             col1, col2 = st.columns(2)
 
-            # =========================
-            # LABEL RENOMMÉ ICI
-            # =========================
             with col1:
-                st.markdown(f"### 🧾 {t['raw_label']}")
+                st.markdown(f"### {t['preview']}")
                 st.code(display_raw)
 
             # =========================
-            # BARCODE (UNCHANGED RAW)
+            # BARCODE
             # =========================
-            codes = encode(raw, columns=columns)
-            image = render_image(codes, scale=scale, padding=padding)
+            codes = encode(raw, columns=10)
+            image = render_image(codes, scale=3, padding=3)
 
             buf = io.BytesIO()
-            image.save(buf, format="PNG")
+            image.save(buf, format="PNG", dpi=(dpi, dpi))
             png_bytes = buf.getvalue()
 
             with col2:
                 st.image(png_bytes)
 
                 st.download_button(
-                    "📥 PNG",
+                    t["png"],
                     png_bytes,
                     file_name=f"{dcs}.png",
                     mime="image/png"
@@ -236,16 +226,13 @@ def show_identity_gen(lang="EN"):
 
                 if potrace_path:
                     try:
-                        svg = png_to_svg(
-                            png_bytes=png_bytes,
-                            potrace_path=potrace_path
-                        )
+                        svg = png_to_svg(png_bytes, potrace_path=potrace_path)
                     except Exception as e:
                         st.warning(f"SVG error: {e}")
 
                 if svg:
                     st.download_button(
-                        "📥 SVG vectoriel",
+                        t["svg"],
                         svg,
                         file_name=f"{dcs}.svg",
                         mime="image/svg+xml"
