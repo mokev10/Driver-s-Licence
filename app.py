@@ -1,6 +1,14 @@
 import streamlit as st
 import os
+import sys
 
+# ✅ FIX IMPORT PATH (IMPORTANT pour Streamlit Cloud)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(BASE_DIR)
+
+# =========================
+# STREAMLIT CONFIG
+# =========================
 st.set_page_config(
     page_title="AI Generator PDF417",
     page_icon="https://img.icons8.com/external-inipagistudio-mixed-inipagistudio/24/external-ai-web-programmer-inipagistudio-mixed-inipagistudio.png",
@@ -8,11 +16,15 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+# =========================
+# IMPORTS LOCAUX
+# =========================
 from utils.helpers import header_component
 from modules.identity_gen import show_identity_gen
 
-
-# 🌍 Traductions globales
+# =========================
+# TEXTES MULTILINGUES
+# =========================
 TEXTS = {
     "EN": {
         "theme_dark": "🌙 Dark",
@@ -28,7 +40,9 @@ TEXTS = {
     }
 }
 
-
+# =========================
+# STYLE PERSONNALISÉ
+# =========================
 def apply_custom_style(dark_mode=True):
     if dark_mode:
         bg = "#0E1117"
@@ -58,9 +72,12 @@ def apply_custom_style(dark_mode=True):
     """, unsafe_allow_html=True)
 
 
+# =========================
+# MAIN APP
+# =========================
 def main():
 
-    # 🔘 Init states
+    # 🔘 STATE INIT
     if "dark_mode" not in st.session_state:
         st.session_state.dark_mode = True
 
@@ -69,10 +86,12 @@ def main():
 
     t = TEXTS[st.session_state.lang]
 
-    # 🔘 Top bar
+    # =========================
+    # TOP BAR
+    # =========================
     col1, col2, col3 = st.columns([10, 1, 1])
 
-    # 🌙 Theme button
+    # 🌙 THEME TOGGLE
     with col2:
         if st.button(
             t["theme_dark"] if st.session_state.dark_mode else t["theme_light"],
@@ -81,9 +100,8 @@ def main():
             st.session_state.dark_mode = not st.session_state.dark_mode
             st.rerun()
 
-    # 🌍 Language dropdown avec icône intégrée
+    # 🌍 LANGUAGE SELECT
     with col3:
-
         LANG_OPTIONS = {
             "EN": "🇺🇸 EN",
             "FR": "🇫🇷 FR"
@@ -102,18 +120,26 @@ def main():
             st.session_state.lang = lang
             st.rerun()
 
-    # 🎨 Apply theme
+    # =========================
+    # APPLY STYLE
+    # =========================
     apply_custom_style(st.session_state.dark_mode)
 
-    # 📌 Sidebar
+    # =========================
+    # SIDEBAR
+    # =========================
     with st.sidebar:
         st.markdown(f"### {t['sidebar_title']}")
         st.info(t["sidebar_info"])
 
-    # 🧠 Header
+    # =========================
+    # HEADER
+    # =========================
     header_component()
 
-    # 📄 Main content
+    # =========================
+    # MAIN MODULE
+    # =========================
     show_identity_gen(st.session_state.lang)
 
 
