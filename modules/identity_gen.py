@@ -20,163 +20,179 @@ from utils.svg_vectorizer import png_to_svg
 
 
 # =========================
-# CSS COMPLET (NE PAS SIMPLIFIER)
+# CSS ANIMATION + MENU FLOATING
 # =========================
 st.markdown(
-"""
-<style>
+    """
+    <style>
 
-/* ANIMATIONS */
-@keyframes slideUp {
-    from { transform: translateY(80px); opacity: 0; }
-    to { transform: translateY(0px); opacity: 1; }
-}
+    @keyframes slideUp {
+        from { transform: translateY(80px); opacity: 0; }
+        to { transform: translateY(0px); opacity: 1; }
+    }
 
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
 
-.step-animated { animation: slideUp 0.8s ease-out; }
-.step-animated-delay-1 { animation: slideUp 1.0s ease-out; }
-.step-fade { animation: fadeIn 1.5s ease-in; }
+    .step-animated { animation: slideUp 0.8s ease-out; }
+    .step-animated-delay-1 { animation: slideUp 1.0s ease-out; }
+    .step-animated-delay-2 { animation: slideUp 1.2s ease-out; }
+    .step-fade { animation: fadeIn 1.5s ease-in; }
 
-.overlay-box {
-    padding: 14px;
-    border-radius: 12px;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.05);
-}
+    .overlay-box {
+        padding: 14px;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.05);
+    }
 
-/* BUTTON STYLE GLOBAL */
-.stButton > button {
-    background: linear-gradient(135deg, #4facfe 0%, #a066ff 100%) !important;
-    color: white !important;
-    border: none !important;
-    padding: 10px 25px !important;
-    border-radius: 50px !important;
-    font-weight: bold !important;
-    box-shadow: 0 0 15px rgba(160, 102, 255, 0.5) !important;
-    transition: all 0.3s ease !important;
-}
+    /* ================= FLOATING MENU ================= */
 
-.stButton > button:hover {
-    transform: scale(1.02);
-    box-shadow: 0 0 25px rgba(160, 102, 255, 0.8) !important;
-}
+    .floating-menu {
+        position: relative;
+        background: #0f172a;
+        border-radius: 16px;
+        padding: 0;
+        margin-top: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.08);
+    }
 
-/* FLOATING MENU */
-.floating-menu {
-    margin-top: 20px;
-    background: #111827;
-    border-radius: 16px;
-    border: 1px solid #2a2f3a;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.5);
-    overflow: hidden;
-}
+    .menu-header {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 16px;
+        background: #111827;
+        color: white;
+        font-weight: bold;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
 
-.menu-header {
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding: 12px 16px;
-    background:#0b1220;
-    color:white;
-    font-weight:600;
-}
+    .menu-body {
+        padding: 15px;
+        color: white;
+        font-family: monospace;
+    }
 
-.menu-body {
-    padding: 18px;
-    color: white;
-}
+    .close-btn {
+        cursor: pointer;
+        color: #ff4d4d;
+        font-weight: bold;
+    }
 
-.close-btn {
-    background:red;
-    padding:2px 10px;
-    border-radius:8px;
-    cursor:pointer;
-}
+    .param-box {
+        margin-top: 8px;
+        padding: 8px;
+        border-radius: 10px;
+        background: rgba(255,255,255,0.05);
+    }
 
-/* ANSI BOX */
-.ansi-box {
-    background:#1a1a1a;
-    color:#00ff88;
-    padding:12px;
-    border-radius:8px;
-    font-family: monospace;
-    white-space: pre-wrap;
-}
-
-</style>
-""",
-unsafe_allow_html=True
+    </style>
+    """,
+    unsafe_allow_html=True
 )
 
 
 # =========================
-# MAIN FUNCTION
+# FUNCTION
 # =========================
 def show_identity_gen(lang="EN"):
 
     TEXT = {
         "EN": {
             "title": "AAMVA Raw Data Generator",
-            "desc": "Advanced forensic PDF417 generator",
-            "step1": "Step 1: Select country and region",
-            "country": "Country",
-            "state": "State",
-            "prov": "Province",
-            "step2": "Step 2: Required fields",
-            "step3": "Step 3: PDF417 Parameters",
+            "desc": "Advanced tool for generating forensic-quality AAMVA raw data strings",
+            "step1": "Step 1: Select the country and state or province",
+            "country": "Select Country",
+            "state": "Select State/Territory",
+            "prov": "Select Province",
+            "step2": "Step 2: Required fields (AAMVA)",
+            "step3": "Step 3: Barcode Parameters",
             "generate": "GENERATE BARCODE & STRING",
-            "success": "Generation completed",
-            "raw": "PDF417 noise data",
             "escape": "Escape Sequences",
-            "escape_desc": "Convert line breaks to \\n",
-            "hr": "Human readable text",
+            "escape_help": "Replace line breaks with \\n",
+            "human": "Human readable text",
             "module": "Module width (mm)",
             "dpi": "Resolution (DPI)",
             "format": "Image format",
-            "padding": "Padding (quiet zone)"
+            "padding": "Padding (quiet zone)",
+            "success": "HDR generation completed."
+        },
+        "FR": {
+            "title": "Générateur de données AAMVA",
+            "desc": "Outil avancé pour générer des chaînes AAMVA",
+            "step1": "Étape 1 : Choisir le pays et la région",
+            "country": "Sélectionner le Pays",
+            "state": "Sélectionner l'État",
+            "prov": "Sélectionner la Province",
+            "step2": "Étape 2 : Champs obligatoires (AAMVA)",
+            "step3": "Étape 3 : Paramètres du code-barres",
+            "generate": "GÉNÉRER LE CODE-BARRES & LA CHAÎNE",
+            "escape": "Séquences d'échappement",
+            "escape_help": "Remplace les retours par \\n",
+            "human": "Texte lisible",
+            "module": "Largeur module (mm)",
+            "dpi": "Résolution (DPI)",
+            "format": "Format image",
+            "padding": "Zone de silence",
+            "success": "Génération terminée."
         }
     }
 
-    t = TEXT[lang]
+    t = TEXT.get(lang, TEXT["EN"])
 
-    # =========================
-    # HEADER
-    # =========================
+    # ================= HEADER =================
     st.title(t["title"])
     st.write(t["desc"])
     st.divider()
 
-    # =========================
-    # COUNTRY
-    # =========================
     col1, col2 = st.columns(2)
 
     with col1:
         country = st.selectbox(t["country"], ["United States", "Canada"])
 
+    # 🔥 ICON RESTAURÉ EXACTEMENT COMME DEMANDÉ
     icon = (
         "https://img.icons8.com/external-justicon-flat-justicon/64/external-united-states-countrys-flags-justicon-flat-justicon.png"
         if country == "United States"
         else "https://img.icons8.com/external-justicon-flat-justicon/64/external-canada-countrys-flags-justicon-flat-justicon.png"
     )
 
+    st.markdown(
+        f"""
+        <div class="step-animated overlay-box">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <img src="{icon}" width="24">
+                <h3 style="margin:0;">{t["step1"]}</h3>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
     with col2:
         if country == "United States":
-            region = st.selectbox(t["state"], ["AL", "CA", "NY"])
-            mock_iin = "636033"
+            region = st.selectbox(t["state"], sorted(IIN_US.keys()))
+            mock_iin = IIN_US[region]
         else:
-            region = st.selectbox(t["prov"], ["QC", "ON"])
-            mock_iin = "636038"
+            region = st.selectbox(t["prov"], sorted(IIN_CA.keys()))
+            mock_iin = IIN_CA[region]
 
     st.divider()
 
-    # =========================
-    # INPUTS (NE PAS MODIFIER STRUCTURE)
-    # =========================
+    # ================= STEP 2 =================
+    st.markdown(
+        f"""
+        <div class="step-animated-delay-1 overlay-box">
+            <h3>{t["step2"]}</h3>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
     colA, colB = st.columns(2)
 
     with colA:
@@ -184,25 +200,20 @@ def show_identity_gen(lang="EN"):
         dac = st.text_input("DAC", "JEAN")
         dcs = st.text_input("DCS", "NICOLAS")
         dbb = st.text_input("DBB", "19941208")
-        daq = st.text_input("DAQ", "D982094120896")
-        dag = st.text_input("DAG", "1560 SHERBROOKE ST E")
+        daq = st.text_input("DAQ", "D9823415")
+        dag = st.text_input("DAG", "1560 STREET")
 
     with colB:
-        dai = st.text_input("DAI", "MONTREAL")
-        dak = st.text_input("DAK", "H2L4M1")
+        dai = st.text_input("DAI", "CITY")
+        dak = st.text_input("DAK", "POSTAL")
         dbd = st.text_input("DBD", "20230510")
         dba = st.text_input("DBA", "20310509")
         dbc = st.selectbox("DBC", ["1", "2", "3"])
         dcf = st.text_input("DCF", "REF001")
 
-    st.divider()
-
-    # =========================
-    # FLOATING MENU (FULL STRUCTURE FIXED)
-    # =========================
+    # ================= FLOATING PARAM MENU =================
     st.markdown(f"""
     <div class="floating-menu">
-
         <div class="menu-header">
             <span>{t["step3"]}</span>
             <span class="close-btn">X</span>
@@ -210,74 +221,95 @@ def show_identity_gen(lang="EN"):
 
         <div class="menu-body">
 
-            <b>{t["escape"]}</b><br>
-            <small>{t["escape_desc"]}</small><br>
-            <input type="checkbox" checked> ON/OFF<br><br>
+            <div class="param-box">
+                <b>{t["escape"]}</b><br>
+                <small>{t["escape_help"]}</small><br>
+                <input type="checkbox" id="escape" checked>
+            </div>
 
-            <b>{t["hr"]}</b><br>
-            <input type="checkbox"><br><br>
+            <div class="param-box">
+                <b>{t["human"]}</b><br>
+                <input type="checkbox" id="human">
+            </div>
 
-            <b>{t["module"]}</b><br>
-            <input type="text" value="0.254 mm"><br><br>
+            <div class="param-box">
+                <b>{t["module"]}</b><br>
+                <input type="text" value="0.254">
+            </div>
 
-            <b>{t["dpi"]}</b><br>
-            <input type="text" value="600 DPI"><br><br>
+            <div class="param-box">
+                <b>{t["dpi"]}</b><br>
+                <input type="text" value="600">
+            </div>
 
-            <b>{t["format"]}</b><br>
-            <select>
-                <option>PNG</option>
-                <option>SVG</option>
-            </select><br><br>
+            <div class="param-box">
+                <b>{t["format"]}</b><br>
+                <select>
+                    <option>PNG</option>
+                    <option>SVG</option>
+                </select>
+            </div>
 
-            <b>{t["padding"]}</b><br>
-            <small>Quiet zone around barcode for scan reliability</small><br>
-            <input type="text" value="3">
+            <div class="param-box">
+                <b>{t["padding"]}</b><br>
+                <input type="text" value="3">
+            </div>
 
         </div>
-
     </div>
     """, unsafe_allow_html=True)
 
-    # =========================
-    # GENERATE (RAW STRICT IDENTICAL)
-    # =========================
+    st.divider()
+
+    # ================= GENERATION =================
     if st.button(t["generate"], use_container_width=True):
 
-        aamva_header = f"ANSI {mock_iin}050102DL00410287ZO02900045DL"
+        try:
+            header = f"ANSI {mock_iin}050102DL00410287ZO02900045DL"
 
-        raw = (
-            f"@\n{aamva_header}\n"
-            f"DCG{dcg}\nDCS{dcs}\nDAC{dac}\nDBB{dbb}\nDAQ{daq}\n"
-            f"DAG{dag}\nDAI{dai}\nDAJ{region}\nDAK{dak}\n"
-            f"DBD{dbd}\nDBA{dba}\nDBC{dbc}\nDCF{dcf}"
-        )
+            raw = (
+                f"@\n{header}\n"
+                f"DCG{dcg}\nDCS{dcs}\nDAC{dac}\nDBB{dbb}\nDAQ{daq}\n"
+                f"DAG{dag}\nDAI{dai}\nDAJ{region[:2].upper()}\nDAK{dak}\n"
+                f"DBD{dbd}\nDBA{dba}\nDBC{dbc}\nDCF{dcf}"
+            )
 
-        st.success(t["success"])
+            st.success(t["success"])
 
-        col1, col2 = st.columns(2)
+            col1, col2 = st.columns(2)
 
-        with col1:
-            st.markdown(f"""
-            <div class="ansi-box">
-{raw}
-            </div>
-            """, unsafe_allow_html=True)
+            with col1:
+                st.code(raw.replace("\n", "\\n"))
 
-        codes = encode(raw, columns=10)
-        image = render_image(codes, scale=3, padding=3)
+            codes = encode(raw, columns=10)
+            image = render_image(codes, scale=3, padding=3)
 
-        buf = io.BytesIO()
-        image.save(buf, format="PNG")
-        png_bytes = buf.getvalue()
+            buf = io.BytesIO()
+            image.save(buf, format="PNG")
+            png_bytes = buf.getvalue()
 
-        with col2:
-            st.image(png_bytes)
-            st.download_button("PNG", png_bytes, file_name=f"{dcs}.png", mime="image/png")
+            with col2:
+                st.image(png_bytes)
 
-            try:
+                st.download_button("📥 PNG", png_bytes, file_name=f"{dcs}.png")
+
                 potrace_path = shutil.which("potrace")
+                svg = None
+
                 if potrace_path:
-                    svg = png_to_svg(png_bytes, potrace_path)
-                    st.download_button("SVG", svg, file_name=f"{dcs}.svg", mime="image/svg+xml")
-            except:
-                pass
+                    try:
+                        svg = png_to_svg(png_bytes, potrace_path)
+                    except:
+                        pass
+
+                if svg:
+                    st.download_button("📥 SVG", svg, file_name=f"{dcs}.svg")
+
+                    st.markdown(f"""
+                    <div class="step-fade overlay-box">
+                        {svg}
+                    </div>
+                    """, unsafe_allow_html=True)
+
+        except Exception:
+            st.error(traceback.format_exc())
