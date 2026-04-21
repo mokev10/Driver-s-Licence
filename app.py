@@ -95,7 +95,7 @@ def main():
             st.rerun()
 
     with col3:
-        lang = st.selectbox("", ["EN 🇺🇲", "FR 🇫🇷"], label_visibility="collapsed")
+        lang = st.selectbox("", ["EN🇺🇲", "FR🇫🇷"], label_visibility="collapsed")
         st.session_state.lang = lang
 
     apply_custom_style(st.session_state.dark_mode)
