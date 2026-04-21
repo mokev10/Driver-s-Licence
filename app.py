@@ -60,11 +60,19 @@ TEXTS = {
 
 
 # =========================
-# BUTTON STYLE (TON DESIGN)
+# BUTTON STYLE + CENTER FIX
 # =========================
 st.markdown("""
 <style>
-.stButton > button {
+
+/* CENTRAGE RÉEL DU BOUTON */
+div.stButton {
+    display: flex;
+    justify-content: center;
+}
+
+/* STYLE DU BOUTON */
+div.stButton > button {
     background: linear-gradient(135deg, #4facfe 0%, #a066ff 100%) !important;
     color: white !important;
     border: none !important;
@@ -77,15 +85,18 @@ st.markdown("""
     width: auto !important;
 }
 
-.stButton > button:hover {
+/* HOVER */
+div.stButton > button:hover {
     box-shadow: 0 0 25px rgba(160, 102, 255, 0.8) !important;
     transform: scale(1.02) !important;
     color: white !important;
 }
 
-.stButton > button:active {
+/* CLICK */
+div.stButton > button:active {
     transform: scale(0.98) !important;
 }
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -118,9 +129,6 @@ def main():
 
     t = TEXTS[st.session_state.lang]
 
-    # =========================
-    # TOP BAR
-    # =========================
     col1, col2, col3 = st.columns([10, 1, 1])
 
     with col2:
@@ -148,15 +156,7 @@ def main():
 
     header_component()
 
-    # =========================
-    # MODULE CENTER (IDENTITY GEN)
-    # =========================
-
-    # 👉 CENTRAGE PROPRE
-    left, center, right = st.columns([1, 2, 1])
-
-    with center:
-        show_identity_gen(st.session_state.lang)
+    show_identity_gen(st.session_state.lang)
 
 
 if __name__ == "__main__":
