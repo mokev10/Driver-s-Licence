@@ -1,117 +1,111 @@
 import streamlit as st
+import datetime
 import io
 import sys
 import os
 import shutil
 import traceback
 
+# =========================
+# PATH FIX (important pour imports)
+# =========================
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
+# =========================
+# IMPORTS
+# =========================
 from utils.constants import IIN_US, IIN_CA
 from pdf417gen import encode, render_image
 from utils.svg_vectorizer import png_to_svg
 
 
 # =========================
-# PAGE CONFIG
+# MAIN FUNCTION
 # =========================
-st.set_page_config(page_title="AAMVA Generator", layout="wide")
+def show_identity_gen(lang="EN"):
 
-
-# =========================
-# ANIMATION CSS
-# =========================
-st.markdown(
-    """
-    <style>
-
-    /* fade + slide up */
-    .fade-up {
-        animation: fadeUp 0.8s ease forwards;
-        opacity: 0;
-        transform: translateY(30px);
-    }
-
-    @keyframes fadeUp {
-        to {
-            opacity: 1;
-            transform: translateY(0px);
+    TEXT = {
+        "EN": {
+            "title": "AAMVA Raw Data Generator",
+            "desc": "Advanced tool for generating forensic-quality AAMVA raw data strings",
+            "step1": "Step 1: Select the country and state or province",
+            "country": "Select Country",
+            "state": "Select State/Territory",
+            "prov": "Select Province",
+            "step2": "Step 2: Required fields (AAMVA)",
+            "step3": "Step 3: Configuration & Generation",
+            "generate": "GENERATE BARCODE & STRING",
+            "success": "HDR generation completed.",
+            "raw": "Raw Data String",
+            "use": "Use this string in external tools.",
+            "preview": "Preview"
+        },
+        "FR": {
+            "title": "Générateur de données AAMVA",
+            "desc": "Outil avancé pour générer des chaînes AAMVA",
+            "step1": "Étape 1 : Choisir le pays et la région",
+            "country": "Sélectionner le Pays",
+            "state": "Sélectionner l'État/Territoire",
+            "prov": "Sélectionner la Province",
+            "step2": "Étape 2 : Champs obligatoires (AAMVA)",
+            "step3": "Étape 3 : Configuration & Génération",
+            "generate": "GÉNÉRER LE CODE-BARRES & LA CHAÎNE",
+            "success": "Génération terminée.",
+            "raw": "Chaîne brute",
+            "use": "Utilisez cette chaîne dans vos outils externes.",
+            "preview": "Aperçu"
         }
     }
 
-    /* progressive sections delay */
-    .step1 { animation-delay: 0.1s; }
-    .step2 { animation-delay: 0.3s; }
-    .step3 { animation-delay: 0.5s; }
-
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-
-# =========================
-# STATE CONTROL
-# =========================
-if "step" not in st.session_state:
-    st.session_state.step = 1
-
-
-# =========================
-# STEP 1 (INTRO + SELECTION)
-# =========================
-def step_one():
-
-    st.markdown('<div class="fade-up step1">', unsafe_allow_html=True)
-
-    st.title("AAMVA Raw Data Generator")
-    st.subheader("Advanced tool for generating forensic-quality AAMVA raw data strings")
-
-    st.markdown("</div>", unsafe_allow_html=True)
-
-    st.markdown("---")
-
-    st.markdown('<div class="fade-up step2">', unsafe_allow_html=True)
-    st.write("Step 1: Select the country and state or province")
-
-    country = st.selectbox("Select Country", ["Canada"])
-
-    province = st.selectbox("Select Province", ["Alberta"])
-
-    st.markdown("</div>", unsafe_allow_html=True)
-
-    st.markdown('<div class="fade-up step3">', unsafe_allow_html=True)
-
-    if st.button("Continue →", use_container_width=True):
-        st.session_state.country = country
-        st.session_state.region = province
-        st.session_state.step = 2
-        st.rerun()
-
-    st.markdown("</div>", unsafe_allow_html=True)
-
-
-# =========================
-# STEP 2 (FORM + GENERATION)
-# =========================
-def step_two():
-
-    st.markdown(
-        '<div class="fade-up step1">',
-        unsafe_allow_html=True
-    )
-
-    st.title("AAMVA Generator")
-    st.markdown("Configure identity fields")
-
-    st.markdown("</div>", unsafe_allow_html=True)
+    t = TEXT.get(lang, TEXT["EN"])
 
     # =========================
-    # INPUTS
+    # HEADER
+    # =========================
+    st.title(t["title"])
+    st.write(t["desc"])
+    st.divider()
+
+    # =========================
+    # STEP 1
     # =========================
     col1, col2 = st.columns(2)
 
     with col1:
+        country = st.selectbox(t["country"], ["United States", "Canada"])
+
+    icon = (
+        "https://img.icons8.com/external-justicon-flat-justicon/64/external-united-states-countrys-flags-justicon-flat-justicon.png"
+        if country == "United States"
+        else "https://img.icons8.com/external-justicon-flat-justicon/64/external-canada-countrys-flags-justicon-flat-justicon.png"
+    )
+
+    st.markdown(
+        f"""
+        <div style="display:flex;align-items:center;gap:10px;">
+            <img src="{icon}" width="24">
+            <h3 style="margin:0;">{t["step1"]}</h3>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    with col2:
+        if country == "United States":
+            region = st.selectbox(t["state"], sorted(IIN_US.keys()))
+            mock_iin = IIN_US[region]
+        else:
+            region = st.selectbox(t["prov"], sorted(IIN_CA.keys()))
+            mock_iin = IIN_CA[region]
+
+    st.divider()
+
+    # =========================
+    # STEP 2
+    # =========================
+    colA, colB = st.columns(2)
+
+    with colA:
         dcg = st.text_input("DCG", "USA")
         dac = st.text_input("DAC", "JEAN")
         dcs = st.text_input("DCS", "NICOLAS")
@@ -119,7 +113,7 @@ def step_two():
         daq = st.text_input("DAQ", "D9823415")
         dag = st.text_input("DAG", "1560 STREET")
 
-    with col2:
+    with colB:
         dai = st.text_input("DAI", "CITY")
         dak = st.text_input("DAK", "POSTAL")
         dbd = st.text_input("DBD", "20230510")
@@ -127,32 +121,36 @@ def step_two():
         dbc = st.selectbox("DBC", ["1", "2", "3"])
         dcf = st.text_input("DCF", "REF001")
 
-    st.markdown("---")
+    st.divider()
 
     # =========================
     # GENERATION
     # =========================
-    if st.button("Generate", use_container_width=True):
+    if st.button(t["generate"], use_container_width=True):
 
         try:
-            mock_iin = 636014  # fallback safe value
-
+            # =========================
+            # RAW STRING
+            # =========================
             aamva_header = f"ANSI {mock_iin}050102DL00410287ZO02900045DL"
 
             raw = (
                 f"@\n{aamva_header}\n"
                 f"DCG{dcg}\nDCS{dcs}\nDAC{dac}\nDBB{dbb}\nDAQ{daq}\n"
-                f"DAG{dag}\nDAI{dai}\nDAJ{st.session_state.region[:2].upper()}\nDAK{dak}\n"
+                f"DAG{dag}\nDAI{dai}\nDAJ{region[:2].upper()}\nDAK{dak}\n"
                 f"DBD{dbd}\nDBA{dba}\nDBC{dbc}\nDCF{dcf}"
             )
 
-            st.success("Generation completed")
+            st.success(t["success"])
 
             col1, col2 = st.columns(2)
 
             with col1:
                 st.code(raw.replace("\n", "\\n"))
 
+            # =========================
+            # PDF417 GENERATION
+            # =========================
             codes = encode(raw, columns=10)
             image = render_image(codes, scale=3, padding=3)
 
@@ -164,40 +162,43 @@ def step_two():
                 st.image(png_bytes)
 
                 st.download_button(
-                    "Download PNG",
+                    "📥 PNG",
                     png_bytes,
                     file_name=f"{dcs}.png",
                     mime="image/png"
                 )
 
                 # =========================
-                # SVG SAFE GENERATION
+                # SVG GENERATION (SAFE)
                 # =========================
                 potrace_path = shutil.which("potrace")
                 svg = None
 
                 if potrace_path:
                     try:
-                        svg = png_to_svg(png_bytes=png_bytes, potrace_path=potrace_path)
-                    except Exception:
-                        pass
+                        svg = png_to_svg(
+                            png_bytes=png_bytes,
+                            potrace_path=potrace_path
+                        )
+                    except Exception as e:
+                        st.warning(f"SVG error: {e}")
+                else:
+                    st.info("SVG non disponible (potrace absent)")
 
                 if svg:
                     st.download_button(
-                        "Download SVG",
+                        "📥 SVG vectoriel",
                         svg,
                         file_name=f"{dcs}.svg",
                         mime="image/svg+xml"
+                    )
+
+                    st.markdown(
+                        f"<div style='background:white;padding:10px'>{svg}</div>",
+                        unsafe_allow_html=True
                     )
 
         except Exception:
             st.error(traceback.format_exc())
 
 
-# =========================
-# ROUTER (TRANSITION SYSTEM)
-# =========================
-if st.session_state.step == 1:
-    step_one()
-else:
-    step_two()
