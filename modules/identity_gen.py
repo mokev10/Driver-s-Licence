@@ -97,7 +97,7 @@ def show_identity_gen(lang="EN"):
     dcg_auto = "USA" if country == "United States" else "CAN"
 
     icon = (
-        "https://img.icons8.com/external-justicon-flat-justicon/80/external-united-states-countrys-flags-justicon-flat-justicon.png"
+        "https://img.icons8.com/external-justicon-flat-justicon/8/external-united-states-countrys-flags-justicon-flat-justicon.png"
         if country == "United States"
         else "https://img.icons8.com/external-justicon-flat-justicon/80/external-canada-countrys-flags-justicon-flat-justicon.png"
     )
