@@ -92,10 +92,8 @@ def show_identity_gen(lang="EN"):
             "step3": "Step 3: Configuration & Barcode Settings",
             "generate": "GENERATE BARCODE & STRING",
             "success": "HDR generation completed.",
-            "raw": "Raw Data String",
-            "use": "Use this string in external tools.",
-            "preview": "Preview",
-            "barcode_settings": "Barcode Parameters"
+            "barcode_settings": "Barcode Parameters",
+            "escape": "Escape Sequences"
         },
         "FR": {
             "title": "Générateur de données AAMVA",
@@ -105,13 +103,11 @@ def show_identity_gen(lang="EN"):
             "state": "Sélectionner l'État/Territoire",
             "prov": "Sélectionner la Province",
             "step2": "Étape 2 : Champs obligatoires (AAMVA)",
-            "step3": "Étape 3 : Configuration & Paramètres du code-barres",
+            "step3": "Étape 3 : Configuration & Paramètres",
             "generate": "GÉNÉRER LE CODE-BARRES & LA CHAÎNE",
             "success": "Génération terminée.",
-            "raw": "Chaîne brute",
-            "use": "Utilisez cette chaîne dans vos outils externes.",
-            "preview": "Aperçu",
-            "barcode_settings": "Paramètres du code-barres"
+            "barcode_settings": "Paramètres du code-barres",
+            "escape": "Séquences d'échappement"
         }
     }
 
@@ -158,19 +154,7 @@ def show_identity_gen(lang="EN"):
     st.divider()
 
     # =========================
-    # STEP 2
-    # =========================
-    st.markdown(
-        f"""
-        <div class="step-animated-delay-1 overlay-box">
-            <h3>{t["step2"]}</h3>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-    # =========================
-    # FORM INPUTS
+    # FORM
     # =========================
     colA, colB = st.columns(2)
 
@@ -193,22 +177,15 @@ def show_identity_gen(lang="EN"):
     st.divider()
 
     # =========================
-    # BARCODE PARAMETERS (NEW)
+    # BARCODE SETTINGS
     # =========================
     st.markdown(f"### ⚙️ {t['barcode_settings']}")
 
-    colP1, colP2, colP3 = st.columns(3)
+    escape_mode = st.checkbox(t["escape"], value=True)
 
-    with colP1:
-        columns = st.slider("PDF417 Columns (largeur)", 5, 30, 10)
-
-    with colP2:
-        scale = st.slider("Résolution (scale ~ DPI)", 2, 8, 3)
-
-    with colP3:
-        padding = st.slider("Padding", 0, 10, 3)
-
-    st.caption("ℹ️ PDF417 | Séquences échappement activées | Human readable désactivé (mode sécurisé)")
+    columns = st.slider("PDF417 Columns", 5, 30, 10)
+    scale = st.slider("Résolution (scale)", 2, 8, 3)
+    padding = st.slider("Padding", 0, 10, 3)
 
     st.divider()
 
@@ -227,18 +204,23 @@ def show_identity_gen(lang="EN"):
                 f"DBD{dbd}\nDBA{dba}\nDBC{dbc}\nDCF{dcf}"
             )
 
+            # =========================
+            # ESCAPE LOGIC (IMPORTANT)
+            # =========================
+            if escape_mode:
+                display_raw = raw
+            else:
+                display_raw = raw.replace("\n", "\\n")
+
             st.success(t["success"])
 
             col1, col2 = st.columns(2)
 
-            # =========================
-            # RAW ANSI (IMPORTANT: inchangé)
-            # =========================
             with col1:
-                st.code(raw)
+                st.code(display_raw)
 
             # =========================
-            # BARCODE GENERATION
+            # BARCODE
             # =========================
             codes = encode(raw, columns=columns)
             image = render_image(codes, scale=scale, padding=padding)
@@ -257,9 +239,6 @@ def show_identity_gen(lang="EN"):
                     mime="image/png"
                 )
 
-                # =========================
-                # SVG GENERATION
-                # =========================
                 potrace_path = shutil.which("potrace")
                 svg = None
 
@@ -271,8 +250,6 @@ def show_identity_gen(lang="EN"):
                         )
                     except Exception as e:
                         st.warning(f"SVG error: {e}")
-                else:
-                    st.info("SVG non disponible (potrace absent)")
 
                 if svg:
                     st.download_button(
