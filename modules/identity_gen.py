@@ -1,5 +1,4 @@
 import streamlit as st
-import datetime
 import io
 import sys
 import os
@@ -7,7 +6,7 @@ import shutil
 import traceback
 
 # =========================
-# PATH FIX (important pour imports)
+# PATH FIX
 # =========================
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
@@ -18,49 +17,25 @@ from utils.constants import IIN_US, IIN_CA
 from pdf417gen import encode, render_image
 from utils.svg_vectorizer import png_to_svg
 
-
 # =========================
-# ANIMATION CSS (AUGMENTÉE - NON SIMPLIFIÉE)
+# CSS ANIMATIONS
 # =========================
 st.markdown(
     """
     <style>
-
     @keyframes slideUp {
-        from {
-            transform: translateY(80px);
-            opacity: 0;
-        }
-        to {
-            transform: translateY(0px);
-            opacity: 1;
-        }
+        from { transform: translateY(80px); opacity: 0; }
+        to { transform: translateY(0px); opacity: 1; }
     }
 
     @keyframes fadeIn {
-        from {
-            opacity: 0;
-        }
-        to {
-            opacity: 1;
-        }
+        from { opacity: 0; }
+        to { opacity: 1; }
     }
 
-    .step-animated {
-        animation: slideUp 0.8s ease-out;
-    }
-
-    .step-animated-delay-1 {
-        animation: slideUp 1.0s ease-out;
-    }
-
-    .step-animated-delay-2 {
-        animation: slideUp 1.2s ease-out;
-    }
-
-    .step-fade {
-        animation: fadeIn 1.5s ease-in;
-    }
+    .step-animated { animation: slideUp 0.8s ease-out; }
+    .step-animated-delay-1 { animation: slideUp 1.0s ease-out; }
+    .step-fade { animation: fadeIn 1.5s ease-in; }
 
     .overlay-box {
         padding: 14px;
@@ -68,15 +43,13 @@ st.markdown(
         background: rgba(255,255,255,0.03);
         border: 1px solid rgba(255,255,255,0.05);
     }
-
     </style>
     """,
     unsafe_allow_html=True
 )
 
-
 # =========================
-# MAIN FUNCTION
+# MAIN APP
 # =========================
 def show_identity_gen(lang="EN"):
 
@@ -84,39 +57,31 @@ def show_identity_gen(lang="EN"):
         "EN": {
             "title": "AAMVA Raw Data Generator",
             "desc": "Advanced tool for generating forensic-quality AAMVA raw data strings",
-            "step1": "Step 1: Select the country and state or province",
             "country": "Select Country",
             "state": "Select State/Territory",
             "prov": "Select Province",
+            "step1": "Step 1: Select the country and state or province",
             "step2": "Step 2: Required fields (AAMVA)",
-            "step3": "Step 3: Configuration & Generation",
             "generate": "GENERATE BARCODE & STRING",
-            "success": "HDR generation completed.",
-            "raw": "Raw Data String",
-            "use": "Use this string in external tools.",
-            "preview": "Preview"
+            "success": "HDR generation completed."
         },
         "FR": {
             "title": "Générateur de données AAMVA",
             "desc": "Outil avancé pour générer des chaînes AAMVA",
-            "step1": "Étape 1 : Choisir le pays et la région",
             "country": "Sélectionner le Pays",
             "state": "Sélectionner l'État/Territoire",
             "prov": "Sélectionner la Province",
+            "step1": "Étape 1 : Choisir le pays et la région",
             "step2": "Étape 2 : Champs obligatoires (AAMVA)",
-            "step3": "Étape 3 : Configuration & Génération",
             "generate": "GÉNÉRER LE CODE-BARRES & LA CHAÎNE",
-            "success": "Génération terminée.",
-            "raw": "Chaîne brute",
-            "use": "Utilisez cette chaîne dans vos outils externes.",
-            "preview": "Aperçu"
+            "success": "Génération terminée."
         }
     }
 
     t = TEXT.get(lang, TEXT["EN"])
 
     # =========================
-    # HEADER (STEP 1 FIXED VISIBLE)
+    # HEADER
     # =========================
     st.title(t["title"])
     st.write(t["desc"])
@@ -156,7 +121,7 @@ def show_identity_gen(lang="EN"):
     st.divider()
 
     # =========================
-    # STEP 2 TITLE (ANIMATED LAYER)
+    # FORM
     # =========================
     st.markdown(
         f"""
@@ -167,9 +132,6 @@ def show_identity_gen(lang="EN"):
         unsafe_allow_html=True
     )
 
-    # =========================
-    # FORM INPUTS
-    # =========================
     colA, colB = st.columns(2)
 
     with colA:
@@ -212,9 +174,6 @@ def show_identity_gen(lang="EN"):
             with col1:
                 st.code(raw.replace("\n", "\\n"))
 
-            # =========================
-            # BARCODE GENERATION
-            # =========================
             codes = encode(raw, columns=10)
             image = render_image(codes, scale=3, padding=3)
 
@@ -232,18 +191,12 @@ def show_identity_gen(lang="EN"):
                     mime="image/png"
                 )
 
-                # =========================
-                # SVG GENERATION (SAFE + OPTIONAL)
-                # =========================
                 potrace_path = shutil.which("potrace")
                 svg = None
 
                 if potrace_path:
                     try:
-                        svg = png_to_svg(
-                            png_bytes=png_bytes,
-                            potrace_path=potrace_path
-                        )
+                        svg = png_to_svg(png_bytes=png_bytes, potrace_path=potrace_path)
                     except Exception as e:
                         st.warning(f"SVG error: {e}")
                 else:
@@ -258,15 +211,9 @@ def show_identity_gen(lang="EN"):
                     )
 
                     st.markdown(
-                        f"""
-                        <div class="step-fade overlay-box">
-                            {svg}
-                        </div>
-                        """,
+                        f"<div class='step-fade overlay-box'>{svg}</div>",
                         unsafe_allow_html=True
                     )
 
         except Exception:
             st.error(traceback.format_exc())
-
-
