@@ -20,12 +20,20 @@ from utils.svg_vectorizer import png_to_svg
 
 
 # =========================
-# ANIMATION CSS (AUGMENTÉE - NON SIMPLIFIÉE)
+# UI THEME (GITHUB DARK + ANSI + DOWNLOAD BUTTONS)
 # =========================
 st.markdown(
     """
     <style>
 
+    /* BACKGROUND GLOBAL */
+    .stApp {
+        background-color: #0d1117;
+    }
+
+    /* =========================
+       ANIMATIONS EXISTANTES
+    ========================= */
     @keyframes slideUp {
         from {
             transform: translateY(80px);
@@ -69,6 +77,64 @@ st.markdown(
         border: 1px solid rgba(255,255,255,0.05);
     }
 
+    /* =========================
+       ANSI HEADER (NEW)
+    ========================= */
+    .ansi-header {
+        background: #1a1a1a;
+        padding: 12px;
+        border-radius: 8px;
+        color: #7ee787;
+        font-family: monospace;
+        font-size: 13px;
+        border: 1px solid #30363d;
+        margin-bottom: 15px;
+        overflow-x: auto;
+    }
+
+    /* =========================
+       BARCODE WHITE ZONE (SCAN OPTIMIZED)
+    ========================= */
+    .barcode-box {
+        background: #ffffff;
+        padding: 20px;
+        border-radius: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 320px;
+    }
+
+    /* =========================
+       DOWNLOAD BUTTONS (PNG / SVG)
+    ========================= */
+    div.stDownloadButton > button {
+        background-color: #238636 !important;
+        color: white !important;
+        border-radius: 8px !important;
+        padding: 10px 14px !important;
+        font-weight: 600 !important;
+        border: 1px solid rgba(240,246,252,0.1) !important;
+        transition: all 0.2s ease-in-out !important;
+        width: 100% !important;
+    }
+
+    div.stDownloadButton > button:hover {
+        background-color: #2ea043 !important;
+        transform: translateY(-1px);
+    }
+
+    /* =========================
+       GENERATE BUTTON (UNCHANGED STYLE SAFE)
+    ========================= */
+    div.stButton > button {
+        background: linear-gradient(135deg, #4facfe 0%, #a066ff 100%) !important;
+        color: white !important;
+        border-radius: 50px !important;
+        font-weight: bold !important;
+        box-shadow: 0 0 15px rgba(160, 102, 255, 0.4) !important;
+    }
+
     </style>
     """,
     unsafe_allow_html=True
@@ -89,12 +155,8 @@ def show_identity_gen(lang="EN"):
             "state": "Select State/Territory",
             "prov": "Select Province",
             "step2": "Step 2: Required fields (AAMVA)",
-            "step3": "Step 3: Configuration & Generation",
             "generate": "GENERATE BARCODE & STRING",
-            "success": "HDR generation completed.",
-            "raw": "Raw Data String",
-            "use": "Use this string in external tools.",
-            "preview": "Preview"
+            "success": "HDR generation completed."
         },
         "FR": {
             "title": "Générateur de données AAMVA",
@@ -104,20 +166,25 @@ def show_identity_gen(lang="EN"):
             "state": "Sélectionner l'État/Territoire",
             "prov": "Sélectionner la Province",
             "step2": "Étape 2 : Champs obligatoires (AAMVA)",
-            "step3": "Étape 3 : Configuration & Génération",
             "generate": "GÉNÉRER LE CODE-BARRES & LA CHAÎNE",
-            "success": "Génération terminée.",
-            "raw": "Chaîne brute",
-            "use": "Utilisez cette chaîne dans vos outils externes.",
-            "preview": "Aperçu"
+            "success": "Génération terminée."
         }
     }
 
     t = TEXT.get(lang, TEXT["EN"])
 
     # =========================
-    # HEADER (STEP 1 FIXED VISIBLE)
+    # ANSI HEADER
     # =========================
+    st.markdown(
+        """
+        <div class="ansi-header">
+        ANSI 636026080102DL00410287ZA03290015DL
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
     st.title(t["title"])
     st.write(t["desc"])
     st.divider()
@@ -126,24 +193,6 @@ def show_identity_gen(lang="EN"):
 
     with col1:
         country = st.selectbox(t["country"], ["United States", "Canada"])
-
-    icon = (
-        "https://img.icons8.com/external-justicon-flat-justicon/64/external-united-states-countrys-flags-justicon-flat-justicon.png"
-        if country == "United States"
-        else "https://img.icons8.com/external-justicon-flat-justicon/64/external-canada-countrys-flags-justicon-flat-justicon.png"
-    )
-
-    st.markdown(
-        f"""
-        <div class="step-animated overlay-box">
-            <div style="display:flex;align-items:center;gap:10px;">
-                <img src="{icon}" width="24">
-                <h3 style="margin:0;">{t["step1"]}</h3>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
 
     with col2:
         if country == "United States":
@@ -156,19 +205,7 @@ def show_identity_gen(lang="EN"):
     st.divider()
 
     # =========================
-    # STEP 2 TITLE (ANIMATED LAYER)
-    # =========================
-    st.markdown(
-        f"""
-        <div class="step-animated-delay-1 overlay-box">
-            <h3>{t["step2"]}</h3>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-    # =========================
-    # FORM INPUTS
+    # FORM INPUTS (UNCHANGED)
     # =========================
     colA, colB = st.columns(2)
 
@@ -207,66 +244,52 @@ def show_identity_gen(lang="EN"):
 
             st.success(t["success"])
 
-            col1, col2 = st.columns(2)
-
-            with col1:
-                st.code(raw.replace("\n", "\\n"))
-
             # =========================
-            # BARCODE GENERATION
+            # LAYOUT RESULT
             # =========================
-            codes = encode(raw, columns=10)
-            image = render_image(codes, scale=3, padding=3)
+            left, right = st.columns([2, 1])
 
-            buf = io.BytesIO()
-            image.save(buf, format="PNG")
-            png_bytes = buf.getvalue()
+            with left:
+                st.markdown('<div class="barcode-box">', unsafe_allow_html=True)
 
-            with col2:
+                codes = encode(raw, columns=10)
+                image = render_image(codes, scale=3, padding=3)
+
+                buf = io.BytesIO()
+                image.save(buf, format="PNG")
+                png_bytes = buf.getvalue()
+
                 st.image(png_bytes)
+
+                st.markdown("</div>", unsafe_allow_html=True)
+
+            with right:
 
                 st.download_button(
                     "📥 PNG",
                     png_bytes,
                     file_name=f"{dcs}.png",
-                    mime="image/png"
+                    mime="image/png",
+                    use_container_width=True
                 )
 
-                # =========================
-                # SVG GENERATION (SAFE + OPTIONAL)
-                # =========================
                 potrace_path = shutil.which("potrace")
                 svg = None
 
                 if potrace_path:
                     try:
-                        svg = png_to_svg(
-                            png_bytes=png_bytes,
-                            potrace_path=potrace_path
-                        )
+                        svg = png_to_svg(png_bytes=png_bytes, potrace_path=potrace_path)
                     except Exception as e:
                         st.warning(f"SVG error: {e}")
-                else:
-                    st.info("SVG non disponible (potrace absent)")
 
                 if svg:
                     st.download_button(
                         "📥 SVG vectoriel",
                         svg,
                         file_name=f"{dcs}.svg",
-                        mime="image/svg+xml"
-                    )
-
-                    st.markdown(
-                        f"""
-                        <div class="step-fade overlay-box">
-                            {svg}
-                        </div>
-                        """,
-                        unsafe_allow_html=True
+                        mime="image/svg+xml",
+                        use_container_width=True
                     )
 
         except Exception:
             st.error(traceback.format_exc())
-
-
