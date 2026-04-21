@@ -35,7 +35,7 @@ show_identity_gen = identity_gen.show_identity_gen
 # =========================
 st.set_page_config(
     page_title="AI Generator PDF417",
-    page_icon="🧾",
+    page_icon="https://img.icons8.com/external-inipagistudio-mixed-inipagistudio/24/external-ai-web-programmer-inipagistudio-mixed-inipagistudio.png",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -49,58 +49,16 @@ TEXTS = {
         "theme_light": "☀️ Light",
         "sidebar_title": "🪪 Identity Gen",
         "sidebar_info": "Identity generation module is active.",
-        "header_title": "🧾 PDF417 Identity Generator",
-        "header_desc": "Streamlit tool for AAMVA + PNG/SVG vector output",
     },
     "FR": {
         "theme_dark": "🌙 Sombre",
         "theme_light": "☀️ Clair",
         "sidebar_title": "🪪 Générateur d'identité",
         "sidebar_info": "Module de génération actif.",
-        "header_title": "🧾 Générateur d'identité PDF417",
-        "header_desc": "Outil Streamlit pour AAMVA + export PNG/SVG",
     }
 }
 
 
-# =========================
-# GLOBAL UI FIX (THEME SAFE)
-# =========================
-st.markdown("""
-<style>
-
-/* Bouton principal */
-div.stButton > button {
-    height: 70px;
-    font-size: 20px;
-    font-weight: bold;
-    border-radius: 10px;
-
-    background-color: var(--primary-color);
-    color: var(--background-color);
-    border: 1px solid var(--primary-color);
-}
-
-div.stButton > button:hover {
-    filter: brightness(1.1);
-}
-
-div.stButton > button:active {
-    transform: scale(0.98);
-}
-
-/* Texte adaptatif */
-.stApp {
-    color: var(--text-color);
-}
-
-</style>
-""", unsafe_allow_html=True)
-
-
-# =========================
-# STYLE CUSTOM DARK/LIGHT
-# =========================
 def apply_custom_style(dark_mode=True):
     bg = "#0E1117" if dark_mode else "#FFFFFF"
     text = "#FAFAFA" if dark_mode else "#000000"
@@ -119,12 +77,8 @@ def apply_custom_style(dark_mode=True):
     """, unsafe_allow_html=True)
 
 
-# =========================
-# MAIN APP
-# =========================
 def main():
 
-    # STATE INIT
     if "dark_mode" not in st.session_state:
         st.session_state.dark_mode = True
 
@@ -133,9 +87,6 @@ def main():
 
     t = TEXTS[st.session_state.lang]
 
-    # =========================
-    # TOP BAR
-    # =========================
     col1, col2, col3 = st.columns([10, 1, 1])
 
     with col2:
@@ -144,57 +95,20 @@ def main():
             st.rerun()
 
     with col3:
-        lang = st.selectbox(
-            "",
-            ["EN", "FR"],
-            index=0 if st.session_state.lang == "EN" else 1,
-            label_visibility="collapsed"
-        )
+        lang = st.selectbox("", ["EN", "FR"], label_visibility="collapsed")
+        st.session_state.lang = lang
 
-        if lang != st.session_state.lang:
-            st.session_state.lang = lang
-            st.rerun()
-
-    # APPLY STYLE
     apply_custom_style(st.session_state.dark_mode)
 
-    # =========================
-    # HEADER (fusion main.py)
-    # =========================
-    st.markdown(
-        f"""
-        <h1 style='text-align:center;'>
-            {t['header_title']}
-        </h1>
-        <p style='text-align:center; color:gray;'>
-            {t['header_desc']}
-        </p>
-        """,
-        unsafe_allow_html=True
-    )
-
-    st.divider()
-
-    # =========================
-    # SIDEBAR
-    # =========================
     with st.sidebar:
         st.markdown(f"### {t['sidebar_title']}")
         st.info(t["sidebar_info"])
 
-    # =========================
-    # CUSTOM HEADER COMPONENT
-    # =========================
     header_component()
 
-    # =========================
-    # MAIN MODULE
-    # =========================
     show_identity_gen(st.session_state.lang)
 
 
-# =========================
-# ENTRYPOINT
-# =========================
 if __name__ == "__main__":
     main()
+
