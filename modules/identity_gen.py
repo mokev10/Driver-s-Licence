@@ -69,20 +69,6 @@ st.markdown(
         border: 1px solid rgba(255,255,255,0.05);
     }
 
-    /* =========================
-       ANSI FIX (IMPORTANT)
-    ========================= */
-    .ansi-box {
-        background: #0d1117;
-        color: #7ee787;
-        padding: 14px;
-        border-radius: 10px;
-        border: 1px solid #30363d;
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-        font-size: 13px;
-        white-space: pre-wrap;
-    }
-
     </style>
     """,
     unsafe_allow_html=True
@@ -103,10 +89,13 @@ def show_identity_gen(lang="EN"):
             "state": "Select State/Territory",
             "prov": "Select Province",
             "step2": "Step 2: Required fields (AAMVA)",
-            "step3": "Step 3: Configuration & Generation",
+            "step3": "Step 3: Configuration & Barcode Settings",
             "generate": "GENERATE BARCODE & STRING",
             "success": "HDR generation completed.",
             "raw": "Raw Data String",
+            "use": "Use this string in external tools.",
+            "preview": "Preview",
+            "barcode_settings": "Barcode Parameters"
         },
         "FR": {
             "title": "Générateur de données AAMVA",
@@ -116,10 +105,13 @@ def show_identity_gen(lang="EN"):
             "state": "Sélectionner l'État/Territoire",
             "prov": "Sélectionner la Province",
             "step2": "Étape 2 : Champs obligatoires (AAMVA)",
-            "step3": "Étape 3 : Configuration & Génération",
+            "step3": "Étape 3 : Configuration & Paramètres du code-barres",
             "generate": "GÉNÉRER LE CODE-BARRES & LA CHAÎNE",
             "success": "Génération terminée.",
             "raw": "Chaîne brute",
+            "use": "Utilisez cette chaîne dans vos outils externes.",
+            "preview": "Aperçu",
+            "barcode_settings": "Paramètres du code-barres"
         }
     }
 
@@ -165,6 +157,21 @@ def show_identity_gen(lang="EN"):
 
     st.divider()
 
+    # =========================
+    # STEP 2
+    # =========================
+    st.markdown(
+        f"""
+        <div class="step-animated-delay-1 overlay-box">
+            <h3>{t["step2"]}</h3>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    # =========================
+    # FORM INPUTS
+    # =========================
     colA, colB = st.columns(2)
 
     with colA:
@@ -185,6 +192,29 @@ def show_identity_gen(lang="EN"):
 
     st.divider()
 
+    # =========================
+    # BARCODE PARAMETERS (NEW)
+    # =========================
+    st.markdown(f"### ⚙️ {t['barcode_settings']}")
+
+    colP1, colP2, colP3 = st.columns(3)
+
+    with colP1:
+        columns = st.slider("PDF417 Columns (largeur)", 5, 30, 10)
+
+    with colP2:
+        scale = st.slider("Résolution (scale ~ DPI)", 2, 8, 3)
+
+    with colP3:
+        padding = st.slider("Padding", 0, 10, 3)
+
+    st.caption("ℹ️ PDF417 | Séquences échappement activées | Human readable désactivé (mode sécurisé)")
+
+    st.divider()
+
+    # =========================
+    # GENERATION
+    # =========================
     if st.button(t["generate"], use_container_width=True):
 
         try:
@@ -202,18 +232,16 @@ def show_identity_gen(lang="EN"):
             col1, col2 = st.columns(2)
 
             # =========================
-            # 🔥 FIX IMPORTANT ICI
+            # RAW ANSI (IMPORTANT: inchangé)
             # =========================
             with col1:
-                st.markdown(
-                    f"""
-                    <div class="ansi-box">{raw}</div>
-                    """,
-                    unsafe_allow_html=True
-                )
+                st.code(raw)
 
-            codes = encode(raw, columns=10)
-            image = render_image(codes, scale=3, padding=3)
+            # =========================
+            # BARCODE GENERATION
+            # =========================
+            codes = encode(raw, columns=columns)
+            image = render_image(codes, scale=scale, padding=padding)
 
             buf = io.BytesIO()
             image.save(buf, format="PNG")
@@ -229,14 +257,22 @@ def show_identity_gen(lang="EN"):
                     mime="image/png"
                 )
 
+                # =========================
+                # SVG GENERATION
+                # =========================
                 potrace_path = shutil.which("potrace")
                 svg = None
 
                 if potrace_path:
                     try:
-                        svg = png_to_svg(png_bytes=png_bytes, potrace_path=potrace_path)
-                    except:
-                        svg = None
+                        svg = png_to_svg(
+                            png_bytes=png_bytes,
+                            potrace_path=potrace_path
+                        )
+                    except Exception as e:
+                        st.warning(f"SVG error: {e}")
+                else:
+                    st.info("SVG non disponible (potrace absent)")
 
                 if svg:
                     st.download_button(
@@ -244,6 +280,15 @@ def show_identity_gen(lang="EN"):
                         svg,
                         file_name=f"{dcs}.svg",
                         mime="image/svg+xml"
+                    )
+
+                    st.markdown(
+                        f"""
+                        <div class="step-fade overlay-box">
+                            {svg}
+                        </div>
+                        """,
+                        unsafe_allow_html=True
                     )
 
         except Exception:
