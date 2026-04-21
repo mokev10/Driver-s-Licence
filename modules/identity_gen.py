@@ -20,7 +20,7 @@ from utils.svg_vectorizer import png_to_svg
 
 
 # =========================
-# ANIMATION CSS
+# ANIMATION CSS (AUGMENTÉE - NON SIMPLIFIÉE)
 # =========================
 st.markdown(
     """
@@ -69,49 +69,6 @@ st.markdown(
         border: 1px solid rgba(255,255,255,0.05);
     }
 
-    /* =========================
-       PRIMARY BUTTON (GENERATE)
-    ========================= */
-    div.stButton > button {
-        background: linear-gradient(135deg, #4facfe 0%, #a066ff 100%) !important;
-        color: white !important;
-        border: none !important;
-        padding: 10px 25px !important;
-        border-radius: 50px !important;
-        font-weight: bold !important;
-        box-shadow: 0 0 15px rgba(160, 102, 255, 0.5) !important;
-        transition: all 0.3s ease !important;
-    }
-
-    div.stButton > button:hover {
-        box-shadow: 0 0 25px rgba(160, 102, 255, 0.8) !important;
-        transform: scale(1.02) !important;
-    }
-
-    div.stButton > button:active {
-        transform: scale(0.98) !important;
-    }
-
-    /* =========================
-       DOWNLOAD BUTTONS (PNG / SVG)
-    ========================= */
-    div.stDownloadButton > button {
-        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
-        color: white !important;
-        border: none !important;
-        padding: 8px 18px !important;
-        border-radius: 40px !important;
-        font-weight: 600 !important;
-        box-shadow: 0 0 10px rgba(34, 197, 94, 0.3) !important;
-        transition: all 0.3s ease !important;
-        font-size: 14px !important;
-    }
-
-    div.stDownloadButton > button:hover {
-        box-shadow: 0 0 18px rgba(34, 197, 94, 0.6) !important;
-        transform: scale(1.03) !important;
-    }
-
     </style>
     """,
     unsafe_allow_html=True
@@ -132,8 +89,12 @@ def show_identity_gen(lang="EN"):
             "state": "Select State/Territory",
             "prov": "Select Province",
             "step2": "Step 2: Required fields (AAMVA)",
+            "step3": "Step 3: Configuration & Generation",
             "generate": "GENERATE BARCODE & STRING",
-            "success": "HDR generation completed."
+            "success": "HDR generation completed.",
+            "raw": "Raw Data String",
+            "use": "Use this string in external tools.",
+            "preview": "Preview"
         },
         "FR": {
             "title": "Générateur de données AAMVA",
@@ -143,13 +104,20 @@ def show_identity_gen(lang="EN"):
             "state": "Sélectionner l'État/Territoire",
             "prov": "Sélectionner la Province",
             "step2": "Étape 2 : Champs obligatoires (AAMVA)",
+            "step3": "Étape 3 : Configuration & Génération",
             "generate": "GÉNÉRER LE CODE-BARRES & LA CHAÎNE",
-            "success": "Génération terminée."
+            "success": "Génération terminée.",
+            "raw": "Chaîne brute",
+            "use": "Utilisez cette chaîne dans vos outils externes.",
+            "preview": "Aperçu"
         }
     }
 
     t = TEXT.get(lang, TEXT["EN"])
 
+    # =========================
+    # HEADER (STEP 1 FIXED VISIBLE)
+    # =========================
     st.title(t["title"])
     st.write(t["desc"])
     st.divider()
@@ -158,6 +126,24 @@ def show_identity_gen(lang="EN"):
 
     with col1:
         country = st.selectbox(t["country"], ["United States", "Canada"])
+
+    icon = (
+        "https://img.icons8.com/external-justicon-flat-justicon/64/external-united-states-countrys-flags-justicon-flat-justicon.png"
+        if country == "United States"
+        else "https://img.icons8.com/external-justicon-flat-justicon/64/external-canada-countrys-flags-justicon-flat-justicon.png"
+    )
+
+    st.markdown(
+        f"""
+        <div class="step-animated overlay-box">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <img src="{icon}" width="24">
+                <h3 style="margin:0;">{t["step1"]}</h3>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
     with col2:
         if country == "United States":
@@ -169,6 +155,21 @@ def show_identity_gen(lang="EN"):
 
     st.divider()
 
+    # =========================
+    # STEP 2 TITLE (ANIMATED LAYER)
+    # =========================
+    st.markdown(
+        f"""
+        <div class="step-animated-delay-1 overlay-box">
+            <h3>{t["step2"]}</h3>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    # =========================
+    # FORM INPUTS
+    # =========================
     colA, colB = st.columns(2)
 
     with colA:
@@ -212,7 +213,7 @@ def show_identity_gen(lang="EN"):
                 st.code(raw.replace("\n", "\\n"))
 
             # =========================
-            # BARCODE
+            # BARCODE GENERATION
             # =========================
             codes = encode(raw, columns=10)
             image = render_image(codes, scale=3, padding=3)
@@ -231,12 +232,18 @@ def show_identity_gen(lang="EN"):
                     mime="image/png"
                 )
 
+                # =========================
+                # SVG GENERATION (SAFE + OPTIONAL)
+                # =========================
                 potrace_path = shutil.which("potrace")
                 svg = None
 
                 if potrace_path:
                     try:
-                        svg = png_to_svg(png_bytes=png_bytes, potrace_path=potrace_path)
+                        svg = png_to_svg(
+                            png_bytes=png_bytes,
+                            potrace_path=potrace_path
+                        )
                     except Exception as e:
                         st.warning(f"SVG error: {e}")
                 else:
@@ -261,3 +268,5 @@ def show_identity_gen(lang="EN"):
 
         except Exception:
             st.error(traceback.format_exc())
+
+
