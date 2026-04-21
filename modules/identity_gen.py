@@ -7,54 +7,61 @@ import shutil
 import traceback
 
 # =========================
-# PATH FIX
+# PATH FIX (important pour imports)
 # =========================
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
+# =========================
+# IMPORTS
+# =========================
 from utils.constants import IIN_US, IIN_CA
 from pdf417gen import encode, render_image
 from utils.svg_vectorizer import png_to_svg
 
 
 # =========================
-# CSS ANIMATION (IMPORTANT)
+# ANIMATION CSS (AJOUT UNIQUEMENT)
 # =========================
-def inject_animation_css():
-    st.markdown(
-        """
-        <style>
+st.markdown("""
+<style>
 
-        /* container animation */
-        .fade-slide {
-            animation: fadeSlide 0.9s ease-out forwards;
-            transform: translateY(40px);
-            opacity: 0;
-        }
+@keyframes slideUp {
+    from {
+        transform: translateY(60px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0px);
+        opacity: 1;
+    }
+}
 
-        @keyframes fadeSlide {
-            to {
-                transform: translateY(0px);
-                opacity: 1;
-            }
-        }
+.step-animated {
+    animation: slideUp 0.8s ease-out;
+}
 
-        .block {
-            padding: 10px;
-            border-radius: 10px;
-        }
+.step-animated-delay-1 {
+    animation: slideUp 0.9s ease-out;
+}
 
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
+.step-animated-delay-2 {
+    animation: slideUp 1.1s ease-out;
+}
+
+.overlay-box {
+    padding: 12px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.02);
+}
+
+</style>
+""", unsafe_allow_html=True)
 
 
 # =========================
 # MAIN FUNCTION
 # =========================
 def show_identity_gen(lang="EN"):
-
-    inject_animation_css()
 
     TEXT = {
         "EN": {
@@ -68,6 +75,9 @@ def show_identity_gen(lang="EN"):
             "step3": "Step 3: Configuration & Generation",
             "generate": "GENERATE BARCODE & STRING",
             "success": "HDR generation completed.",
+            "raw": "Raw Data String",
+            "use": "Use this string in external tools.",
+            "preview": "Preview"
         },
         "FR": {
             "title": "Générateur de données AAMVA",
@@ -80,13 +90,16 @@ def show_identity_gen(lang="EN"):
             "step3": "Étape 3 : Configuration & Génération",
             "generate": "GÉNÉRER LE CODE-BARRES & LA CHAÎNE",
             "success": "Génération terminée.",
+            "raw": "Chaîne brute",
+            "use": "Utilisez cette chaîne dans vos outils externes.",
+            "preview": "Aperçu"
         }
     }
 
     t = TEXT.get(lang, TEXT["EN"])
 
     # =========================
-    # INTERFACE 1 (TOUJOURS VISIBLE)
+    # HEADER (STEP 1 ALWAYS VISIBLE)
     # =========================
     st.title(t["title"])
     st.write(t["desc"])
@@ -97,6 +110,24 @@ def show_identity_gen(lang="EN"):
     with col1:
         country = st.selectbox(t["country"], ["United States", "Canada"])
 
+    icon = (
+        "https://img.icons8.com/external-justicon-flat-justicon/64/external-united-states-countrys-flags-justicon-flat-justicon.png"
+        if country == "United States"
+        else "https://img.icons8.com/external-justicon-flat-justicon/64/external-canada-countrys-flags-justicon-flat-justicon.png"
+    )
+
+    st.markdown(
+        f"""
+        <div class="step-animated overlay-box">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <img src="{icon}" width="24">
+                <h3 style="margin:0;">{t["step1"]}</h3>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
     with col2:
         if country == "United States":
             region = st.selectbox(t["state"], sorted(IIN_US.keys()))
@@ -105,91 +136,109 @@ def show_identity_gen(lang="EN"):
             region = st.selectbox(t["prov"], sorted(IIN_CA.keys()))
             mock_iin = IIN_CA[region]
 
-    st.markdown(
-        f"""
-        <div class="fade-slide block">
-            <h3>{t["step1"]}</h3>
+    st.divider()
+
+    # =========================
+    # STEP 2 (OVERLAY + ANIMATION, SANS SUPPRESSION STEP 1)
+    # =========================
+
+    st.markdown(f"""
+        <div class="step-animated-delay-1 overlay-box">
+            <h3>{t["step2"]}</h3>
         </div>
-        """,
-        unsafe_allow_html=True
-    )
+    """, unsafe_allow_html=True)
+
+    colA, colB = st.columns(2)
+
+    with colA:
+        dcg = st.text_input("DCG", "USA")
+        dac = st.text_input("DAC", "JEAN")
+        dcs = st.text_input("DCS", "NICOLAS")
+        dbb = st.text_input("DBB", "19941208")
+        daq = st.text_input("DAQ", "D9823415")
+        dag = st.text_input("DAG", "1560 STREET")
+
+    with colB:
+        dai = st.text_input("DAI", "CITY")
+        dak = st.text_input("DAK", "POSTAL")
+        dbd = st.text_input("DBD", "20230510")
+        dba = st.text_input("DBA", "20310509")
+        dbc = st.selectbox("DBC", ["1", "2", "3"])
+        dcf = st.text_input("DCF", "REF001")
 
     st.divider()
 
     # =========================
-    # INTERFACE 2 (OVERLAY + ANIMATION)
+    # GENERATION (UNCHANGED LOGIC)
     # =========================
-    show_second_ui = True  # toujours affiché (pas de remplacement)
+    if st.button(t["generate"], use_container_width=True):
 
-    if show_second_ui:
+        try:
+            aamva_header = f"ANSI {mock_iin}050102DL00410287ZO02900045DL"
 
-        st.markdown(
-            f"""
-            <div class="fade-slide block">
-                <h3>{t["step2"]}</h3>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+            raw = (
+                f"@\n{aamva_header}\n"
+                f"DCG{dcg}\nDCS{dcs}\nDAC{dac}\nDBB{dbb}\nDAQ{daq}\n"
+                f"DAG{dag}\nDAI{dai}\nDAJ{region[:2].upper()}\nDAK{dak}\n"
+                f"DBD{dbd}\nDBA{dba}\nDBC{dbc}\nDCF{dcf}"
+            )
 
-        colA, colB = st.columns(2)
+            st.success(t["success"])
 
-        with colA:
-            dcg = st.text_input("DCG", "USA")
-            dac = st.text_input("DAC", "JEAN")
-            dcs = st.text_input("DCS", "NICOLAS")
-            dbb = st.text_input("DBB", "19941208")
-            daq = st.text_input("DAQ", "D9823415")
-            dag = st.text_input("DAG", "1560 STREET")
+            col1, col2 = st.columns(2)
 
-        with colB:
-            dai = st.text_input("DAI", "CITY")
-            dak = st.text_input("DAK", "POSTAL")
-            dbd = st.text_input("DBD", "20230510")
-            dba = st.text_input("DBA", "20310509")
-            dbc = st.selectbox("DBC", ["1", "2", "3"])
-            dcf = st.text_input("DCF", "REF001")
+            with col1:
+                st.code(raw.replace("\n", "\\n"))
 
-        st.divider()
+            # =========================
+            # PDF417 GENERATION (UNCHANGED)
+            # =========================
+            codes = encode(raw, columns=10)
+            image = render_image(codes, scale=3, padding=3)
 
-        # =========================
-        # GENERATION
-        # =========================
-        if st.button(t["generate"], use_container_width=True):
+            buf = io.BytesIO()
+            image.save(buf, format="PNG")
+            png_bytes = buf.getvalue()
 
-            try:
-                aamva_header = f"ANSI {mock_iin}050102DL00410287ZO02900045DL"
+            with col2:
+                st.image(png_bytes)
 
-                raw = (
-                    f"@\n{aamva_header}\n"
-                    f"DCG{dcg}\nDCS{dcs}\nDAC{dac}\nDBB{dbb}\nDAQ{daq}\n"
-                    f"DAG{dag}\nDAI{dai}\nDAJ{region[:2].upper()}\nDAK{dak}\n"
-                    f"DBD{dbd}\nDBA{dba}\nDBC{dbc}\nDCF{dcf}"
+                st.download_button(
+                    "📥 PNG",
+                    png_bytes,
+                    file_name=f"{dcs}.png",
+                    mime="image/png"
                 )
 
-                st.success(t["success"])
+                # =========================
+                # SVG GENERATION (UNCHANGED)
+                # =========================
+                potrace_path = shutil.which("potrace")
+                svg = None
 
-                col1, col2 = st.columns(2)
+                if potrace_path:
+                    try:
+                        svg = png_to_svg(
+                            png_bytes=png_bytes,
+                            potrace_path=potrace_path
+                        )
+                    except Exception as e:
+                        st.warning(f"SVG error: {e}")
+                else:
+                    st.info("SVG non disponible (potrace absent)")
 
-                with col1:
-                    st.code(raw.replace("\n", "\\n"))
-
-                codes = encode(raw, columns=10)
-                image = render_image(codes, scale=3, padding=3)
-
-                buf = io.BytesIO()
-                image.save(buf, format="PNG")
-                png_bytes = buf.getvalue()
-
-                with col2:
-                    st.image(png_bytes)
-
+                if svg:
                     st.download_button(
-                        "📥 PNG",
-                        png_bytes,
-                        file_name=f"{dcs}.png",
-                        mime="image/png"
+                        "📥 SVG vectoriel",
+                        svg,
+                        file_name=f"{dcs}.svg",
+                        mime="image/svg+xml"
                     )
 
-            except Exception:
-                st.error(traceback.format_exc())
+                    st.markdown(
+                        f"<div style='background:white;padding:10px'>{svg}</div>",
+                        unsafe_allow_html=True
+                    )
+
+        except Exception:
+            st.error(traceback.format_exc())
