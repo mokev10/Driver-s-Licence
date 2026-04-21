@@ -7,12 +7,12 @@ import shutil
 import traceback
 
 # =========================
-# PATH FIX
+# PATH FIX (CONSERVÉ)
 # =========================
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 # =========================
-# IMPORTS
+# IMPORTS (CONSERVÉS)
 # =========================
 from utils.constants import IIN_US, IIN_CA
 from pdf417gen import encode, render_image
@@ -20,17 +20,16 @@ from utils.svg_vectorizer import png_to_svg
 
 
 # =========================
-# CSS (CENTRAGE GLOBAL ET STYLISATION)
+# CSS (CENTRAGE GLOBAL + VOS ANIMATIONS)
 # =========================
 st.markdown(
 """
 <style>
-/* Centrer le titre et la description */
+/* --- CENTRAGE GLOBAL STREAMLIT --- */
 .stApp h1, .stApp p, .stApp div.stMarkdown {
     text-align: center;
 }
 
-/* Centrer les colonnes Streamlit */
 [data-testid="column"] {
     display: flex;
     flex-direction: column;
@@ -38,19 +37,26 @@ st.markdown(
     justify-content: center;
 }
 
-/* Forcer le centrage des inputs natifs */
 .stTextInput, .stSelectbox, .stCheckbox {
     width: 100% !important;
-    max-width: 400px !important;
+    max-width: 450px !important;
 }
 
-/* ================= ANIMATIONS ================= */
+/* --- VOS ANIMATIONS ORIGINALES --- */
 @keyframes slideUp {
     from { transform: translateY(80px); opacity: 0; }
     to { transform: translateY(0px); opacity: 1; }
 }
 
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
 .step-animated { animation: slideUp 0.8s ease-out; }
+.step-animated-delay-1 { animation: slideUp 1.0s ease-out; }
+.step-animated-delay-2 { animation: slideUp 1.2s ease-out; }
+.step-fade { animation: fadeIn 1.5s ease-in; }
 
 .overlay-box {
     padding: 14px;
@@ -58,27 +64,34 @@ st.markdown(
     background: rgba(255,255,255,0.03);
     border: 1px solid rgba(255,255,255,0.05);
     width: 100%;
-    max-width: 800px;
+    max-width: 850px;
     margin: 0 auto;
 }
 
-/* ================= MENU FLOTTANT CENTRÉ ================= */
+/* --- VOS FIX DE BRUIT STREAMLIT --- */
 #floating-menu-wrapper {
     display: flex;
     justify-content: center;
     width: 100%;
+    position: relative;
+    z-index: 9999;
     isolation: isolate;
+    contain: layout style paint;
 }
 
 .floating-menu {
     width: 100%;
     max-width: 750px;
+    margin-top: 20px;
     background: #0f172a;
     border-radius: 16px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     border: 1px solid rgba(255,255,255,0.08);
     overflow: hidden;
     font-family: monospace;
+    transform: translateZ(0);
+    will-change: transform;
+    backface-visibility: hidden;
 }
 
 .menu-header {
@@ -88,22 +101,38 @@ st.markdown(
     padding: 14px 16px;
     background: #111827;
     color: #ffffff;
+    font-weight: bold;
+    font-size: 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
 }
+
+.close-btn {
+    cursor: pointer;
+    color: #ff4d4d;
+    font-size: 16px;
+    font-weight: bold;
+    transition: 0.2s ease;
+}
+
+.close-btn:hover { transform: scale(1.2); }
 
 .menu-body {
     padding: 16px;
+    color: white;
     display: flex;
     flex-direction: column;
     align-items: center;
+    contain: layout style paint;
 }
 
 .param-box {
     width: 100%;
-    max-width: 500px;
+    max-width: 550px;
     margin-bottom: 14px;
     padding: 15px;
     border-radius: 10px;
     background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.06);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -115,11 +144,17 @@ st.markdown(
     max-width: 300px;
     margin-top: 10px;
     padding: 8px;
+    border-radius: 6px;
+    border: none;
+    outline: none;
     background: #1f2937;
     color: white;
     text-align: center;
-    border-radius: 6px;
-    border: none;
+}
+
+.param-box small {
+    color: #9ca3af;
+    font-size: 12px;
 }
 </style>
 """,
@@ -127,6 +162,9 @@ unsafe_allow_html=True
 )
 
 
+# =========================
+# MAIN FUNCTION
+# =========================
 def show_identity_gen(lang="EN"):
 
     TEXT = {
@@ -146,21 +184,23 @@ def show_identity_gen(lang="EN"):
             "module": "Module width (mm)",
             "dpi": "Resolution (DPI)",
             "format": "Image format",
+            "padding": "Padding (quiet zone)",
             "success": "HDR generation completed"
         }
     }
+
     t = TEXT["EN"]
 
-    # --- TITRES CENTRÉS ---
+    # ================= HEADER =================
     st.title(t["title"])
     st.write(t["desc"])
     st.divider()
 
-    # --- ÉTAPE 1 : Centrage avec colonnes vides (layout 1:2:1) ---
-    _, center_col, _ = st.columns([1, 2, 1])
-    with center_col:
+    # Centrage de l'étape 1
+    col_l, col_c, col_r = st.columns([1, 2, 1])
+    with col_c:
         country = st.selectbox(t["country"], ["United States", "Canada"])
-    
+
     icon_url = (
         "https://icons8.com"
         if country == "United States"
@@ -179,20 +219,28 @@ def show_identity_gen(lang="EN"):
         unsafe_allow_html=True
     )
 
-    _, center_col_2, _ = st.columns([1, 2, 1])
-    with center_col_2:
+    with col_c:
         if country == "United States":
             region = st.selectbox(t["state"], sorted(IIN_US.keys()))
+            mock_iin = IIN_US[region]
         else:
             region = st.selectbox(t["prov"], sorted(IIN_CA.keys()))
+            mock_iin = IIN_CA[region]
 
     st.divider()
 
-    # --- ÉTAPE 2 : Champs de saisie ---
-    st.markdown(f'<div class="overlay-box"><h3>{t["step2"]}</h3></div>', unsafe_allow_html=True)
-    
-    # Pour centrer les deux colonnes de saisie au milieu de l'écran
-    _, colA, colB, _ = st.columns([0.5, 2, 2, 0.5])
+    # ================= STEP 2 =================
+    st.markdown(
+        f"""
+        <div class="step-animated-delay-1 overlay-box" style="text-align:center;">
+            <h3>{t["step2"]}</h3>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    # Centrage des deux colonnes de saisie
+    _, colA, colB, _ = st.columns([0.3, 2, 2, 0.3])
 
     with colA:
         dcg = st.text_input("DCG", "USA")
@@ -212,7 +260,7 @@ def show_identity_gen(lang="EN"):
 
     st.divider()
 
-    # --- ÉTAPE 3 : Menu Barcode Centré ---
+    # ================= STEP 3 HTML (CONSERVÉ + CENTRÉ) =================
     escape = st.checkbox(t["escape"], value=True)
 
     st.markdown(
@@ -221,7 +269,7 @@ def show_identity_gen(lang="EN"):
             <div class="floating-menu">
                 <div class="menu-header">
                     <span>{t["step3"]}</span>
-                    <span style="color:#ff4d4d; cursor:pointer;">✕</span>
+                    <span class="close-btn">✕</span>
                 </div>
                 <div class="menu-body">
                     <div class="param-box">
@@ -255,12 +303,14 @@ def show_identity_gen(lang="EN"):
         unsafe_allow_html=True
     )
 
-    # Bouton de génération centré
     st.markdown("<br>", unsafe_allow_html=True)
-    _, btn_col, _ = st.columns([1, 1, 1])
-    with btn_col:
+    
+    # Bouton de génération centré
+    _, col_btn, _ = st.columns([1.5, 1, 1.5])
+    with col_btn:
         if st.button(t["generate"], use_container_width=True):
             st.success(t["success"])
 
+# Exécution
 if __name__ == "__main__":
     show_identity_gen()
