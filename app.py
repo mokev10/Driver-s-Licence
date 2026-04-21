@@ -59,6 +59,38 @@ TEXTS = {
 }
 
 
+# =========================
+# BUTTON FIX (ADAPTIVE)
+# =========================
+st.markdown("""
+<style>
+
+/* Bouton principal robuste dark/light */
+div.stButton > button {
+    height: 70px;
+    font-size: 20px;
+    font-weight: bold;
+    border-radius: 10px;
+
+    background-color: #2563EB; /* bleu stable */
+    color: white;
+    border: none;
+}
+
+/* Hover */
+div.stButton > button:hover {
+    background-color: #1E4ED8;
+}
+
+/* Click */
+div.stButton > button:active {
+    transform: scale(0.98);
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+
 def apply_custom_style(dark_mode=True):
     bg = "#0E1117" if dark_mode else "#FFFFFF"
     text = "#FAFAFA" if dark_mode else "#000000"
@@ -79,9 +111,6 @@ def apply_custom_style(dark_mode=True):
 
 def main():
 
-    # =========================
-    # STATE INIT
-    # =========================
     if "dark_mode" not in st.session_state:
         st.session_state.dark_mode = True
 
@@ -90,9 +119,6 @@ def main():
 
     t = TEXTS[st.session_state.lang]
 
-    # =========================
-    # TOP BAR
-    # =========================
     col1, col2, col3 = st.columns([10, 1, 1])
 
     with col2:
@@ -108,31 +134,18 @@ def main():
             label_visibility="collapsed"
         )
 
-        # ✅ FIX IMPORTANT (vient de main.py)
         if lang != st.session_state.lang:
             st.session_state.lang = lang
             st.rerun()
 
-    # =========================
-    # APPLY STYLE
-    # =========================
     apply_custom_style(st.session_state.dark_mode)
 
-    # =========================
-    # SIDEBAR
-    # =========================
     with st.sidebar:
         st.markdown(f"### {t['sidebar_title']}")
         st.info(t["sidebar_info"])
 
-    # =========================
-    # HEADER
-    # =========================
     header_component()
 
-    # =========================
-    # MAIN MODULE
-    # =========================
     show_identity_gen(st.session_state.lang)
 
 
