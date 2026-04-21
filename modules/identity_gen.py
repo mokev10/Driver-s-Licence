@@ -48,51 +48,144 @@ st.markdown(
         border: 1px solid rgba(255,255,255,0.05);
     }
 
-    /* ================= FLOATING MENU ================= */
+    st.markdown(
+"""
+<style>
 
-    .floating-menu {
-        position: relative;
-        background: #0f172a;
-        border-radius: 16px;
-        padding: 0;
-        margin-top: 15px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-        overflow: hidden;
-        border: 1px solid rgba(255,255,255,0.08);
-    }
+/* ================= FLOATING MENU ================= */
 
-    .menu-header {
-        display: flex;
-        justify-content: space-between;
-        padding: 12px 16px;
-        background: #111827;
-        color: white;
-        font-weight: bold;
-        border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
+.floating-menu {
+    position: relative;
+    width: 100%;
+    max-width: 700px;
+    margin-top: 20px;
+    background: #0f172a;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.08);
+    overflow: hidden;
+}
 
-    .menu-body {
-        padding: 15px;
-        color: white;
-        font-family: monospace;
-    }
+/* HEADER */
+.menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    background: #111827;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
 
-    .close-btn {
-        cursor: pointer;
-        color: #ff4d4d;
-        font-weight: bold;
-    }
+/* CLOSE BUTTON */
+.close-btn {
+    cursor: pointer;
+    color: #ff4d4d;
+    font-size: 16px;
+    font-weight: bold;
+    transition: 0.2s ease;
+}
 
-    .param-box {
-        margin-top: 8px;
-        padding: 8px;
-        border-radius: 10px;
-        background: rgba(255,255,255,0.05);
-    }
+.close-btn:hover {
+    transform: scale(1.2);
+}
 
-    </style>
-    """,
-    unsafe_allow_html=True
+/* BODY */
+.menu-body {
+    padding: 16px;
+    color: white;
+    font-family: monospace;
+}
+
+/* PARAM BOX */
+.param-box {
+    margin-bottom: 14px;
+    padding: 10px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.06);
+}
+
+/* INPUTS */
+.param-box input,
+.param-box select {
+    width: 100%;
+    margin-top: 6px;
+    padding: 6px;
+    border-radius: 6px;
+    border: none;
+    outline: none;
+    background: #1f2937;
+    color: white;
+}
+
+/* SMALL TEXT */
+.param-box small {
+    color: #9ca3af;
+    font-size: 12px;
+}
+
+</style>
+""",
+unsafe_allow_html=True
+)
+
+
+st.markdown(
+"""
+<div class="floating-menu">
+
+    <!-- HEADER PROPRE + FERMETURE -->
+    <div class="menu-header">
+        <span>Step 3: Barcode Parameters</span>
+        <span class="close-btn">✕</span>
+    </div>
+
+    <!-- BODY -->
+    <div class="menu-body">
+
+        <div class="param-box">
+            <b>Escape Sequences</b><br>
+            <small>Replace line breaks with \n</small><br>
+            <input type="checkbox" checked>
+        </div>
+
+        <div class="param-box">
+            <b>Human readable text</b><br>
+            <input type="checkbox">
+        </div>
+
+        <div class="param-box">
+            <b>Module width (mm)</b><br>
+            <input type="text" value="0.254">
+        </div>
+
+        <div class="param-box">
+            <b>Resolution (DPI)</b><br>
+            <input type="text" value="600">
+        </div>
+
+        <div class="param-box">
+            <b>Image format</b><br>
+            <select>
+                <option>PNG</option>
+                <option>SVG</option>
+            </select>
+        </div>
+
+        <div class="param-box">
+            <b>Padding (quiet zone)</b><br>
+            <small>Space autour du code pour améliorer la lecture</small><br>
+            <input type="text" value="3">
+        </div>
+
+    </div>
+
+</div>
+""",
+unsafe_allow_html=True
 )
 
 
