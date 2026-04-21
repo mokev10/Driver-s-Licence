@@ -188,18 +188,18 @@ def show_identity_gen(lang="EN"):
     with col1:
         country = st.selectbox(t["country"], ["United States", "Canada"])
 
-    # LIENS DES ICONES RÉTABLIS
-    icon = (
-        "https://icons8.com"
-        if country == "United States"
-        else "https://icons8.com"
-    )
+    # LOGIQUE ICONE PLACÉE AVANT LE RENDU HTML
+    if country == "United States":
+        icon_url = "https://img.icons8.com/external-justicon-flat-justicon/64/external-united-states-countrys-flags-justicon-flat-justicon.png"
+    else:
+        icon_url = "https://img.icons8.com/external-justicon-flat-justicon/64/external-canada-countrys-flags-justicon-flat-justicon.png"
 
+    # RENDU DE L'ÉTAPE 1 AVEC ICON_URL
     st.markdown(
         f"""
         <div class="step-animated overlay-box">
             <div style="display:flex;align-items:center;gap:10px;justify-content:center;">
-                <img src="{icon}" width="24">
+                <img src="{icon_url}" width="24">
                 <h3 style="margin:0;">{t["step1"]}</h3>
             </div>
         </div>
@@ -247,7 +247,7 @@ def show_identity_gen(lang="EN"):
 
     st.divider()
 
-    # ================= STEP 3 HTML (CENTRÉ ET COMPLET) =================
+    # ================= STEP 3 HTML (CENTRÉ) =================
     escape = st.checkbox(t["escape"], value=True)
 
     st.markdown(
