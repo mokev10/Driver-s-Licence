@@ -20,35 +20,95 @@ from utils.svg_vectorizer import png_to_svg
 
 
 # =========================
-# CSS CLEAN (NO HTML FLOATING)
+# CSS (UNCHANGED + FIX ISOLATION)
 # =========================
 st.markdown(
 """
 <style>
 
-.step-animated { animation: fadeIn 0.8s ease-out; }
+@keyframes slideUp {
+    from { transform: translateY(80px); opacity: 0; }
+    to { transform: translateY(0px); opacity: 1; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.step-animated { animation: slideUp 0.8s ease-out; }
+.step-animated-delay-1 { animation: slideUp 1.0s ease-out; }
+.step-animated-delay-2 { animation: slideUp 1.2s ease-out; }
+.step-fade { animation: fadeIn 1.5s ease-in; }
 
 .overlay-box {
     padding: 14px;
     border-radius: 12px;
     background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.05);
 }
 
-/* PANEL STYLE (STREAMLIT ONLY) */
-.panel {
-    padding: 16px;
-    border-radius: 16px;
+/* FIX IMPORTANT : ISOLATION DU FLOATING MENU */
+.floating-menu {
+    position: relative;
+    width: 100%;
+    max-width: 750px;
+    margin-top: 20px;
     background: #0f172a;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     border: 1px solid rgba(255,255,255,0.08);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-    color: white;
-    margin-top: 10px;
+    overflow: hidden;
+    font-family: monospace;
 }
 
-.small {
-    font-size: 12px;
+.menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    background: #111827;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.close-btn {
+    cursor: pointer;
+    color: #ff4d4d;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.menu-body {
+    padding: 16px;
+    color: white;
+}
+
+.param-box {
+    margin-bottom: 14px;
+    padding: 10px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.06);
+}
+
+.param-box input,
+.param-box select {
+    width: 100%;
+    margin-top: 6px;
+    padding: 6px;
+    border-radius: 6px;
+    border: none;
+    outline: none;
+    background: #1f2937;
+    color: white;
+}
+
+.param-box small {
     color: #9ca3af;
+    font-size: 12px;
 }
 
 </style>
@@ -65,48 +125,97 @@ def show_identity_gen(lang="EN"):
     TEXT = {
         "EN": {
             "title": "AAMVA Raw Data Generator",
-            "desc": "Advanced forensic barcode generator",
-            "step1": "Step 1: Country selection",
-            "step2": "Step 2: Required fields",
-            "step3": "Step 3: Barcode parameters",
-            "generate": "GENERATE",
+            "desc": "Advanced tool for generating forensic-quality AAMVA raw data strings",
+            "step1": "Step 1: Select country and region",
+            "country": "Select Country",
+            "state": "Select State",
+            "prov": "Select Province",
+            "step2": "Step 2: Required fields (AAMVA)",
+            "step3": "Step 3: Barcode Parameters",
+            "generate": "GENERATE BARCODE & STRING",
 
-            "escape": "Escape sequences",
+            "escape": "Escape Sequences",
+            "escape_help": "Use \\n for line breaks",
             "human": "Human readable text",
             "module": "Module width (mm)",
             "dpi": "Resolution (DPI)",
             "format": "Image format",
-            "padding": "Quiet zone",
-            "success": "Generation completed"
+            "padding": "Padding (quiet zone)",
+
+            "success": "HDR generation completed"
+        },
+        "FR": {
+            "title": "Générateur AAMVA",
+            "desc": "Outil avancé de génération de données forensic",
+            "step1": "Étape 1 : Sélection pays et région",
+            "country": "Pays",
+            "state": "État",
+            "prov": "Province",
+            "step2": "Étape 2 : Champs obligatoires",
+            "step3": "Étape 3 : Paramètres du code-barres",
+            "generate": "GÉNÉRER CODE & CHAÎNE",
+
+            "escape": "Séquences d'échappement",
+            "escape_help": "Utiliser \\n pour retour ligne",
+            "human": "Texte lisible",
+            "module": "Largeur module (mm)",
+            "dpi": "Résolution (DPI)",
+            "format": "Format image",
+            "padding": "Zone de silence",
+
+            "success": "Génération terminée"
         }
     }
 
-    t = TEXT["EN"]
+    t = TEXT.get(lang, TEXT["EN"])
 
     # ================= HEADER =================
     st.title(t["title"])
     st.write(t["desc"])
     st.divider()
 
-    # ================= STEP 1 =================
-    st.markdown(f"### {t['step1']}")
-
     col1, col2 = st.columns(2)
 
     with col1:
-        country = st.selectbox("Country", ["United States", "Canada"])
+        country = st.selectbox(t["country"], ["United States", "Canada"])
 
-    if country == "United States":
-        region = st.selectbox("State", sorted(IIN_US.keys()))
-        mock_iin = IIN_US[region]
-    else:
-        region = st.selectbox("Province", sorted(IIN_CA.keys()))
-        mock_iin = IIN_CA[region]
+    icon = (
+        "https://img.icons8.com/external-justicon-flat-justicon/64/external-united-states-countrys-flags-justicon-flat-justicon.png"
+        if country == "United States"
+        else "https://img.icons8.com/external-justicon-flat-justicon/64/external-canada-countrys-flags-justicon-flat-justicon.png"
+    )
+
+    st.markdown(
+        f"""
+        <div class="step-animated overlay-box">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <img src="{icon}" width="24">
+                <h3 style="margin:0;">{t["step1"]}</h3>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    with col2:
+        if country == "United States":
+            region = st.selectbox(t["state"], sorted(IIN_US.keys()))
+            mock_iin = IIN_US[region]
+        else:
+            region = st.selectbox(t["prov"], sorted(IIN_CA.keys()))
+            mock_iin = IIN_CA[region]
 
     st.divider()
 
     # ================= STEP 2 =================
-    st.markdown(f"### {t['step2']}")
+    st.markdown(
+        f"""
+        <div class="step-animated-delay-1 overlay-box">
+            <h3>{t["step2"]}</h3>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
     colA, colB = st.columns(2)
 
@@ -126,24 +235,59 @@ def show_identity_gen(lang="EN"):
         dbc = st.selectbox("DBC", ["1", "2", "3"])
         dcf = st.text_input("DCF", "REF001")
 
-    st.divider()
+    # ================= STEP 3 (HTML FIXED ONLY) =================
+    escape = st.checkbox(t["escape"], value=True)
 
-    # ================= STEP 3 (CLEAN PANEL) =================
-    st.markdown(f"### {t['step3']}")
+    st.markdown(
+        f"""
+        <div class="floating-menu">
 
-    with st.container():
-        st.markdown('<div class="panel">', unsafe_allow_html=True)
+            <div class="menu-header">
+                <span>{t["step3"]}</span>
+                <span class="close-btn">✕</span>
+            </div>
 
-        escape = st.checkbox("Escape sequences (\\n)", value=True)
-        human = st.checkbox("Human readable text")
+            <div class="menu-body">
 
-        module = st.text_input("Module width (mm)", "0.254")
-        dpi = st.text_input("Resolution (DPI)", "600")
+                <div class="param-box">
+                    <b>{t["escape"]}</b><br>
+                    <small>{t["escape_help"]}</small><br>
+                    <input type="checkbox" {"checked" if escape else ""}>
+                </div>
 
-        fmt = st.selectbox("Image format", ["PNG", "SVG"])
-        padding = st.text_input("Quiet zone", "3")
+                <div class="param-box">
+                    <b>{t["human"]}</b><br>
+                    <input type="checkbox">
+                </div>
 
-        st.markdown("</div>", unsafe_allow_html=True)
+                <div class="param-box">
+                    <b>{t["module"]}</b><br>
+                    <input type="text" value="0.254">
+                </div>
+
+                <div class="param-box">
+                    <b>{t["dpi"]}</b><br>
+                    <input type="text" value="600">
+                </div>
+
+                <div class="param-box">
+                    <b>{t["format"]}</b><br>
+                    <select>
+                        <option>PNG</option>
+                        <option>SVG</option>
+                    </select>
+                </div>
+
+                <div class="param-box">
+                    <b>{t["padding"]}</b><br>
+                    <input type="text" value="3">
+                </div>
+
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
     st.divider()
 
@@ -170,7 +314,7 @@ def show_identity_gen(lang="EN"):
                 st.code(display_raw)
 
             codes = encode(raw, columns=10)
-            image = render_image(codes, scale=3, padding=int(padding))
+            image = render_image(codes, scale=3, padding=3)
 
             buf = io.BytesIO()
             image.save(buf, format="PNG")
@@ -178,7 +322,7 @@ def show_identity_gen(lang="EN"):
 
             with col2:
                 st.image(png_bytes)
-                st.download_button("Download PNG", png_bytes, file_name=f"{dcs}.png")
+                st.download_button("📥 PNG", png_bytes, file_name=f"{dcs}.png")
 
                 potrace_path = shutil.which("potrace")
                 svg = None
@@ -190,10 +334,7 @@ def show_identity_gen(lang="EN"):
                         pass
 
                 if svg:
-                    st.download_button("Download SVG", svg, file_name=f"{dcs}.svg")
-
-                    if fmt == "SVG":
-                        st.markdown(svg, unsafe_allow_html=True)
+                    st.download_button("📥 SVG", svg, file_name=f"{dcs}.svg")
 
         except Exception:
             st.error(traceback.format_exc())
