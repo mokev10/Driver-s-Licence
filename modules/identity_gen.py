@@ -7,7 +7,7 @@ import shutil
 import traceback
 
 # =========================
-# PATH FIX (important pour imports)
+# PATH FIX
 # =========================
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
@@ -20,53 +20,51 @@ from utils.svg_vectorizer import png_to_svg
 
 
 # =========================
-# ANIMATION CSS (AUGMENTÉE - NON SIMPLIFIÉE)
+# CSS GLOBAL
 # =========================
 st.markdown(
     """
     <style>
-
-    @keyframes slideUp {
-        from {
-            transform: translateY(80px);
-            opacity: 0;
-        }
-        to {
-            transform: translateY(0px);
-            opacity: 1;
-        }
-    }
-
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-        }
-        to {
-            opacity: 1;
-        }
-    }
-
-    .step-animated {
-        animation: slideUp 0.8s ease-out;
-    }
-
-    .step-animated-delay-1 {
-        animation: slideUp 1.0s ease-out;
-    }
-
-    .step-animated-delay-2 {
-        animation: slideUp 1.2s ease-out;
-    }
-
-    .step-fade {
-        animation: fadeIn 1.5s ease-in;
-    }
 
     .overlay-box {
         padding: 14px;
         border-radius: 12px;
         background: rgba(255,255,255,0.03);
         border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    /* =========================
+       FLOATING MENU PANEL
+       ========================= */
+    .floating-menu {
+        position: relative;
+        background: rgba(20,20,20,0.85);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 10px 35px rgba(0,0,0,0.4);
+        border: 1px solid rgba(255,255,255,0.08);
+        margin-top: 15px;
+    }
+
+    .menu-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .close-btn {
+        cursor: pointer;
+        padding: 4px 10px;
+        border-radius: 8px;
+        background: rgba(255,0,0,0.15);
+        color: white;
+        font-weight: bold;
+    }
+
+    .close-btn:hover {
+        background: rgba(255,0,0,0.35);
     }
 
     </style>
@@ -83,35 +81,67 @@ def show_identity_gen(lang="EN"):
     TEXT = {
         "EN": {
             "title": "AAMVA Raw Data Generator",
-            "desc": "Advanced tool for generating forensic-quality AAMVA raw data strings",
-            "step1": "Step 1: Select the country and state or province",
-            "country": "Select Country",
-            "state": "Select State/Territory",
-            "prov": "Select Province",
-            "step2": "Step 2: Required fields (AAMVA)",
-            "step3": "Step 3: Configuration & Barcode Settings",
+            "desc": "Advanced forensic PDF417 generator",
+
+            "step1": "Step 1: Select country / region",
+            "country": "Country",
+            "state": "State",
+            "prov": "Province",
+
+            "step2": "Step 2: Identity fields",
+
+            "step3": "Step 3: PDF417 Config Panel",
+
             "generate": "GENERATE BARCODE & STRING",
-            "success": "HDR generation completed.",
-            "barcode_settings": "Barcode Parameters",
-            "escape": "Escape Sequences"
+            "success": "Generation completed",
+
+            "settings": "PDF417 Settings",
+            "escape": "Escape sequences",
+            "eval": "Evaluate escape sequences (\\n \\t \\F)",
+            "human": "Human readable text",
+            "dpi": "Resolution (DPI)",
+            "module": "Module width: 0.254 mm",
+            "format": "Image format",
+
+            "preview": "Preview",
+            "png": "Download PNG",
+            "svg": "Download SVG",
+
+            "close": "Close"
         },
         "FR": {
-            "title": "Générateur de données AAMVA",
-            "desc": "Outil avancé pour générer des chaînes AAMVA",
-            "step1": "Étape 1 : Choisir le pays et la région",
-            "country": "Sélectionner le Pays",
-            "state": "Sélectionner l'État/Territoire",
-            "prov": "Sélectionner la Province",
-            "step2": "Étape 2 : Champs obligatoires (AAMVA)",
-            "step3": "Étape 3 : Configuration & Paramètres",
-            "generate": "GÉNÉRER LE CODE-BARRES & LA CHAÎNE",
-            "success": "Génération terminée.",
-            "barcode_settings": "Paramètres du code-barres",
-            "escape": "Séquences d'échappement"
+            "title": "Générateur AAMVA",
+            "desc": "Générateur forensic PDF417",
+
+            "step1": "Étape 1 : Pays / région",
+            "country": "Pays",
+            "state": "État",
+            "prov": "Province",
+
+            "step2": "Étape 2 : Données identité",
+
+            "step3": "Étape 3 : Panneau PDF417",
+
+            "generate": "GÉNÉRER CODE-BARRES & CHAÎNE",
+            "success": "Génération terminée",
+
+            "settings": "Paramètres PDF417",
+            "escape": "Séquences d'échappement",
+            "eval": "Évaluer les séquences (\\n \\t \\F)",
+            "human": "Texte lisible humain",
+            "dpi": "Résolution (DPI)",
+            "module": "Largeur module : 0.254 mm",
+            "format": "Format image",
+
+            "preview": "Aperçu",
+            "png": "Télécharger PNG",
+            "svg": "Télécharger SVG",
+
+            "close": "Fermer"
         }
     }
 
-    t = TEXT.get(lang, TEXT["EN"])
+    t = TEXT[lang]
 
     # =========================
     # HEADER
@@ -131,18 +161,6 @@ def show_identity_gen(lang="EN"):
         else "https://img.icons8.com/external-justicon-flat-justicon/64/external-canada-countrys-flags-justicon-flat-justicon.png"
     )
 
-    st.markdown(
-        f"""
-        <div class="step-animated overlay-box">
-            <div style="display:flex;align-items:center;gap:10px;">
-                <img src="{icon}" width="24">
-                <h3 style="margin:0;">{t["step1"]}</h3>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
     with col2:
         if country == "United States":
             region = st.selectbox(t["state"], sorted(IIN_US.keys()))
@@ -151,10 +169,12 @@ def show_identity_gen(lang="EN"):
             region = st.selectbox(t["prov"], sorted(IIN_CA.keys()))
             mock_iin = IIN_CA[region]
 
+    st.markdown(f"<div class='overlay-box'><h3>{t['step1']}</h3></div>", unsafe_allow_html=True)
+
     st.divider()
 
     # =========================
-    # FORM
+    # IDENTITY FIELDS
     # =========================
     colA, colB = st.columns(2)
 
@@ -177,15 +197,36 @@ def show_identity_gen(lang="EN"):
     st.divider()
 
     # =========================
-    # BARCODE SETTINGS
+    # FLOATING PDF417 MENU
     # =========================
-    st.markdown(f"### ⚙️ {t['barcode_settings']}")
+    if "menu_open" not in st.session_state:
+        st.session_state.menu_open = True
 
-    escape_mode = st.checkbox(t["escape"], value=True)
+    if st.session_state.menu_open:
 
-    columns = st.slider("PDF417 Columns", 5, 30, 10)
-    scale = st.slider("Résolution (scale)", 2, 8, 3)
-    padding = st.slider("Padding", 0, 10, 3)
+        st.markdown(f"""
+        <div class="floating-menu">
+
+            <div class="menu-header">
+                <strong>{t['settings']}</strong>
+                <div class="close-btn">{t['close']}</div>
+            </div>
+
+        </div>
+        """, unsafe_allow_html=True)
+
+        colS1, colS2 = st.columns(2)
+
+        with colS1:
+            escape_sequences = st.checkbox(t["escape"], value=True)
+            eval_escape = st.checkbox(t["eval"], value=True)
+            human = st.checkbox(t["human"], value=False)
+
+        with colS2:
+            dpi = st.number_input(t["dpi"], 72, 1200, 600, 50)
+            format_img = st.selectbox(t["format"], ["PNG", "SVG"])
+
+        st.markdown(f"- {t['module']}")
 
     st.divider()
 
@@ -204,71 +245,30 @@ def show_identity_gen(lang="EN"):
                 f"DBD{dbd}\nDBA{dba}\nDBC{dbc}\nDCF{dcf}"
             )
 
-            # =========================
-            # ESCAPE LOGIC (IMPORTANT)
-            # =========================
-            if escape_mode:
-                display_raw = raw
-            else:
-                display_raw = raw.replace("\n", "\\n")
+            display = raw.replace("\n", "\\n") if escape_sequences else raw
 
             st.success(t["success"])
 
             col1, col2 = st.columns(2)
 
             with col1:
-                st.code(display_raw)
+                st.code(display)
 
-            # =========================
-            # BARCODE
-            # =========================
-            codes = encode(raw, columns=columns)
-            image = render_image(codes, scale=scale, padding=padding)
+            codes = encode(raw, columns=10)
+            image = render_image(codes, scale=3, padding=3)
 
             buf = io.BytesIO()
-            image.save(buf, format="PNG")
+            image.save(buf, format="PNG", dpi=(dpi, dpi))
             png_bytes = buf.getvalue()
 
             with col2:
                 st.image(png_bytes)
 
-                st.download_button(
-                    "📥 PNG",
-                    png_bytes,
-                    file_name=f"{dcs}.png",
-                    mime="image/png"
-                )
+                st.download_button(t["png"], png_bytes, file_name=f"{dcs}.png")
 
-                potrace_path = shutil.which("potrace")
-                svg = None
-
-                if potrace_path:
-                    try:
-                        svg = png_to_svg(
-                            png_bytes=png_bytes,
-                            potrace_path=potrace_path
-                        )
-                    except Exception as e:
-                        st.warning(f"SVG error: {e}")
-
-                if svg:
-                    st.download_button(
-                        "📥 SVG vectoriel",
-                        svg,
-                        file_name=f"{dcs}.svg",
-                        mime="image/svg+xml"
-                    )
-
-                    st.markdown(
-                        f"""
-                        <div class="step-fade overlay-box">
-                            {svg}
-                        </div>
-                        """,
-                        unsafe_allow_html=True
-                    )
+                if format_img == "SVG":
+                    svg = png_to_svg(png_bytes, shutil.which("potrace"))
+                    st.download_button(t["svg"], svg, file_name=f"{dcs}.svg")
 
         except Exception:
             st.error(traceback.format_exc())
-
-
