@@ -20,45 +20,6 @@ from utils.svg_vectorizer import png_to_svg
 
 
 # =========================
-# ANIMATION CSS (AJOUT UNIQUEMENT)
-# =========================
-st.markdown("""
-<style>
-
-@keyframes slideUp {
-    from {
-        transform: translateY(60px);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0px);
-        opacity: 1;
-    }
-}
-
-.step-animated {
-    animation: slideUp 0.8s ease-out;
-}
-
-.step-animated-delay-1 {
-    animation: slideUp 0.9s ease-out;
-}
-
-.step-animated-delay-2 {
-    animation: slideUp 1.1s ease-out;
-}
-
-.overlay-box {
-    padding: 12px;
-    border-radius: 10px;
-    background: rgba(255,255,255,0.02);
-}
-
-</style>
-""", unsafe_allow_html=True)
-
-
-# =========================
 # MAIN FUNCTION
 # =========================
 def show_identity_gen(lang="EN"):
@@ -99,12 +60,15 @@ def show_identity_gen(lang="EN"):
     t = TEXT.get(lang, TEXT["EN"])
 
     # =========================
-    # HEADER (STEP 1 ALWAYS VISIBLE)
+    # HEADER
     # =========================
     st.title(t["title"])
     st.write(t["desc"])
     st.divider()
 
+    # =========================
+    # STEP 1
+    # =========================
     col1, col2 = st.columns(2)
 
     with col1:
@@ -118,11 +82,9 @@ def show_identity_gen(lang="EN"):
 
     st.markdown(
         f"""
-        <div class="step-animated overlay-box">
-            <div style="display:flex;align-items:center;gap:10px;">
-                <img src="{icon}" width="24">
-                <h3 style="margin:0;">{t["step1"]}</h3>
-            </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+            <img src="{icon}" width="24">
+            <h3 style="margin:0;">{t["step1"]}</h3>
         </div>
         """,
         unsafe_allow_html=True
@@ -139,15 +101,8 @@ def show_identity_gen(lang="EN"):
     st.divider()
 
     # =========================
-    # STEP 2 (OVERLAY + ANIMATION, SANS SUPPRESSION STEP 1)
+    # STEP 2
     # =========================
-
-    st.markdown(f"""
-        <div class="step-animated-delay-1 overlay-box">
-            <h3>{t["step2"]}</h3>
-        </div>
-    """, unsafe_allow_html=True)
-
     colA, colB = st.columns(2)
 
     with colA:
@@ -169,11 +124,14 @@ def show_identity_gen(lang="EN"):
     st.divider()
 
     # =========================
-    # GENERATION (UNCHANGED LOGIC)
+    # GENERATION
     # =========================
     if st.button(t["generate"], use_container_width=True):
 
         try:
+            # =========================
+            # RAW STRING
+            # =========================
             aamva_header = f"ANSI {mock_iin}050102DL00410287ZO02900045DL"
 
             raw = (
@@ -191,7 +149,7 @@ def show_identity_gen(lang="EN"):
                 st.code(raw.replace("\n", "\\n"))
 
             # =========================
-            # PDF417 GENERATION (UNCHANGED)
+            # PDF417 GENERATION
             # =========================
             codes = encode(raw, columns=10)
             image = render_image(codes, scale=3, padding=3)
@@ -211,7 +169,7 @@ def show_identity_gen(lang="EN"):
                 )
 
                 # =========================
-                # SVG GENERATION (UNCHANGED)
+                # SVG GENERATION (SAFE)
                 # =========================
                 potrace_path = shutil.which("potrace")
                 svg = None
@@ -242,3 +200,5 @@ def show_identity_gen(lang="EN"):
 
         except Exception:
             st.error(traceback.format_exc())
+
+
