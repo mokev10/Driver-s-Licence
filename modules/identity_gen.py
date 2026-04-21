@@ -27,40 +27,19 @@ st.markdown(
     <style>
 
     @keyframes slideUp {
-        from {
-            transform: translateY(80px);
-            opacity: 0;
-        }
-        to {
-            transform: translateY(0px);
-            opacity: 1;
-        }
+        from { transform: translateY(80px); opacity: 0; }
+        to { transform: translateY(0px); opacity: 1; }
     }
 
     @keyframes fadeIn {
-        from {
-            opacity: 0;
-        }
-        to {
-            opacity: 1;
-        }
+        from { opacity: 0; }
+        to { opacity: 1; }
     }
 
-    .step-animated {
-        animation: slideUp 0.8s ease-out;
-    }
-
-    .step-animated-delay-1 {
-        animation: slideUp 1.0s ease-out;
-    }
-
-    .step-animated-delay-2 {
-        animation: slideUp 1.2s ease-out;
-    }
-
-    .step-fade {
-        animation: fadeIn 1.5s ease-in;
-    }
+    .step-animated { animation: slideUp 0.8s ease-out; }
+    .step-animated-delay-1 { animation: slideUp 1.0s ease-out; }
+    .step-animated-delay-2 { animation: slideUp 1.2s ease-out; }
+    .step-fade { animation: fadeIn 1.5s ease-in; }
 
     .overlay-box {
         padding: 14px;
@@ -70,42 +49,19 @@ st.markdown(
     }
 
     /* =========================
-       ANSI HEADER (RESTAURÉ & STABLE)
+       ANSI DISPLAY FIX (IMPORTANT)
     ========================= */
-    .ansi-header {
-        background: linear-gradient(180deg, #161b22 0%, #0d1117 100%);
-        padding: 14px 16px;
+    .ansi-box {
+        background: #0d1117;
+        color: #7ee787;
+        padding: 14px;
         border-radius: 10px;
         border: 1px solid #30363d;
-        color: #7ee787;
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
         font-size: 13px;
-        letter-spacing: 0.4px;
-        white-space: nowrap;
+        white-space: pre-wrap;   /* 🔥 IMPORTANT: conserve les retours ligne */
+        word-break: break-word;
         overflow-x: auto;
-        box-shadow: inset 0 0 12px rgba(0,0,0,0.6);
-    }
-
-    /* =========================
-       BARCODE BOX (CENTRÉ PROPRE)
-    ========================= */
-    .barcode-wrapper {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background: #ffffff;
-        padding: 25px;
-        border-radius: 12px;
-        box-shadow: 0 0 25px rgba(0,0,0,0.4);
-    }
-
-    /* =========================
-       DOWNLOAD STACK
-    ========================= */
-    .download-stack {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
     }
 
     </style>
@@ -128,47 +84,17 @@ def show_identity_gen(lang="EN"):
             "state": "Select State/Territory",
             "prov": "Select Province",
             "step2": "Step 2: Required fields (AAMVA)",
-            "step3": "Step 3: Configuration & Generation",
             "generate": "GENERATE BARCODE & STRING",
             "success": "HDR generation completed.",
-        },
-        "FR": {
-            "title": "Générateur de données AAMVA",
-            "desc": "Outil avancé pour générer des chaînes AAMVA",
-            "step1": "Étape 1 : Choisir le pays et la région",
-            "country": "Sélectionner le Pays",
-            "state": "Sélectionner l'État/Territoire",
-            "prov": "Sélectionner la Province",
-            "step2": "Étape 2 : Champs obligatoires (AAMVA)",
-            "step3": "Étape 3 : Configuration & Génération",
-            "generate": "GÉNÉRER LE CODE-BARRES & LA CHAÎNE",
-            "success": "Génération terminée.",
         }
     }
 
     t = TEXT.get(lang, TEXT["EN"])
 
-    # =========================
-    # ANSI HEADER (FIX VISIBILITY)
-    # =========================
-    st.markdown(
-        """
-        <div style="margin-bottom:12px;">
-            <div class="ansi-header">
-            ░ SYSTEM: AAMVA FORENSIC DATA STREAM ACTIVE ░ NODE: 636026 ░ STATUS: LIVE ░ VERIFY: TRUE ░
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
     st.title(t["title"])
     st.write(t["desc"])
     st.divider()
 
-    # =========================
-    # COUNTRY / REGION
-    # =========================
     col1, col2 = st.columns(2)
 
     with col1:
@@ -184,9 +110,6 @@ def show_identity_gen(lang="EN"):
 
     st.divider()
 
-    # =========================
-    # INPUTS
-    # =========================
     colA, colB = st.columns(2)
 
     with colA:
@@ -207,14 +130,14 @@ def show_identity_gen(lang="EN"):
 
     st.divider()
 
-    # =========================
-    # GENERATION
-    # =========================
     if st.button(t["generate"], use_container_width=True):
 
         try:
             aamva_header = f"ANSI {mock_iin}050102DL00410287ZO02900045DL"
 
+            # =========================
+            # RAW EXACT (identique barcode)
+            # =========================
             raw = (
                 f"@\n{aamva_header}\n"
                 f"DCG{dcg}\nDCS{dcs}\nDAC{dac}\nDBB{dbb}\nDAQ{daq}\n"
@@ -224,11 +147,22 @@ def show_identity_gen(lang="EN"):
 
             st.success(t["success"])
 
-            # =========================
-            # RESULT LAYOUT
-            # =========================
-            col_barcode, col_actions = st.columns([3, 1])
+            col1, col2 = st.columns(2)
 
+            # =========================
+            # ANSI DISPLAY FIX (IMPORTANT)
+            # =========================
+            with col1:
+                st.markdown(
+                    f"""
+                    <div class="ansi-box">{raw}</div>
+                    """,
+                    unsafe_allow_html=True
+                )
+
+            # =========================
+            # BARCODE
+            # =========================
             codes = encode(raw, columns=10)
             image = render_image(codes, scale=3, padding=3)
 
@@ -236,20 +170,14 @@ def show_identity_gen(lang="EN"):
             image.save(buf, format="PNG")
             png_bytes = buf.getvalue()
 
-            with col_barcode:
-                st.markdown('<div class="barcode-wrapper">', unsafe_allow_html=True)
+            with col2:
                 st.image(png_bytes)
-                st.markdown('</div>', unsafe_allow_html=True)
-
-            with col_actions:
-                st.markdown('<div class="download-stack">', unsafe_allow_html=True)
 
                 st.download_button(
                     "📥 PNG",
                     png_bytes,
                     file_name=f"{dcs}.png",
-                    mime="image/png",
-                    use_container_width=True
+                    mime="image/png"
                 )
 
                 potrace_path = shutil.which("potrace")
@@ -258,7 +186,7 @@ def show_identity_gen(lang="EN"):
                 if potrace_path:
                     try:
                         svg = png_to_svg(png_bytes=png_bytes, potrace_path=potrace_path)
-                    except Exception:
+                    except:
                         svg = None
 
                 if svg:
@@ -266,11 +194,13 @@ def show_identity_gen(lang="EN"):
                         "📥 SVG vectoriel",
                         svg,
                         file_name=f"{dcs}.svg",
-                        mime="image/svg+xml",
-                        use_container_width=True
+                        mime="image/svg+xml"
                     )
 
-                st.markdown('</div>', unsafe_allow_html=True)
+                    st.markdown(
+                        f"""<div class="step-fade overlay-box">{svg}</div>""",
+                        unsafe_allow_html=True
+                    )
 
         except Exception:
             st.error(traceback.format_exc())
