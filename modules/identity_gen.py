@@ -20,7 +20,7 @@ from utils.svg_vectorizer import png_to_svg
 
 
 # =========================
-# CSS (FULL DESIGN + FLOAT MENU)
+# CSS COMPLET
 # =========================
 st.markdown(
 """
@@ -41,7 +41,7 @@ st.markdown(
 
 .step-animated { animation: slideUp 0.8s ease-out; }
 .step-animated-delay-1 { animation: slideUp 1.0s ease-out; }
-.step-fade { animation: fadeIn 1.2s ease-in; }
+.step-fade { animation: fadeIn 1.5s ease-in; }
 
 .overlay-box {
     padding: 14px;
@@ -51,7 +51,7 @@ st.markdown(
 }
 
 /* =========================
-   BUTTON STYLE (GLOBAL)
+   BUTTON STYLE
 ========================= */
 .stButton > button {
     background: linear-gradient(135deg, #4facfe 0%, #a066ff 100%) !important;
@@ -70,17 +70,15 @@ st.markdown(
 }
 
 /* =========================
-   FLOATING MENU (CONFIG PANEL)
+   FLOATING MENU
 ========================= */
 .floating-menu {
-    position: relative;
+    margin-top: 20px;
     background: #111827;
     border-radius: 16px;
-    padding: 0;
-    margin-top: 20px;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.4);
-    border: 1px solid #2a2f3a;
     overflow: hidden;
+    border: 1px solid #2a2f3a;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.5);
 }
 
 .menu-header {
@@ -94,19 +92,22 @@ st.markdown(
 }
 
 .menu-body {
-    padding: 20px;
+    padding: 18px;
     color: white;
 }
 
 .close-btn {
+    background:red;
+    padding:2px 10px;
+    border-radius:8px;
     cursor:pointer;
-    padding: 2px 10px;
-    border-radius: 8px;
-    background: #ff4d4d;
     color:white;
+    font-weight:bold;
 }
 
-/* code block ANSI style */
+/* =========================
+   ANSI DISPLAY
+========================= */
 .ansi-box {
     background:#1a1a1a;
     color:#00ff88;
@@ -123,31 +124,28 @@ unsafe_allow_html=True
 
 
 # =========================
-# MAIN
+# MAIN FUNCTION
 # =========================
 def show_identity_gen(lang="EN"):
 
     TEXT = {
         "EN": {
             "title": "AAMVA Raw Data Generator",
-            "desc": "Advanced tool for generating forensic-quality AAMVA raw data strings",
+            "desc": "Advanced forensic PDF417 generator",
 
-            "step1": "Step 1: Select country and region",
+            "step1": "Step 1: Country selection",
             "country": "Country",
             "state": "State",
             "prov": "Province",
 
-            "step2": "Step 2: Required fields (AAMVA)",
-
-            "step3": "Step 3: Barcode Parameters",
+            "step2": "Step 2: Required fields",
+            "step3": "Step 3: PDF417 Parameters",
 
             "generate": "GENERATE BARCODE & STRING",
             "success": "Generation completed",
 
             "raw": "PDF417 noise data",
-            "preview": "Preview",
 
-            # PARAMS
             "escape": "Escape Sequences",
             "escape_desc": "Replace line breaks with \\n",
             "hr": "Human readable text",
@@ -155,38 +153,10 @@ def show_identity_gen(lang="EN"):
             "dpi": "Resolution (DPI)",
             "format": "Image format",
             "padding": "Padding (quiet zone)"
-        },
-
-        "FR": {
-            "title": "Générateur AAMVA",
-            "desc": "Outil avancé de génération de données AAMVA",
-
-            "step1": "Étape 1 : Pays et région",
-            "country": "Pays",
-            "state": "État",
-            "prov": "Province",
-
-            "step2": "Étape 2 : Champs obligatoires",
-
-            "step3": "Étape 3 : Paramètres du code-barres",
-
-            "generate": "GÉNÉRER BARCODE & CHAÎNE",
-            "success": "Génération terminée",
-
-            "raw": "Données brutes du PDF417",
-            "preview": "Aperçu",
-
-            "escape": "Séquences d'échappement",
-            "escape_desc": "Remplace les retours à la ligne par \\n",
-            "hr": "Texte lisible",
-            "module": "Largeur module (mm)",
-            "dpi": "Résolution (DPI)",
-            "format": "Format image",
-            "padding": "Padding (zone silencieuse)"
         }
     }
 
-    t = TEXT[lang]
+    t = TEXT.get(lang, TEXT["EN"])
 
     # =========================
     # HEADER
@@ -211,26 +181,16 @@ def show_identity_gen(lang="EN"):
 
     with col2:
         if country == "United States":
-            region = st.selectbox(t["state"], sorted(IIN_US.keys()))
-            mock_iin = IIN_US[region]
+            region = st.selectbox(t["state"], ["AL", "CA", "NY"])
+            mock_iin = "636033"
         else:
-            region = st.selectbox(t["prov"], sorted(IIN_CA.keys()))
-            mock_iin = IIN_CA[region]
-
-    st.markdown(
-        f"""
-        <div class="step-animated overlay-box">
-            <img src="{icon}" width="22">
-            <b>{t["step1"]}</b>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+            region = st.selectbox(t["prov"], ["QC", "ON"])
+            mock_iin = "636038"
 
     st.divider()
 
     # =========================
-    # INPUTS
+    # INPUT FIELDS
     # =========================
     colA, colB = st.columns(2)
 
@@ -239,12 +199,12 @@ def show_identity_gen(lang="EN"):
         dac = st.text_input("DAC", "JEAN")
         dcs = st.text_input("DCS", "NICOLAS")
         dbb = st.text_input("DBB", "19941208")
-        daq = st.text_input("DAQ", "D9823415")
-        dag = st.text_input("DAG", "1560 STREET")
+        daq = st.text_input("DAQ", "D982094120896")
+        dag = st.text_input("DAG", "1560 SHERBROOKE ST E")
 
     with colB:
-        dai = st.text_input("DAI", "CITY")
-        dak = st.text_input("DAK", "POSTAL")
+        dai = st.text_input("DAI", "MONTREAL")
+        dak = st.text_input("DAK", "H2L4M1")
         dbd = st.text_input("DBD", "20230510")
         dba = st.text_input("DBA", "20310509")
         dbc = st.selectbox("DBC", ["1", "2", "3"])
@@ -253,49 +213,45 @@ def show_identity_gen(lang="EN"):
     st.divider()
 
     # =========================
-    # FLOATING MENU PARAMS
+    # FLOATING MENU (FULL PARAMETERS)
     # =========================
-    if "menu" not in st.session_state:
-        st.session_state.menu = True
+    st.markdown(f"""
+    <div class="floating-menu">
 
-    if st.session_state.menu:
-        st.markdown(f"""
-        <div class="floating-menu">
+        <div class="menu-header">
+            <span>{t["step3"]}</span>
+            <span class="close-btn">X</span>
+        </div>
 
-            <div class="menu-header">
-                <span>{t["step3"]}</span>
-                <span class="close-btn" onclick="alert('Close not supported natively')">X</span>
-            </div>
+        <div class="menu-body">
 
-            <div class="menu-body">
+            <b>{t["escape"]}</b><br>
+            <small>{t["escape_desc"]}</small><br>
+            <input type="checkbox" checked> ON/OFF<br><br>
 
-                <b>{t["escape"]}</b><br>
-                <small>{t["escape_desc"]}</small><br>
-                <input type="checkbox" checked> ON/OFF<br><br>
+            <b>{t["hr"]}</b><br>
+            <input type="checkbox"><br><br>
 
-                <b>{t["hr"]}</b><br>
-                <input type="checkbox"><br><br>
+            <b>{t["module"]}</b>
+            <input type="text" value="0.254 mm"><br><br>
 
-                <b>{t["module"]}</b>
-                <input type="text" value="0.254"><br><br>
+            <b>{t["dpi"]}</b>
+            <input type="text" value="600 DPI"><br><br>
 
-                <b>{t["dpi"]}</b>
-                <input type="text" value="600"><br><br>
+            <b>{t["format"]}</b>
+            <select>
+                <option>PNG</option>
+                <option>SVG</option>
+            </select><br><br>
 
-                <b>{t["format"]}</b>
-                <select>
-                    <option>PNG</option>
-                    <option>SVG</option>
-                </select><br><br>
-
-                <b>{t["padding"]}</b>
-                <small>Zone de silence autour du code pour amélioration scan</small><br>
-                <input type="text" value="3">
-
-            </div>
+            <b>{t["padding"]}</b><br>
+            <small>Quiet zone for scan reliability</small><br>
+            <input type="text" value="3">
 
         </div>
-        """, unsafe_allow_html=True)
+
+    </div>
+    """, unsafe_allow_html=True)
 
     # =========================
     # GENERATE
@@ -307,7 +263,7 @@ def show_identity_gen(lang="EN"):
         raw = (
             f"@\n{aamva_header}\n"
             f"DCG{dcg}\nDCS{dcs}\nDAC{dac}\nDBB{dbb}\nDAQ{daq}\n"
-            f"DAG{dag}\nDAI{dai}\nDAJ{region[:2].upper()}\nDAK{dak}\n"
+            f"DAG{dag}\nDAI{dai}\nDAJ{region}\nDAK{dak}\n"
             f"DBD{dbd}\nDBA{dba}\nDBC{dbc}\nDCF{dcf}"
         )
 
@@ -316,7 +272,11 @@ def show_identity_gen(lang="EN"):
         col1, col2 = st.columns(2)
 
         with col1:
-            st.code(raw.replace("\n", "\\n"))
+            st.markdown(f"""
+            <div class="ansi-box">
+{raw}
+            </div>
+            """, unsafe_allow_html=True)
 
         codes = encode(raw, columns=10)
         image = render_image(codes, scale=3, padding=3)
@@ -327,17 +287,9 @@ def show_identity_gen(lang="EN"):
 
         with col2:
             st.image(png_bytes)
-
             st.download_button("PNG", png_bytes, file_name=f"{dcs}.png", mime="image/png")
 
-            svg = None
             potrace_path = shutil.which("potrace")
-
             if potrace_path:
-                try:
-                    svg = png_to_svg(png_bytes, potrace_path)
-                except:
-                    pass
-
-            if svg:
+                svg = png_to_svg(png_bytes, potrace_path)
                 st.download_button("SVG", svg, file_name=f"{dcs}.svg", mime="image/svg+xml")
