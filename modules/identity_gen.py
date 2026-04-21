@@ -7,12 +7,12 @@ import shutil
 import traceback
 
 # =========================
-# PATH FIX (CONSERVÉ)
+# PATH FIX
 # =========================
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 # =========================
-# IMPORTS (CONSERVÉS)
+# IMPORTS
 # =========================
 from utils.constants import IIN_US, IIN_CA
 from pdf417gen import encode, render_image
@@ -20,12 +20,12 @@ from utils.svg_vectorizer import png_to_svg
 
 
 # =========================
-# CSS (CENTRAGE GLOBAL + VOS ANIMATIONS)
+# CSS (CENTRAGE TOTAL + ANIMATIONS + ISOLATION)
 # =========================
 st.markdown(
 """
 <style>
-/* --- CENTRAGE GLOBAL STREAMLIT --- */
+/* --- CENTRAGE GLOBAL --- */
 .stApp h1, .stApp p, .stApp div.stMarkdown {
     text-align: center;
 }
@@ -37,12 +37,13 @@ st.markdown(
     justify-content: center;
 }
 
+/* Forçage du centrage des widgets Streamlit */
 .stTextInput, .stSelectbox, .stCheckbox {
     width: 100% !important;
     max-width: 450px !important;
 }
 
-/* --- VOS ANIMATIONS ORIGINALES --- */
+/* ================= ANIMATIONS ================= */
 @keyframes slideUp {
     from { transform: translateY(80px); opacity: 0; }
     to { transform: translateY(0px); opacity: 1; }
@@ -65,18 +66,19 @@ st.markdown(
     border: 1px solid rgba(255,255,255,0.05);
     width: 100%;
     max-width: 850px;
-    margin: 0 auto;
+    margin: 10px auto;
 }
 
-/* --- VOS FIX DE BRUIT STREAMLIT --- */
+/* ================= FIX BRUIT STREAMLIT + CENTRAGE MENU ================= */
+
 #floating-menu-wrapper {
     display: flex;
     justify-content: center;
-    width: 100%;
     position: relative;
     z-index: 9999;
     isolation: isolate;
     contain: layout style paint;
+    width: 100%;
 }
 
 .floating-menu {
@@ -114,7 +116,9 @@ st.markdown(
     transition: 0.2s ease;
 }
 
-.close-btn:hover { transform: scale(1.2); }
+.close-btn:hover {
+    transform: scale(1.2);
+}
 
 .menu-body {
     padding: 16px;
@@ -139,7 +143,8 @@ st.markdown(
     text-align: center;
 }
 
-.param-box input, .param-box select {
+.param-box input,
+.param-box select {
     width: 100%;
     max-width: 300px;
     margin-top: 10px;
@@ -156,6 +161,7 @@ st.markdown(
     color: #9ca3af;
     font-size: 12px;
 }
+
 </style>
 """,
 unsafe_allow_html=True
@@ -196,12 +202,14 @@ def show_identity_gen(lang="EN"):
     st.write(t["desc"])
     st.divider()
 
-    # Centrage de l'étape 1
-    col_l, col_c, col_r = st.columns([1, 2, 1])
-    with col_c:
+    # --- ÉTAPE 1 (CENTRÉE VIA COLONNES) ---
+    _, col_center, _ = st.columns([1, 2, 1])
+
+    with col_center:
         country = st.selectbox(t["country"], ["United States", "Canada"])
 
-    icon_url = (
+    # VOTRE CODE D'ICONE EXACT
+    icon = (
         "https://icons8.com"
         if country == "United States"
         else "https://icons8.com"
@@ -211,7 +219,7 @@ def show_identity_gen(lang="EN"):
         f"""
         <div class="step-animated overlay-box">
             <div style="display:flex;align-items:center;gap:10px;justify-content:center;">
-                <img src="{icon_url}" width="24">
+                <img src="{icon}" width="32">
                 <h3 style="margin:0;">{t["step1"]}</h3>
             </div>
         </div>
@@ -219,7 +227,7 @@ def show_identity_gen(lang="EN"):
         unsafe_allow_html=True
     )
 
-    with col_c:
+    with col_center:
         if country == "United States":
             region = st.selectbox(t["state"], sorted(IIN_US.keys()))
             mock_iin = IIN_US[region]
@@ -239,8 +247,8 @@ def show_identity_gen(lang="EN"):
         unsafe_allow_html=True
     )
 
-    # Centrage des deux colonnes de saisie
-    _, colA, colB, _ = st.columns([0.3, 2, 2, 0.3])
+    # Centrage des champs de saisie (3 colonnes pour garder le milieu)
+    _, colA, colB, _ = st.columns([0.2, 2, 2, 0.2])
 
     with colA:
         dcg = st.text_input("DCG", "USA")
@@ -260,7 +268,7 @@ def show_identity_gen(lang="EN"):
 
     st.divider()
 
-    # ================= STEP 3 HTML (CONSERVÉ + CENTRÉ) =================
+    # ================= STEP 3 HTML (CENTRÉ ET COMPLET) =================
     escape = st.checkbox(t["escape"], value=True)
 
     st.markdown(
@@ -305,8 +313,8 @@ def show_identity_gen(lang="EN"):
 
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # Bouton de génération centré
-    _, col_btn, _ = st.columns([1.5, 1, 1.5])
+    # BOUTON GENERATE CENTRÉ
+    _, col_btn, _ = st.columns([1, 1, 1])
     with col_btn:
         if st.button(t["generate"], use_container_width=True):
             st.success(t["success"])
