@@ -27,41 +27,46 @@ st.markdown(
     <style>
 
     @keyframes slideUp {
-        from { transform: translateY(80px); opacity: 0; }
-        to { transform: translateY(0px); opacity: 1; }
+        from {
+            transform: translateY(80px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0px);
+            opacity: 1;
+        }
     }
 
     @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
     }
 
-    .step-animated { animation: slideUp 0.8s ease-out; }
-    .step-animated-delay-1 { animation: slideUp 1.0s ease-out; }
-    .step-animated-delay-2 { animation: slideUp 1.2s ease-out; }
-    .step-fade { animation: fadeIn 1.5s ease-in; }
+    .step-animated {
+        animation: slideUp 0.8s ease-out;
+    }
+
+    .step-animated-delay-1 {
+        animation: slideUp 1.0s ease-out;
+    }
+
+    .step-animated-delay-2 {
+        animation: slideUp 1.2s ease-out;
+    }
+
+    .step-fade {
+        animation: fadeIn 1.5s ease-in;
+    }
 
     .overlay-box {
         padding: 14px;
         border-radius: 12px;
         background: rgba(255,255,255,0.03);
         border: 1px solid rgba(255,255,255,0.05);
-    }
-
-    /* =========================
-       ANSI DISPLAY FIX (IMPORTANT)
-    ========================= */
-    .ansi-box {
-        background: #0d1117;
-        color: #7ee787;
-        padding: 14px;
-        border-radius: 10px;
-        border: 1px solid #30363d;
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-        font-size: 13px;
-        white-space: pre-wrap;   /* 🔥 IMPORTANT: conserve les retours ligne */
-        word-break: break-word;
-        overflow-x: auto;
     }
 
     </style>
@@ -84,13 +89,35 @@ def show_identity_gen(lang="EN"):
             "state": "Select State/Territory",
             "prov": "Select Province",
             "step2": "Step 2: Required fields (AAMVA)",
+            "step3": "Step 3: Configuration & Generation",
             "generate": "GENERATE BARCODE & STRING",
             "success": "HDR generation completed.",
+            "raw": "Raw Data String",
+            "use": "Use this string in external tools.",
+            "preview": "Preview"
+        },
+        "FR": {
+            "title": "Générateur de données AAMVA",
+            "desc": "Outil avancé pour générer des chaînes AAMVA",
+            "step1": "Étape 1 : Choisir le pays et la région",
+            "country": "Sélectionner le Pays",
+            "state": "Sélectionner l'État/Territoire",
+            "prov": "Sélectionner la Province",
+            "step2": "Étape 2 : Champs obligatoires (AAMVA)",
+            "step3": "Étape 3 : Configuration & Génération",
+            "generate": "GÉNÉRER LE CODE-BARRES & LA CHAÎNE",
+            "success": "Génération terminée.",
+            "raw": "Chaîne brute",
+            "use": "Utilisez cette chaîne dans vos outils externes.",
+            "preview": "Aperçu"
         }
     }
 
     t = TEXT.get(lang, TEXT["EN"])
 
+    # =========================
+    # HEADER (STEP 1 FIXED VISIBLE)
+    # =========================
     st.title(t["title"])
     st.write(t["desc"])
     st.divider()
@@ -99,6 +126,24 @@ def show_identity_gen(lang="EN"):
 
     with col1:
         country = st.selectbox(t["country"], ["United States", "Canada"])
+
+    icon = (
+        "https://img.icons8.com/external-justicon-flat-justicon/64/external-united-states-countrys-flags-justicon-flat-justicon.png"
+        if country == "United States"
+        else "https://img.icons8.com/external-justicon-flat-justicon/64/external-canada-countrys-flags-justicon-flat-justicon.png"
+    )
+
+    st.markdown(
+        f"""
+        <div class="step-animated overlay-box">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <img src="{icon}" width="24">
+                <h3 style="margin:0;">{t["step1"]}</h3>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
     with col2:
         if country == "United States":
@@ -110,6 +155,21 @@ def show_identity_gen(lang="EN"):
 
     st.divider()
 
+    # =========================
+    # STEP 2 TITLE (ANIMATED LAYER)
+    # =========================
+    st.markdown(
+        f"""
+        <div class="step-animated-delay-1 overlay-box">
+            <h3>{t["step2"]}</h3>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    # =========================
+    # FORM INPUTS
+    # =========================
     colA, colB = st.columns(2)
 
     with colA:
@@ -130,14 +190,14 @@ def show_identity_gen(lang="EN"):
 
     st.divider()
 
+    # =========================
+    # GENERATION
+    # =========================
     if st.button(t["generate"], use_container_width=True):
 
         try:
             aamva_header = f"ANSI {mock_iin}050102DL00410287ZO02900045DL"
 
-            # =========================
-            # RAW EXACT (identique barcode)
-            # =========================
             raw = (
                 f"@\n{aamva_header}\n"
                 f"DCG{dcg}\nDCS{dcs}\nDAC{dac}\nDBB{dbb}\nDAQ{daq}\n"
@@ -149,19 +209,11 @@ def show_identity_gen(lang="EN"):
 
             col1, col2 = st.columns(2)
 
-            # =========================
-            # ANSI DISPLAY FIX (IMPORTANT)
-            # =========================
             with col1:
-                st.markdown(
-                    f"""
-                    <div class="ansi-box">{raw}</div>
-                    """,
-                    unsafe_allow_html=True
-                )
+                st.code(raw.replace("\n", "\\n"))
 
             # =========================
-            # BARCODE
+            # BARCODE GENERATION
             # =========================
             codes = encode(raw, columns=10)
             image = render_image(codes, scale=3, padding=3)
@@ -180,14 +232,22 @@ def show_identity_gen(lang="EN"):
                     mime="image/png"
                 )
 
+                # =========================
+                # SVG GENERATION (SAFE + OPTIONAL)
+                # =========================
                 potrace_path = shutil.which("potrace")
                 svg = None
 
                 if potrace_path:
                     try:
-                        svg = png_to_svg(png_bytes=png_bytes, potrace_path=potrace_path)
-                    except:
-                        svg = None
+                        svg = png_to_svg(
+                            png_bytes=png_bytes,
+                            potrace_path=potrace_path
+                        )
+                    except Exception as e:
+                        st.warning(f"SVG error: {e}")
+                else:
+                    st.info("SVG non disponible (potrace absent)")
 
                 if svg:
                     st.download_button(
@@ -198,9 +258,15 @@ def show_identity_gen(lang="EN"):
                     )
 
                     st.markdown(
-                        f"""<div class="step-fade overlay-box">{svg}</div>""",
+                        f"""
+                        <div class="step-fade overlay-box">
+                            {svg}
+                        </div>
+                        """,
                         unsafe_allow_html=True
                     )
 
         except Exception:
             st.error(traceback.format_exc())
+
+
