@@ -231,7 +231,6 @@ def show_identity_gen(lang="EN"):
     with col1:
         country = st.selectbox(t["country"], ["United States", "Canada"])
 
-    # ✅ ICON RESTAURÉ EXACTEMENT COMME DEMANDÉ
     icon = (
         "https://img.icons8.com/external-justicon-flat-justicon/64/external-united-states-countrys-flags-justicon-flat-justicon.png"
         if country == "United States"
@@ -260,7 +259,6 @@ def show_identity_gen(lang="EN"):
 
     st.divider()
 
-    # ================= STEP 2 =================
     st.markdown(
         f"""
         <div class="step-animated-delay-1 overlay-box">
@@ -288,7 +286,6 @@ def show_identity_gen(lang="EN"):
         dbc = st.selectbox("DBC", ["1", "2", "3"])
         dcf = st.text_input("DCF", "REF001")
 
-    # ================= STEP 3 FLOATING MENU =================
     escape = st.checkbox(t["escape"], value=True)
 
     st.markdown(f"""
@@ -340,7 +337,6 @@ def show_identity_gen(lang="EN"):
 
     st.divider()
 
-    # ================= GENERATION =================
     if st.button(t["generate"], use_container_width=True):
 
         try:
@@ -353,7 +349,6 @@ def show_identity_gen(lang="EN"):
                 f"DBD{dbd}\nDBA{dba}\nDBC{dbc}\nDCF{dcf}"
             )
 
-            # IMPORTANT: escape mode
             display_raw = raw.replace("\n", "\\n") if escape else raw
 
             st.success(t["success"])
@@ -372,7 +367,6 @@ def show_identity_gen(lang="EN"):
 
             with col2:
                 st.image(png_bytes)
-
                 st.download_button("📥 PNG", png_bytes, file_name=f"{dcs}.png")
 
                 potrace_path = shutil.which("potrace")
