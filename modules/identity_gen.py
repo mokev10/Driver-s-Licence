@@ -3,14 +3,25 @@ import datetime
 import io
 import sys
 import os
+import shutil
+import traceback
 
+# =========================
+# PATH FIX (important pour imports)
+# =========================
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
+# =========================
+# IMPORTS
+# =========================
 from utils.constants import IIN_US, IIN_CA
 from pdf417gen import encode, render_image
 from utils.svg_vectorizer import png_to_svg
 
 
+# =========================
+# MAIN FUNCTION
+# =========================
 def show_identity_gen(lang="EN"):
 
     TEXT = {
@@ -48,6 +59,9 @@ def show_identity_gen(lang="EN"):
 
     t = TEXT.get(lang, TEXT["EN"])
 
+    # =========================
+    # HEADER
+    # =========================
     st.title(t["title"])
     st.write(t["desc"])
     st.divider()
@@ -55,7 +69,6 @@ def show_identity_gen(lang="EN"):
     # =========================
     # STEP 1
     # =========================
-
     col1, col2 = st.columns(2)
 
     with col1:
@@ -90,7 +103,6 @@ def show_identity_gen(lang="EN"):
     # =========================
     # STEP 2
     # =========================
-
     colA, colB = st.columns(2)
 
     with colA:
@@ -114,28 +126,32 @@ def show_identity_gen(lang="EN"):
     # =========================
     # GENERATION
     # =========================
-
     if st.button(t["generate"], use_container_width=True):
 
-        aamva_header = f"ANSI {mock_iin}050102DL00410287ZO02900045DL"
-
-        raw = (
-            f"@\n{aamva_header}\n"
-            f"DCG{dcg}\nDCS{dcs}\nDAC{dac}\nDBB{dbb}\nDAQ{daq}\n"
-            f"DAG{dag}\nDAI{dai}\nDAJ{region[:2].upper()}\nDAK{dak}\n"
-            f"DBD{dbd}\nDBA{dba}\nDBC{dbc}\nDCF{dcf}"
-        )
-
-        st.success(t["success"])
-
-        col1, col2 = st.columns(2)
-
-        with col1:
-            st.code(raw.replace("\n", "\\n"))
-
         try:
-            codes = encode(raw, columns=10)
+            # =========================
+            # RAW STRING
+            # =========================
+            aamva_header = f"ANSI {mock_iin}050102DL00410287ZO02900045DL"
 
+            raw = (
+                f"@\n{aamva_header}\n"
+                f"DCG{dcg}\nDCS{dcs}\nDAC{dac}\nDBB{dbb}\nDAQ{daq}\n"
+                f"DAG{dag}\nDAI{dai}\nDAJ{region[:2].upper()}\nDAK{dak}\n"
+                f"DBD{dbd}\nDBA{dba}\nDBC{dbc}\nDCF{dcf}"
+            )
+
+            st.success(t["success"])
+
+            col1, col2 = st.columns(2)
+
+            with col1:
+                st.code(raw.replace("\n", "\\n"))
+
+            # =========================
+            # PDF417 GENERATION
+            # =========================
+            codes = encode(raw, columns=10)
             image = render_image(codes, scale=3, padding=3)
 
             buf = io.BytesIO()
@@ -153,27 +169,34 @@ def show_identity_gen(lang="EN"):
                 )
 
                 # =========================
-                # SVG VECTORISATION (REAL)
+                # SVG GENERATION (SAFE)
                 # =========================
+                potrace_path = shutil.which("potrace")
+                svg = None
 
-                potrace_path = "potrace"  # à configurer
+                if potrace_path:
+                    try:
+                        svg = png_to_svg(
+                            png_bytes=png_bytes,
+                            potrace_path=potrace_path
+                        )
+                    except Exception as e:
+                        st.warning(f"SVG error: {e}")
+                else:
+                    st.info("SVG non disponible (potrace absent)")
 
-                svg = png_to_svg(
-                    png_bytes=png_bytes,
-                    potrace_path=potrace_path
-                )
+                if svg:
+                    st.download_button(
+                        "📥 SVG vectoriel",
+                        svg,
+                        file_name=f"{dcs}.svg",
+                        mime="image/svg+xml"
+                    )
 
-                st.download_button(
-                    "📥 SVG vectoriel",
-                    svg,
-                    file_name=f"{dcs}.svg",
-                    mime="image/svg+xml"
-                )
+                    st.markdown(
+                        f"<div style='background:white;padding:10px'>{svg}</div>",
+                        unsafe_allow_html=True
+                    )
 
-                st.markdown(
-                    f"<div style='background:white;padding:10px'>{svg}</div>",
-                    unsafe_allow_html=True
-                )
-
-        except Exception as e:
-            st.error(str(e))
+        except Exception:
+            st.error(traceback.format_exc())
