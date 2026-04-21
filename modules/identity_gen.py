@@ -20,20 +20,7 @@ from utils.svg_vectorizer import png_to_svg
 
 
 # =========================
-# SESSION STATE (WIZARD CONTROL - IMPORTANT)
-# =========================
-if "wizard_step" not in st.session_state:
-    st.session_state.wizard_step = 1
-
-if "country_selected" not in st.session_state:
-    st.session_state.country_selected = ""
-
-if "region_selected" not in st.session_state:
-    st.session_state.region_selected = ""
-
-
-# =========================
-# CSS ANIMATIONS + GLASSMORPHISM (FULL VERSION)
+# ANIMATION CSS (AUGMENTÉE - NON SIMPLIFIÉE)
 # =========================
 st.markdown(
     """
@@ -51,30 +38,35 @@ st.markdown(
     }
 
     @keyframes fadeIn {
-        from {opacity:0;}
-        to {opacity:1;}
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
     }
 
-    .glass {
-        background: rgba(255,255,255,0.06);
-        border: 1px solid rgba(255,255,255,0.12);
-        border-radius: 16px;
-        padding: 16px;
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.35);
-    }
-
-    .step1 {
+    .step-animated {
         animation: slideUp 0.8s ease-out;
     }
 
-    .step2 {
-        animation: slideUp 1.1s ease-out;
+    .step-animated-delay-1 {
+        animation: slideUp 1.0s ease-out;
     }
 
-    .step3 {
-        animation: fadeIn 1.2s ease-in;
+    .step-animated-delay-2 {
+        animation: slideUp 1.2s ease-out;
+    }
+
+    .step-fade {
+        animation: fadeIn 1.5s ease-in;
+    }
+
+    .overlay-box {
+        padding: 14px;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.05);
     }
 
     </style>
@@ -91,39 +83,67 @@ def show_identity_gen(lang="EN"):
     TEXT = {
         "EN": {
             "title": "AAMVA Raw Data Generator",
-            "desc": "Advanced forensic-grade AAMVA generator",
-            "step1": "Step 1 — Location Selection",
-            "step2": "Step 2 — Identity Fields",
+            "desc": "Advanced tool for generating forensic-quality AAMVA raw data strings",
+            "step1": "Step 1: Select the country and state or province",
             "country": "Select Country",
-            "state": "Select State",
+            "state": "Select State/Territory",
             "prov": "Select Province",
-            "generate": "GENERATE BARCODE",
-            "locked": "Complete Step 1 to continue"
+            "step2": "Step 2: Required fields (AAMVA)",
+            "step3": "Step 3: Configuration & Generation",
+            "generate": "GENERATE BARCODE & STRING",
+            "success": "HDR generation completed.",
+            "raw": "Raw Data String",
+            "use": "Use this string in external tools.",
+            "preview": "Preview"
+        },
+        "FR": {
+            "title": "Générateur de données AAMVA",
+            "desc": "Outil avancé pour générer des chaînes AAMVA",
+            "step1": "Étape 1 : Choisir le pays et la région",
+            "country": "Sélectionner le Pays",
+            "state": "Sélectionner l'État/Territoire",
+            "prov": "Sélectionner la Province",
+            "step2": "Étape 2 : Champs obligatoires (AAMVA)",
+            "step3": "Étape 3 : Configuration & Génération",
+            "generate": "GÉNÉRER LE CODE-BARRES & LA CHAÎNE",
+            "success": "Génération terminée.",
+            "raw": "Chaîne brute",
+            "use": "Utilisez cette chaîne dans vos outils externes.",
+            "preview": "Aperçu"
         }
     }
 
-    t = TEXT[lang]
+    t = TEXT.get(lang, TEXT["EN"])
 
     # =========================
-    # HEADER (NO MODIFICATION)
+    # HEADER (STEP 1 FIXED VISIBLE)
     # =========================
     st.title(t["title"])
     st.write(t["desc"])
-
     st.divider()
-
-    # =========================
-    # STEP 1 (ALWAYS VISIBLE)
-    # =========================
-    st.markdown(f"<div class='glass step1'><b>{t['step1']}</b></div>", unsafe_allow_html=True)
 
     col1, col2 = st.columns(2)
 
     with col1:
         country = st.selectbox(t["country"], ["United States", "Canada"])
 
-    # SAVE STATE
-    st.session_state.country_selected = country
+    icon = (
+        "https://img.icons8.com/external-justicon-flat-justicon/64/external-united-states-countrys-flags-justicon-flat-justicon.png"
+        if country == "United States"
+        else "https://img.icons8.com/external-justicon-flat-justicon/64/external-canada-countrys-flags-justicon-flat-justicon.png"
+    )
+
+    st.markdown(
+        f"""
+        <div class="step-animated overlay-box">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <img src="{icon}" width="24">
+                <h3 style="margin:0;">{t["step1"]}</h3>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
     with col2:
         if country == "United States":
@@ -133,122 +153,118 @@ def show_identity_gen(lang="EN"):
             region = st.selectbox(t["prov"], sorted(IIN_CA.keys()))
             mock_iin = IIN_CA[region]
 
-    # SAVE STATE
-    st.session_state.region_selected = region
+    st.divider()
 
     # =========================
-    # REAL VALIDATION (NO FAKE CONDITION)
+    # STEP 2 TITLE (ANIMATED LAYER)
     # =========================
-    step2_enabled = (
-        st.session_state.country_selected is not None
-        and st.session_state.country_selected != ""
-        and st.session_state.region_selected is not None
-        and st.session_state.region_selected != ""
+    st.markdown(
+        f"""
+        <div class="step-animated-delay-1 overlay-box">
+            <h3>{t["step2"]}</h3>
+        </div>
+        """,
+        unsafe_allow_html=True
     )
+
+    # =========================
+    # FORM INPUTS
+    # =========================
+    colA, colB = st.columns(2)
+
+    with colA:
+        dcg = st.text_input("DCG", "USA")
+        dac = st.text_input("DAC", "JEAN")
+        dcs = st.text_input("DCS", "NICOLAS")
+        dbb = st.text_input("DBB", "19941208")
+        daq = st.text_input("DAQ", "D9823415")
+        dag = st.text_input("DAG", "1560 STREET")
+
+    with colB:
+        dai = st.text_input("DAI", "CITY")
+        dak = st.text_input("DAK", "POSTAL")
+        dbd = st.text_input("DBD", "20230510")
+        dba = st.text_input("DBA", "20310509")
+        dbc = st.selectbox("DBC", ["1", "2", "3"])
+        dcf = st.text_input("DCF", "REF001")
 
     st.divider()
 
     # =========================
-    # STEP 2 (ONLY IF VALID)
+    # GENERATION
     # =========================
-    if step2_enabled:
+    if st.button(t["generate"], use_container_width=True):
 
-        st.markdown(f"<div class='glass step2'><b>{t['step2']}</b></div>", unsafe_allow_html=True)
+        try:
+            aamva_header = f"ANSI {mock_iin}050102DL00410287ZO02900045DL"
 
-        colA, colB = st.columns(2)
+            raw = (
+                f"@\n{aamva_header}\n"
+                f"DCG{dcg}\nDCS{dcs}\nDAC{dac}\nDBB{dbb}\nDAQ{daq}\n"
+                f"DAG{dag}\nDAI{dai}\nDAJ{region[:2].upper()}\nDAK{dak}\n"
+                f"DBD{dbd}\nDBA{dba}\nDBC{dbc}\nDCF{dcf}"
+            )
 
-        with colA:
-            dcg = "USA" if country == "United States" else "CAN"
-            dcg_input = st.text_input("DCG (Auto Country Code)", dcg, disabled=True)
+            st.success(t["success"])
 
-            dcs = st.text_input("DCS (Surname)", "NICOLAS")
-            dac = st.text_input("DAC (First Name)", "JEAN")
-            dbb = st.text_input("DBB (Birth Date)", "19941208")
-            daq = st.text_input("DAQ (License ID)", "D9823415")
-            dag = st.text_input("DAG (Address)", "1560 STREET")
+            col1, col2 = st.columns(2)
 
-        with colB:
-            dai = st.text_input("DAI (City)", "CITY")
-            dak = st.text_input("DAK (Postal Code)", "POSTAL")
-            dbd = st.text_input("DBD (Issue Date)", "20230510")
-            dba = st.text_input("DBA (Expiry Date)", "20310509")
-            dbc = st.selectbox("DBC (Gender)", ["1", "2", "3"])
-            dcf = st.text_input("DCF (Document ID)", "REF001")
+            with col1:
+                st.code(raw.replace("\n", "\\n"))
 
-        st.divider()
+            # =========================
+            # BARCODE GENERATION
+            # =========================
+            codes = encode(raw, columns=10)
+            image = render_image(codes, scale=3, padding=3)
 
-        # =========================
-        # GENERATION (FULL LOGIC PRESERVED)
-        # =========================
-        if st.button(t["generate"], use_container_width=True):
+            buf = io.BytesIO()
+            image.save(buf, format="PNG")
+            png_bytes = buf.getvalue()
 
-            try:
-                aamva_header = f"ANSI {mock_iin}050102DL00410287ZO02900045DL"
+            with col2:
+                st.image(png_bytes)
 
-                raw = (
-                    f"@\n{aamva_header}\n"
-                    f"DCG{dcg_input}\nDCS{dcs}\nDAC{dac}\nDBB{dbb}\nDAQ{daq}\n"
-                    f"DAG{dag}\nDAI{dai}\nDAJ{region[:2].upper()}\nDAK{dak}\n"
-                    f"DBD{dbd}\nDBA{dba}\nDBC{dbc}\nDCF{dcf}"
+                st.download_button(
+                    "📥 PNG",
+                    png_bytes,
+                    file_name=f"{dcs}.png",
+                    mime="image/png"
                 )
 
-                st.success("Generation completed")
-
-                col1, col2 = st.columns(2)
-
-                with col1:
-                    st.code(raw.replace("\n", "\\n"))
-
                 # =========================
-                # BARCODE GENERATION
+                # SVG GENERATION (SAFE + OPTIONAL)
                 # =========================
-                codes = encode(raw, columns=10)
-                image = render_image(codes, scale=3, padding=3)
+                potrace_path = shutil.which("potrace")
+                svg = None
 
-                buf = io.BytesIO()
-                image.save(buf, format="PNG")
-                png_bytes = buf.getvalue()
+                if potrace_path:
+                    try:
+                        svg = png_to_svg(
+                            png_bytes=png_bytes,
+                            potrace_path=potrace_path
+                        )
+                    except Exception as e:
+                        st.warning(f"SVG error: {e}")
+                else:
+                    st.info("SVG non disponible (potrace absent)")
 
-                with col2:
-                    st.image(png_bytes)
-
+                if svg:
                     st.download_button(
-                        "PNG",
-                        png_bytes,
-                        file_name=f"{dcs}.png",
-                        mime="image/png"
+                        "📥 SVG vectoriel",
+                        svg,
+                        file_name=f"{dcs}.svg",
+                        mime="image/svg+xml"
                     )
 
-                    # =========================
-                    # SVG (OPTIONAL - FULL PRESERVED LOGIC)
-                    # =========================
-                    potrace_path = shutil.which("potrace")
-                    svg = None
+                    st.markdown(
+                        f"""
+                        <div class="step-fade overlay-box">
+                            {svg}
+                        </div>
+                        """,
+                        unsafe_allow_html=True
+                    )
 
-                    if potrace_path:
-                        try:
-                            svg = png_to_svg(png_bytes=png_bytes, potrace_path=potrace_path)
-                        except Exception:
-                            pass
-
-                    if svg:
-                        st.download_button(
-                            "SVG",
-                            svg,
-                            file_name=f"{dcs}.svg",
-                            mime="image/svg+xml"
-                        )
-
-                        st.markdown(
-                            f"<div class='glass step3'>{svg}</div>",
-                            unsafe_allow_html=True
-                        )
-
-            except Exception:
-                st.error(traceback.format_exc())
-
-    else:
-        # =========================
-        # LOCKED STATE (NO STEP 2)
-        # =========================
-        st.info("Step 2 locked — complete country and region selection")
+        except Exception:
+            st.error(traceback.format_exc())
