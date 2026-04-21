@@ -103,15 +103,13 @@ st.markdown(
     contain: layout style paint;
 }
 
-/* ================= MODIFICATION POUR CENTRER ================= */
+/* ================= CENTRAGE PARAM-BOX ================= */
 .param-box {
     margin-bottom: 14px;
     padding: 15px;
     border-radius: 10px;
     background: rgba(255,255,255,0.05);
     border: 1px solid rgba(255,255,255,0.06);
-    
-    /* Centrage du contenu */
     display: flex;
     flex-direction: column;
     align-items: center; 
@@ -121,7 +119,7 @@ st.markdown(
 .param-box input,
 .param-box select {
     width: 100%;
-    max-width: 300px; /* Limite la largeur pour un meilleur aspect centré */
+    max-width: 300px;
     margin-top: 10px;
     padding: 8px;
     border-radius: 6px;
@@ -129,10 +127,9 @@ st.markdown(
     outline: none;
     background: #1f2937;
     color: white;
-    text-align: center; /* Centre le texte à l'intérieur des inputs */
+    text-align: center;
 }
 
-/* Style spécifique pour les checkboxes pour les garder centrées */
 .param-box input[type="checkbox"] {
     width: 20px;
     height: 20px;
@@ -191,6 +188,7 @@ def show_identity_gen(lang="EN"):
     with col1:
         country = st.selectbox(t["country"], ["United States", "Canada"])
 
+    # LIENS DES ICONES RÉTABLIS
     icon = (
         "https://icons8.com"
         if country == "United States"
@@ -249,7 +247,7 @@ def show_identity_gen(lang="EN"):
 
     st.divider()
 
-    # ================= STEP 3 HTML (FIXED & CENTERED) =================
+    # ================= STEP 3 HTML (CENTRÉ ET COMPLET) =================
     escape = st.checkbox(t["escape"], value=True)
 
     st.markdown(
