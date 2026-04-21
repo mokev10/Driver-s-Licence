@@ -7,7 +7,7 @@ import shutil
 import traceback
 
 # =========================
-# PATH FIX (important pour imports)
+# PATH FIX
 # =========================
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
@@ -20,53 +20,33 @@ from utils.svg_vectorizer import png_to_svg
 
 
 # =========================
-# ANIMATION CSS (AUGMENTÉE - NON SIMPLIFIÉE)
+# CSS
 # =========================
 st.markdown(
     """
     <style>
 
     @keyframes slideUp {
-        from {
-            transform: translateY(80px);
-            opacity: 0;
-        }
-        to {
-            transform: translateY(0px);
-            opacity: 1;
-        }
+        from { transform: translateY(80px); opacity: 0; }
+        to { transform: translateY(0px); opacity: 1; }
     }
 
     @keyframes fadeIn {
-        from {
-            opacity: 0;
-        }
-        to {
-            opacity: 1;
-        }
+        from { opacity: 0; }
+        to { opacity: 1; }
     }
 
-    .step-animated {
-        animation: slideUp 0.8s ease-out;
-    }
-
-    .step-animated-delay-1 {
-        animation: slideUp 1.0s ease-out;
-    }
-
-    .step-animated-delay-2 {
-        animation: slideUp 1.2s ease-out;
-    }
-
-    .step-fade {
-        animation: fadeIn 1.5s ease-in;
-    }
+    .step-animated { animation: slideUp 0.8s ease-out; }
+    .step-animated-delay-1 { animation: slideUp 1.0s ease-out; }
+    .step-animated-delay-2 { animation: slideUp 1.2s ease-out; }
+    .step-fade { animation: fadeIn 1.5s ease-in; }
 
     .overlay-box {
         padding: 14px;
         border-radius: 12px;
         background: rgba(255,255,255,0.03);
         border: 1px solid rgba(255,255,255,0.05);
+        font-family: monospace;
     }
 
     </style>
@@ -93,7 +73,13 @@ def show_identity_gen(lang="EN"):
             "generate": "GENERATE BARCODE & STRING",
             "success": "HDR generation completed.",
             "barcode_settings": "Barcode Parameters",
-            "escape": "Escape Sequences"
+            "escape": "Escape Sequences",
+            "columns": "PDF417 Columns",
+            "scale": "Resolution (scale)",
+            "padding": "Padding",
+
+            # NEW LABEL
+            "raw_label": "PDF417 noise data"
         },
         "FR": {
             "title": "Générateur de données AAMVA",
@@ -103,11 +89,17 @@ def show_identity_gen(lang="EN"):
             "state": "Sélectionner l'État/Territoire",
             "prov": "Sélectionner la Province",
             "step2": "Étape 2 : Champs obligatoires (AAMVA)",
-            "step3": "Étape 3 : Configuration & Paramètres",
+            "step3": "Étape 3 : Configuration & Paramètres du code-barres",
             "generate": "GÉNÉRER LE CODE-BARRES & LA CHAÎNE",
             "success": "Génération terminée.",
             "barcode_settings": "Paramètres du code-barres",
-            "escape": "Séquences d'échappement"
+            "escape": "Séquences d'échappement",
+            "columns": "Colonnes PDF417",
+            "scale": "Résolution (échelle)",
+            "padding": "Espacement (padding)",
+
+            # NEW LABEL
+            "raw_label": "Données brutes du PDF417"
         }
     }
 
@@ -154,7 +146,7 @@ def show_identity_gen(lang="EN"):
     st.divider()
 
     # =========================
-    # FORM
+    # INPUTS
     # =========================
     colA, colB = st.columns(2)
 
@@ -183,9 +175,9 @@ def show_identity_gen(lang="EN"):
 
     escape_mode = st.checkbox(t["escape"], value=True)
 
-    columns = st.slider("PDF417 Columns", 5, 30, 10)
-    scale = st.slider("Résolution (scale)", 2, 8, 3)
-    padding = st.slider("Padding", 0, 10, 3)
+    columns = st.slider(t["columns"], 5, 30, 10)
+    scale = st.slider(t["scale"], 2, 8, 3)
+    padding = st.slider(t["padding"], 0, 10, 3)
 
     st.divider()
 
@@ -197,6 +189,7 @@ def show_identity_gen(lang="EN"):
         try:
             aamva_header = f"ANSI {mock_iin}050102DL00410287ZO02900045DL"
 
+            # IMPORTANT: RAW NON MODIFIÉ (barcode)
             raw = (
                 f"@\n{aamva_header}\n"
                 f"DCG{dcg}\nDCS{dcs}\nDAC{dac}\nDBB{dbb}\nDAQ{daq}\n"
@@ -204,23 +197,22 @@ def show_identity_gen(lang="EN"):
                 f"DBD{dbd}\nDBA{dba}\nDBC{dbc}\nDCF{dcf}"
             )
 
-            # =========================
-            # ESCAPE LOGIC (IMPORTANT)
-            # =========================
-            if escape_mode:
-                display_raw = raw
-            else:
-                display_raw = raw.replace("\n", "\\n")
+            # DISPLAY ONLY (escape mode)
+            display_raw = raw if escape_mode else raw.replace("\n", "\\n")
 
             st.success(t["success"])
 
             col1, col2 = st.columns(2)
 
+            # =========================
+            # LABEL RENOMMÉ ICI
+            # =========================
             with col1:
+                st.markdown(f"### 🧾 {t['raw_label']}")
                 st.code(display_raw)
 
             # =========================
-            # BARCODE
+            # BARCODE (UNCHANGED RAW)
             # =========================
             codes = encode(raw, columns=columns)
             image = render_image(codes, scale=scale, padding=padding)
