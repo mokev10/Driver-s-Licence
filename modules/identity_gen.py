@@ -20,55 +20,76 @@ from utils.svg_vectorizer import png_to_svg
 
 
 # =========================
-# UI THEME (GITHUB DARK + ANSI + DOWNLOAD BUTTONS)
+# UI FORENSIC / TERMINAL STYLE
 # =========================
 st.markdown(
     """
     <style>
 
-    /* BACKGROUND GLOBAL */
+    /* =========================
+       GLOBAL BACKGROUND (DARK SYSTEM)
+    ========================= */
     .stApp {
         background-color: #0d1117;
+    }
+
+    /* =========================
+       ANSI HEADER (FORENSIC TERMINAL)
+    ========================= */
+    .ansi-header {
+        background: linear-gradient(180deg, #161b22 0%, #0d1117 100%);
+        padding: 14px 16px;
+        border-radius: 10px;
+        border: 1px solid #30363d;
+        color: #7ee787;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+        font-size: 13px;
+        letter-spacing: 0.4px;
+        white-space: nowrap;
+        overflow-x: auto;
+        box-shadow: inset 0 0 12px rgba(0,0,0,0.6);
+        position: relative;
+    }
+
+    /* SCAN LINE EFFECT */
+    .ansi-header::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -50%;
+        width: 50%;
+        height: 100%;
+        background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(126, 231, 135, 0.15),
+            transparent
+        );
+        animation: scan 3s infinite;
+    }
+
+    @keyframes scan {
+        0% { left: -50%; }
+        100% { left: 120%; }
     }
 
     /* =========================
        ANIMATIONS EXISTANTES
     ========================= */
     @keyframes slideUp {
-        from {
-            transform: translateY(80px);
-            opacity: 0;
-        }
-        to {
-            transform: translateY(0px);
-            opacity: 1;
-        }
+        from { transform: translateY(80px); opacity: 0; }
+        to { transform: translateY(0px); opacity: 1; }
     }
 
     @keyframes fadeIn {
-        from {
-            opacity: 0;
-        }
-        to {
-            opacity: 1;
-        }
+        from { opacity: 0; }
+        to { opacity: 1; }
     }
 
-    .step-animated {
-        animation: slideUp 0.8s ease-out;
-    }
-
-    .step-animated-delay-1 {
-        animation: slideUp 1.0s ease-out;
-    }
-
-    .step-animated-delay-2 {
-        animation: slideUp 1.2s ease-out;
-    }
-
-    .step-fade {
-        animation: fadeIn 1.5s ease-in;
-    }
+    .step-animated { animation: slideUp 0.8s ease-out; }
+    .step-animated-delay-1 { animation: slideUp 1.0s ease-out; }
+    .step-animated-delay-2 { animation: slideUp 1.2s ease-out; }
+    .step-fade { animation: fadeIn 1.5s ease-in; }
 
     .overlay-box {
         padding: 14px;
@@ -78,35 +99,21 @@ st.markdown(
     }
 
     /* =========================
-       ANSI HEADER (NEW)
-    ========================= */
-    .ansi-header {
-        background: #1a1a1a;
-        padding: 12px;
-        border-radius: 8px;
-        color: #7ee787;
-        font-family: monospace;
-        font-size: 13px;
-        border: 1px solid #30363d;
-        margin-bottom: 15px;
-        overflow-x: auto;
-    }
-
-    /* =========================
-       BARCODE WHITE ZONE (SCAN OPTIMIZED)
+       BARCODE ZONE (SCAN SAFE WHITE)
     ========================= */
     .barcode-box {
         background: #ffffff;
-        padding: 20px;
-        border-radius: 10px;
+        padding: 22px;
+        border-radius: 12px;
         display: flex;
         justify-content: center;
         align-items: center;
         min-height: 320px;
+        box-shadow: 0 0 25px rgba(0,0,0,0.4);
     }
 
     /* =========================
-       DOWNLOAD BUTTONS (PNG / SVG)
+       DOWNLOAD BUTTONS (GREEN SYSTEM)
     ========================= */
     div.stDownloadButton > button {
         background-color: #238636 !important;
@@ -117,6 +124,7 @@ st.markdown(
         border: 1px solid rgba(240,246,252,0.1) !important;
         transition: all 0.2s ease-in-out !important;
         width: 100% !important;
+        font-family: monospace !important;
     }
 
     div.stDownloadButton > button:hover {
@@ -125,14 +133,14 @@ st.markdown(
     }
 
     /* =========================
-       GENERATE BUTTON (UNCHANGED STYLE SAFE)
+       GENERATE BUTTON (NEON STYLE)
     ========================= */
     div.stButton > button {
         background: linear-gradient(135deg, #4facfe 0%, #a066ff 100%) !important;
         color: white !important;
         border-radius: 50px !important;
         font-weight: bold !important;
-        box-shadow: 0 0 15px rgba(160, 102, 255, 0.4) !important;
+        box-shadow: 0 0 18px rgba(160, 102, 255, 0.45) !important;
     }
 
     </style>
@@ -149,25 +157,25 @@ def show_identity_gen(lang="EN"):
     TEXT = {
         "EN": {
             "title": "AAMVA Raw Data Generator",
-            "desc": "Advanced tool for generating forensic-quality AAMVA raw data strings",
+            "desc": "Advanced forensic-grade identity encoding system",
             "step1": "Step 1: Select the country and state or province",
             "country": "Select Country",
             "state": "Select State/Territory",
             "prov": "Select Province",
             "step2": "Step 2: Required fields (AAMVA)",
             "generate": "GENERATE BARCODE & STRING",
-            "success": "HDR generation completed."
+            "success": "SYSTEM OUTPUT COMPLETE"
         },
         "FR": {
-            "title": "Générateur de données AAMVA",
-            "desc": "Outil avancé pour générer des chaînes AAMVA",
+            "title": "Générateur AAMVA",
+            "desc": "Système avancé d'encodage d'identité",
             "step1": "Étape 1 : Choisir le pays et la région",
             "country": "Sélectionner le Pays",
             "state": "Sélectionner l'État/Territoire",
             "prov": "Sélectionner la Province",
             "step2": "Étape 2 : Champs obligatoires (AAMVA)",
-            "generate": "GÉNÉRER LE CODE-BARRES & LA CHAÎNE",
-            "success": "Génération terminée."
+            "generate": "GÉNÉRER CODE-BARRES & CHAÎNE",
+            "success": "SORTIE SYSTÈME TERMINÉE"
         }
     }
 
@@ -179,7 +187,7 @@ def show_identity_gen(lang="EN"):
     st.markdown(
         """
         <div class="ansi-header">
-        ANSI 636026080102DL00410287ZA03290015DL
+        ░ SYSTEM: AAMVA FORENSIC DATA STREAM ACTIVE ░ NODE: 636026 ░ STATUS: LIVE ░ VERIFY: TRUE ░
         </div>
         """,
         unsafe_allow_html=True
@@ -189,6 +197,9 @@ def show_identity_gen(lang="EN"):
     st.write(t["desc"])
     st.divider()
 
+    # =========================
+    # COUNTRY / REGION
+    # =========================
     col1, col2 = st.columns(2)
 
     with col1:
@@ -205,7 +216,7 @@ def show_identity_gen(lang="EN"):
     st.divider()
 
     # =========================
-    # FORM INPUTS (UNCHANGED)
+    # FORM INPUTS
     # =========================
     colA, colB = st.columns(2)
 
@@ -244,11 +255,11 @@ def show_identity_gen(lang="EN"):
 
             st.success(t["success"])
 
-            # =========================
-            # LAYOUT RESULT
-            # =========================
             left, right = st.columns([2, 1])
 
+            # =========================
+            # BARCODE
+            # =========================
             with left:
                 st.markdown('<div class="barcode-box">', unsafe_allow_html=True)
 
@@ -261,12 +272,15 @@ def show_identity_gen(lang="EN"):
 
                 st.image(png_bytes)
 
-                st.markdown("</div>", unsafe_allow_html=True)
+                st.markdown('</div>', unsafe_allow_html=True)
 
+            # =========================
+            # DOWNLOADS
+            # =========================
             with right:
 
                 st.download_button(
-                    "📥 PNG",
+                    "⬇ PNG",
                     png_bytes,
                     file_name=f"{dcs}.png",
                     mime="image/png",
@@ -279,12 +293,12 @@ def show_identity_gen(lang="EN"):
                 if potrace_path:
                     try:
                         svg = png_to_svg(png_bytes=png_bytes, potrace_path=potrace_path)
-                    except Exception as e:
-                        st.warning(f"SVG error: {e}")
+                    except Exception:
+                        pass
 
                 if svg:
                     st.download_button(
-                        "📥 SVG vectoriel",
+                        "⬇ SVG",
                         svg,
                         file_name=f"{dcs}.svg",
                         mime="image/svg+xml",
