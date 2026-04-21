@@ -20,11 +20,29 @@ from utils.svg_vectorizer import png_to_svg
 
 
 # =========================
-# CSS (FULL FIX RENDER + ISOLATION HTML + ANTI BRUIT STREAMLIT)
+# CSS (CENTRAGE GLOBAL ET STYLISATION)
 # =========================
 st.markdown(
 """
 <style>
+/* Centrer le titre et la description */
+.stApp h1, .stApp p, .stApp div.stMarkdown {
+    text-align: center;
+}
+
+/* Centrer les colonnes Streamlit */
+[data-testid="column"] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Forcer le centrage des inputs natifs */
+.stTextInput, .stSelectbox, .stCheckbox {
+    width: 100% !important;
+    max-width: 400px !important;
+}
 
 /* ================= ANIMATIONS ================= */
 @keyframes slideUp {
@@ -32,45 +50,35 @@ st.markdown(
     to { transform: translateY(0px); opacity: 1; }
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
 .step-animated { animation: slideUp 0.8s ease-out; }
-.step-animated-delay-1 { animation: slideUp 1.0s ease-out; }
-.step-animated-delay-2 { animation: slideUp 1.2s ease-out; }
-.step-fade { animation: fadeIn 1.5s ease-in; }
 
 .overlay-box {
     padding: 14px;
     border-radius: 12px;
     background: rgba(255,255,255,0.03);
     border: 1px solid rgba(255,255,255,0.05);
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
-/* ================= FIX BRUIT STREAMLIT + ISOLATION TOTAL ================= */
-
+/* ================= MENU FLOTTANT CENTRÉ ================= */
 #floating-menu-wrapper {
-    position: relative;
-    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    width: 100%;
     isolation: isolate;
-    contain: layout style paint;
 }
 
 .floating-menu {
     width: 100%;
     max-width: 750px;
-    margin-top: 20px;
     background: #0f172a;
     border-radius: 16px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     border: 1px solid rgba(255,255,255,0.08);
     overflow: hidden;
     font-family: monospace;
-    transform: translateZ(0);
-    will-change: transform;
-    backface-visibility: hidden;
 }
 
 .menu-header {
@@ -80,78 +88,45 @@ st.markdown(
     padding: 14px 16px;
     background: #111827;
     color: #ffffff;
-    font-weight: bold;
-    font-size: 14px;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-}
-
-.close-btn {
-    cursor: pointer;
-    color: #ff4d4d;
-    font-size: 16px;
-    font-weight: bold;
-    transition: 0.2s ease;
-}
-
-.close-btn:hover {
-    transform: scale(1.2);
 }
 
 .menu-body {
     padding: 16px;
-    color: white;
-    contain: layout style paint;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-/* ================= CENTRAGE PARAM-BOX ================= */
 .param-box {
+    width: 100%;
+    max-width: 500px;
     margin-bottom: 14px;
     padding: 15px;
     border-radius: 10px;
     background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.06);
     display: flex;
     flex-direction: column;
-    align-items: center; 
+    align-items: center;
     text-align: center;
 }
 
-.param-box input,
-.param-box select {
+.param-box input, .param-box select {
     width: 100%;
     max-width: 300px;
     margin-top: 10px;
     padding: 8px;
-    border-radius: 6px;
-    border: none;
-    outline: none;
     background: #1f2937;
     color: white;
     text-align: center;
+    border-radius: 6px;
+    border: none;
 }
-
-.param-box input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-}
-
-.param-box small {
-    color: #9ca3af;
-    font-size: 12px;
-    display: block;
-    margin-top: 4px;
-}
-
 </style>
 """,
 unsafe_allow_html=True
 )
 
 
-# =========================
-# MAIN FUNCTION
-# =========================
 def show_identity_gen(lang="EN"):
 
     TEXT = {
@@ -171,30 +146,27 @@ def show_identity_gen(lang="EN"):
             "module": "Module width (mm)",
             "dpi": "Resolution (DPI)",
             "format": "Image format",
-            "padding": "Padding (quiet zone)",
             "success": "HDR generation completed"
         }
     }
-
     t = TEXT["EN"]
 
-    # ================= HEADER =================
+    # --- TITRES CENTRÉS ---
     st.title(t["title"])
     st.write(t["desc"])
     st.divider()
 
-    col1, col2 = st.columns(2)
-
-    with col1:
+    # --- ÉTAPE 1 : Centrage avec colonnes vides (layout 1:2:1) ---
+    _, center_col, _ = st.columns([1, 2, 1])
+    with center_col:
         country = st.selectbox(t["country"], ["United States", "Canada"])
+    
+    icon_url = (
+        "https://icons8.com"
+        if country == "United States"
+        else "https://icons8.com"
+    )
 
-    # LOGIQUE ICONE PLACÉE AVANT LE RENDU HTML
-    if country == "United States":
-        icon_url = "https://img.icons8.com/external-justicon-flat-justicon/64/external-united-states-countrys-flags-justicon-flat-justicon.png"
-    else:
-        icon_url = "https://img.icons8.com/external-justicon-flat-justicon/64/external-canada-countrys-flags-justicon-flat-justicon.png"
-
-    # RENDU DE L'ÉTAPE 1 AVEC ICON_URL
     st.markdown(
         f"""
         <div class="step-animated overlay-box">
@@ -207,27 +179,20 @@ def show_identity_gen(lang="EN"):
         unsafe_allow_html=True
     )
 
-    with col2:
+    _, center_col_2, _ = st.columns([1, 2, 1])
+    with center_col_2:
         if country == "United States":
             region = st.selectbox(t["state"], sorted(IIN_US.keys()))
-            mock_iin = IIN_US[region]
         else:
             region = st.selectbox(t["prov"], sorted(IIN_CA.keys()))
-            mock_iin = IIN_CA[region]
 
     st.divider()
 
-    # ================= STEP 2 =================
-    st.markdown(
-        f"""
-        <div class="step-animated-delay-1 overlay-box" style="text-align:center;">
-            <h3>{t["step2"]}</h3>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-    colA, colB = st.columns(2)
+    # --- ÉTAPE 2 : Champs de saisie ---
+    st.markdown(f'<div class="overlay-box"><h3>{t["step2"]}</h3></div>', unsafe_allow_html=True)
+    
+    # Pour centrer les deux colonnes de saisie au milieu de l'écran
+    _, colA, colB, _ = st.columns([0.5, 2, 2, 0.5])
 
     with colA:
         dcg = st.text_input("DCG", "USA")
@@ -247,7 +212,7 @@ def show_identity_gen(lang="EN"):
 
     st.divider()
 
-    # ================= STEP 3 HTML (CENTRÉ) =================
+    # --- ÉTAPE 3 : Menu Barcode Centré ---
     escape = st.checkbox(t["escape"], value=True)
 
     st.markdown(
@@ -256,7 +221,7 @@ def show_identity_gen(lang="EN"):
             <div class="floating-menu">
                 <div class="menu-header">
                     <span>{t["step3"]}</span>
-                    <span class="close-btn">✕</span>
+                    <span style="color:#ff4d4d; cursor:pointer;">✕</span>
                 </div>
                 <div class="menu-body">
                     <div class="param-box">
@@ -290,10 +255,12 @@ def show_identity_gen(lang="EN"):
         unsafe_allow_html=True
     )
 
+    # Bouton de génération centré
     st.markdown("<br>", unsafe_allow_html=True)
-    if st.button(t["generate"]):
-        st.success(t["success"])
+    _, btn_col, _ = st.columns([1, 1, 1])
+    with btn_col:
+        if st.button(t["generate"], use_container_width=True):
+            st.success(t["success"])
 
-# Exécution
 if __name__ == "__main__":
     show_identity_gen()
