@@ -20,7 +20,7 @@ from utils.svg_vectorizer import png_to_svg
 
 
 # =========================
-# CSS (CENTRAGE TOTAL + ANIMATIONS + ISOLATION)
+# CSS (CENTRAGE TOTAL + ANIMATIONS + FIX RENDU)
 # =========================
 st.markdown(
 """
@@ -202,24 +202,26 @@ def show_identity_gen(lang="EN"):
     st.write(t["desc"])
     st.divider()
 
-    # --- ÉTAPE 1 (CENTRÉE VIA COLONNES) ---
-    _, col_center, _ = st.columns([1, 2, 1])
+    # --- LOGIQUE ÉTAPE 1 ---
+    # Colonnes de centrage pour le sélecteur de pays
+    _, col_center_1, _ = st.columns([1, 2, 1])
 
-    with col_center:
+    with col_center_1:
         country = st.selectbox(t["country"], ["United States", "Canada"])
 
-    # VOTRE CODE D'ICONE EXACT
+    # DÉFINITION DE L'ICÔNE (VOTRE CODE EXACT)
     icon = (
-        "https://icons8.com"
+        "https://img.icons8.com/external-justicon-flat-justicon/64/external-united-states-countrys-flags-justicon-flat-justicon.png"
         if country == "United States"
-        else "https://icons8.com"
+        else "https://img.icons8.com/external-justicon-flat-justicon/64/external-canada-countrys-flags-justicon-flat-justicon.png"
     )
 
+    # AFFICHAGE DE L'ICÔNE ET DU TITRE ÉTAPE 1
     st.markdown(
         f"""
         <div class="step-animated overlay-box">
-            <div style="display:flex;align-items:center;gap:10px;justify-content:center;">
-                <img src="{icon}" width="32">
+            <div style="display:flex;align-items:center;gap:15px;justify-content:center;">
+                <img src="{icon}" style="width:48px; height:48px; display:block;">
                 <h3 style="margin:0;">{t["step1"]}</h3>
             </div>
         </div>
@@ -227,7 +229,10 @@ def show_identity_gen(lang="EN"):
         unsafe_allow_html=True
     )
 
-    with col_center:
+    # Colonnes de centrage pour le sélecteur de région
+    _, col_center_2, _ = st.columns([1, 2, 1])
+
+    with col_center_2:
         if country == "United States":
             region = st.selectbox(t["state"], sorted(IIN_US.keys()))
             mock_iin = IIN_US[region]
@@ -247,8 +252,8 @@ def show_identity_gen(lang="EN"):
         unsafe_allow_html=True
     )
 
-    # Centrage des champs de saisie (3 colonnes pour garder le milieu)
-    _, colA, colB, _ = st.columns([0.2, 2, 2, 0.2])
+    # Centrage des champs de saisie
+    _, colA, colB, _ = st.columns([0.1, 2, 2, 0.1])
 
     with colA:
         dcg = st.text_input("DCG", "USA")
@@ -268,7 +273,7 @@ def show_identity_gen(lang="EN"):
 
     st.divider()
 
-    # ================= STEP 3 HTML (CENTRÉ ET COMPLET) =================
+    # ================= STEP 3 HTML (CENTRÉ) =================
     escape = st.checkbox(t["escape"], value=True)
 
     st.markdown(
@@ -319,6 +324,6 @@ def show_identity_gen(lang="EN"):
         if st.button(t["generate"], use_container_width=True):
             st.success(t["success"])
 
-# Exécution
+# Exécution du point d'entrée
 if __name__ == "__main__":
     show_identity_gen()
