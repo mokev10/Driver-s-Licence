@@ -59,6 +59,43 @@ TEXTS = {
 }
 
 
+# =========================
+# GLOBAL UI FIX (THEME SAFE)
+# =========================
+st.markdown("""
+<style>
+
+/* Bouton adaptatif */
+div.stButton > button {
+    height: 70px;
+    font-size: 20px;
+    font-weight: bold;
+    border-radius: 10px;
+
+    background-color: var(--primary-color);
+    color: var(--background-color);
+    border: 1px solid var(--primary-color);
+}
+
+/* Hover */
+div.stButton > button:hover {
+    filter: brightness(1.1);
+}
+
+/* Click */
+div.stButton > button:active {
+    transform: scale(0.98);
+}
+
+/* Fix contrast global */
+.stApp {
+    color: var(--text-color);
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+
 def apply_custom_style(dark_mode=True):
     bg = "#0E1117" if dark_mode else "#FFFFFF"
     text = "#FAFAFA" if dark_mode else "#000000"
@@ -111,4 +148,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
