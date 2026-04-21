@@ -1,6 +1,10 @@
 import streamlit as st
 import datetime
 import io
+import sys
+import os
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from utils.constants import IIN_US, IIN_CA
 from pdf417gen import encode, render_image
