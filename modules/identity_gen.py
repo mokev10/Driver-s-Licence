@@ -7,9 +7,9 @@ import shutil
 import traceback
 
 # ==============================================================================
-# CONFIGURATION DU CHEMIN ET IMPORTS CORE
+# CONFIGURATION ET IMPORTS SYSTÈME (VERSION INTÉGRALE)
 # ==============================================================================
-# Ajout du répertoire parent au chemin système pour les imports de modules internes
+# Extension du path pour garantir l'accès aux utilitaires de constantes et vecteurs
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 try:
@@ -17,162 +17,180 @@ try:
     from pdf417gen import encode, render_image
     from utils.svg_vectorizer import png_to_svg
 except ImportError:
-    # Fallback pour le développement local si les utilitaires sont manquants
-    IIN_US = {"California": "603273"}
-    IIN_CA = {"Quebec": "604428"}
+    # Fallback technique pour environnement de test
+    IIN_US = {"California": "603273", "New York": "603219"}
+    IIN_CA = {"Quebec": "604428", "Ontario": "604430"}
 
 # ==============================================================================
-# MOTEUR CSS : LIQUID GLASS UI (EDITION PROFESSIONNELLE)
+# MOTEUR DE STYLE LIQUID GLASS - VERSION PRO 500
 # ==============================================================================
-# Ce bloc définit l'identité visuelle de l'application sans aucun emoji.
-# Focus sur la réfraction, les flous et les dégradés néon.
 st.markdown(
     """
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;500&display=swap');
     
-    /* Configuration globale du viewport */
+    /* Fond de page et conteneur principal */
     html, body, [data-testid="stAppViewContainer"] {
         font-family: 'Inter', sans-serif;
-        background-color: #030303;
+        background-color: #020203;
         color: #ffffff;
     }
 
-    /* Animation d'entrée des cartes */
-    @keyframes cardArrival {
-        from { transform: translateY(40px); opacity: 0; }
-        to { transform: translateY(0px); opacity: 1; }
+    /* Animation de déploiement des cartes Crystal */
+    @keyframes cardGlowFade {
+        0% { transform: translateY(20px); opacity: 0; box-shadow: 0 0 0 rgba(0,0,0,0); }
+        100% { transform: translateY(0px); opacity: 1; box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
     }
 
-    /* Conteneur de section style Crystal Slab */
+    /* Styles des Cartes Crystal (Sections) */
     .crystal-card {
-        background: rgba(255, 255, 255, 0.02);
-        backdrop-filter: blur(25px);
-        -webkit-backdrop-filter: blur(25px);
-        border: 1px solid rgba(255, 255, 255, 0.07);
-        border-radius: 24px;
-        padding: 35px;
-        margin-bottom: 30px;
-        box-shadow: 0 25px 50px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.02);
-        animation: cardArrival 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+        background: rgba(255, 255, 255, 0.015);
+        backdrop-filter: blur(30px);
+        -webkit-backdrop-filter: blur(30px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 28px;
+        padding: 40px;
+        margin-bottom: 35px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.6), inset 0 0 30px rgba(255,255,255,0.01);
+        animation: cardGlowFade 0.9s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    /* --- SLIDERS PROFESSIONNELS (OPTICAL CONFIG) --- */
-    /* Masquage des éléments natifs Streamlit redondants */
+    /* --- SLIDERS PROFESSIONNELS (STYLE IMAGE 7D64EC) --- */
     div[data-testid="stTickBar"] { display: none !important; }
     
-    /* Rail du slider style verre fumé */
+    /* Rail principal du slider */
     div[data-baseweb="slider"] > div:first-child {
-        height: 10px !important;
-        background: rgba(255, 255, 255, 0.05) !important;
-        border-radius: 10px !important;
+        height: 14px !important;
+        background: rgba(255, 255, 255, 0.04) !important;
+        border-radius: 20px !important;
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.5) !important;
     }
 
-    /* Remplissage du slider avec dégradé progressif */
+    /* Barre de progression avec dégradé liquide */
     div[role="presentation"] > div > div:first-child {
-        background: linear-gradient(90deg, #7000ff 0%, #0072ff 100%) !important;
-        height: 10px !important;
-        border-radius: 10px !important;
-        box-shadow: 0 0 15px rgba(112, 0, 255, 0.5) !important;
+        background: linear-gradient(90deg, #8122ff 0%, #3a82ff 100%) !important;
+        height: 14px !important;
+        border-radius: 20px !important;
+        box-shadow: 0 0 20px rgba(129, 34, 255, 0.4) !important;
     }
 
     /* Curseur (Thumb) style capsule de verre poli */
     div[role="slider"] {
-        height: 22px !important;
-        width: 22px !important;
+        height: 28px !important;
+        width: 28px !important;
         background-color: #ffffff !important;
-        border: 4px solid #7000ff !important;
-        box-shadow: 0 0 25px rgba(112, 0, 255, 0.8) !important;
-        transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+        border: 5px solid #8122ff !important;
+        box-shadow: 0 0 30px rgba(129, 34, 255, 0.9), inset 0 2px 4px rgba(0,0,0,0.3) !important;
+        transition: transform 0.2s ease, box-shadow 0.2s ease !important;
     }
 
     div[role="slider"]:hover {
-        transform: scale(1.25) !important;
-        cursor: grab;
+        transform: scale(1.15) !important;
+        box-shadow: 0 0 40px rgba(129, 34, 255, 1) !important;
     }
 
-    /* --- INPUTS ET SELECTS (GLASSMOPHISM NOIR) --- */
+    /* --- INPUTS TEXTE ET CHAMPS DE SELECTION (NOIR GLASS) --- */
     .stTextInput input, .stSelectbox [data-baseweb="select"] {
-        background: rgba(0, 0, 0, 0.3) !important;
-        backdrop-filter: blur(12px) !important;
-        border-radius: 16px !important;
+        background: rgba(10, 10, 12, 0.6) !important;
+        backdrop-filter: blur(15px) !important;
+        border-radius: 18px !important;
         border: 1px solid rgba(255, 255, 255, 0.08) !important;
-        color: #e0e0e0 !important;
-        padding: 12px 20px !important;
-        box-shadow: inset 0 2px 8px rgba(0,0,0,0.4) !important;
-        transition: all 0.3s ease !important;
+        color: #f2f2f2 !important;
+        padding: 14px 22px !important;
+        font-size: 1rem !important;
+        box-shadow: inset 0 2px 10px rgba(0,0,0,0.5) !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     }
 
     .stTextInput input:focus {
-        border-color: #0072ff !important;
-        box-shadow: 0 0 20px rgba(0, 114, 255, 0.2), inset 0 2px 8px rgba(0,0,0,0.4) !important;
-        background: rgba(0, 0, 0, 0.4) !important;
+        border-color: #3a82ff !important;
+        background: rgba(15, 15, 20, 0.8) !important;
+        box-shadow: 0 0 25px rgba(58, 130, 255, 0.2), inset 0 2px 10px rgba(0,0,0,0.5) !important;
     }
 
-    /* --- BOUTONS D'ACTION (PILL DESIGN) --- */
+    /* --- BOUTONS D'ACTION (PILL DESIGN SANS EMOJI) --- */
     div.stButton > button, div.stDownloadButton > button {
-        background: rgba(255, 255, 255, 0.04) !important;
-        backdrop-filter: blur(20px) !important;
+        background: rgba(255, 255, 255, 0.03) !important;
+        backdrop-filter: blur(25px) !important;
         color: #ffffff !important;
-        border: 1px solid rgba(255, 255, 255, 0.15) !important;
-        border-radius: 60px !important;
-        padding: 15px 45px !important;
+        border: 1.5px solid rgba(255, 255, 255, 0.15) !important;
+        border-radius: 80px !important;
+        padding: 18px 50px !important;
         font-weight: 600 !important;
         text-transform: uppercase !important;
-        letter-spacing: 2px !important;
-        box-shadow: 0 12px 24px rgba(0,0,0,0.3) !important;
-        transition: all 0.4s ease !important;
-        width: 100% !important;
+        letter-spacing: 2.5px !important;
+        font-size: 0.95rem !important;
+        box-shadow: 0 15px 30px rgba(0,0,0,0.4) !important;
+        transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1) !important;
     }
 
-    div.stButton > button:hover, div.stDownloadButton > button:hover {
-        background: linear-gradient(135deg, rgba(112, 0, 255, 0.1) 0%, rgba(0, 114, 255, 0.1) 100%) !important;
-        border-color: rgba(255, 255, 255, 0.4) !important;
-        transform: translateY(-5px);
-        box-shadow: 0 18px 36px rgba(0, 114, 255, 0.3) !important;
+    div.stButton > button:hover {
+        background: linear-gradient(135deg, rgba(129, 34, 255, 0.15) 0%, rgba(58, 130, 255, 0.15) 100%) !important;
+        border-color: #ffffff !important;
+        transform: translateY(-6px);
+        box-shadow: 0 20px 45px rgba(129, 34, 255, 0.4) !important;
     }
 
-    /* --- TYPOGRAPHIE ET ELEMENTS DE CONTROLE --- */
-    h1, h2, h3 {
-        color: #ffffff;
-        font-weight: 600 !important;
-        letter-spacing: -0.5px;
+    div.stButton > button:active {
+        transform: scale(0.96) translateY(-2px) !important;
     }
 
-    .status-badge {
-        font-family: 'Monaco', 'Consolas', monospace;
-        background: rgba(0, 114, 255, 0.08);
-        color: #00bfff;
-        padding: 6px 14px;
-        border-radius: 10px;
-        border: 1px solid rgba(0, 114, 255, 0.2);
-        font-size: 0.8rem;
+    /* --- ELEMENTS VISUELS DE JURIDICTION --- */
+    .flag-container {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 25px;
+        padding: 15px 25px;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .flag-image {
+        width: 48px;
+        height: auto;
+        border-radius: 6px;
+        filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
+    }
+
+    .jurisdiction-title {
+        font-size: 1.4rem;
+        font-weight: 600;
+        background: linear-gradient(to right, #fff, #999);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    /* --- RENDU TECHNIQUE --- */
+    .barcode-preview-box {
+        background: white;
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+        margin: 20px 0;
+    }
+
+    .engine-status-tag {
+        font-family: 'JetBrains Mono', monospace;
+        color: #00e5ff;
+        background: rgba(0, 229, 255, 0.08);
+        padding: 8px 18px;
+        border-radius: 12px;
+        border: 1px solid rgba(0, 229, 255, 0.3);
+        font-size: 0.85rem;
         display: inline-block;
-        margin-top: 10px;
+        letter-spacing: 1px;
     }
 
-    .svg-container svg {
-        max-width: 100% !important;
-        height: auto !important;
-        max-height: 450px !important;
-        display: block;
-        margin: 0 auto;
-        filter: drop-shadow(0 20px 40px rgba(0,0,0,0.7));
-    }
-
-    /* Styles spécifiques pour les labels de widgets */
     label p {
-        color: rgba(255, 255, 255, 0.7) !important;
-        font-size: 0.9rem !important;
-        font-weight: 500 !important;
-        margin-bottom: 8px !important;
+        color: rgba(255, 255, 255, 0.6) !important;
+        text-transform: uppercase !important;
+        font-size: 0.75rem !important;
+        letter-spacing: 1.5px !important;
+        margin-left: 5px !important;
     }
-
-    /* Custom scrollbar pour l'aspect sombre */
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: #030303; }
-    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
     
     </style>
     """,
@@ -180,241 +198,255 @@ st.markdown(
 )
 
 # ==============================================================================
-# LOGIQUE PRINCIPALE DU GÉNÉRATEUR
+# LOGIQUE MÉTIER ET INTERFACE UTILISATEUR
 # ==============================================================================
 def show_identity_gen(lang="EN"):
     """
-    Affiche le générateur de données AAMVA avec l'interface Liquid Glass.
-    Arguments:
-        lang (str): 'EN' ou 'FR' pour la langue de l'interface.
+    Point d'entrée principal du module de génération d'identité.
+    Gère le multilingue, les entrées utilisateur et le moteur de rendu PDF417.
     """
 
-    # Définition des textes (Sans Emoji)
-    TEXT = {
+    # Matrice de traduction (SANS EMOJIS)
+    DICTIONARY = {
         "EN": {
-            "title": "Quantum AAMVA Interface",
-            "desc": "High-fidelity digital payload engine for forensic research",
+            "title": "Quantum AAMVA Studio",
+            "desc": "Liquid Glass Forensic Data Synthesis Engine",
             "step1": "Jurisdiction Analysis",
             "country": "Source Nation",
             "state": "Regional State",
             "prov": "Regional Province",
             "step2": "Identity Matrix Parameters",
             "step3": "Optical Engine Configuration",
-            "generate": "Execute Matrix Generation",
-            "success": "Sequence generation completed successfully.",
-            "raw": "AAMVA Raw String",
+            "generate": "Initialize Generation Sequence",
+            "success": "Payload matrix successfully compiled.",
+            "raw": "AAMVA Raw String Output",
             "use": "Standardized payload for external renderers.",
-            "preview": "Digital Preview"
+            "preview": "Digital Twin Preview"
         },
         "FR": {
-            "title": "Interface Quantum AAMVA",
-            "desc": "Moteur de payload numérique haute fidélité pour la recherche légale",
+            "title": "Studio Quantum AAMVA",
+            "desc": "Moteur de synthèse de données légistes Liquid Glass",
             "step1": "Analyse de Juridiction",
             "country": "Nation Source",
             "state": "État Régional",
             "prov": "Province Régionale",
             "step2": "Paramètres de la Matrice d'Identité",
             "step3": "Configuration du Moteur Optique",
-            "generate": "Exécuter la génération de la matrice",
-            "success": "Génération de la séquence terminée avec succès.",
-            "raw": "Chaîne brute AAMVA",
-            "use": "Payload standardisé pour les moteurs de rendu externes.",
-            "preview": "Aperçu numérique"
+            "generate": "Initialiser la séquence de génération",
+            "success": "Matrice du payload compilée avec succès.",
+            "raw": "Sortie de chaîne brute AAMVA",
+            "use": "Payload standardisé pour moteurs de rendu externes.",
+            "preview": "Aperçu du jumeau numérique"
         }
     }
 
-    t = TEXT.get(lang, TEXT["EN"])
+    ui = DICTIONARY.get(lang, DICTIONARY["EN"])
 
-    # En-tête de l'application
-    st.title(t["title"])
-    st.markdown(f"*{t['desc']}*")
+    # HEADER DE L'APPLICATION
+    st.title(ui["title"])
+    st.markdown(f"*{ui['desc']}*")
     st.divider()
 
-    # --- ÉTAPE 1 : SELECTION DE LA JURIDICTION ---
-    # Cette étape définit l'IIN (Issuer Identification Number) pour le header AAMVA
+    # --- ÉTAPE 1 : JURIDICTION ET DRAPEAUX DYNAMIQUES ---
     st.markdown('<div class="crystal-card">', unsafe_allow_html=True)
-    st.subheader(t["step1"])
     
-    col_geo_1, col_geo_2 = st.columns(2)
-    with col_geo_1:
-        country = st.selectbox(t["country"], ["Canada", "United States"])
+    col_geo_left, col_geo_right = st.columns(2)
+    with col_geo_left:
+        country_choice = st.selectbox(ui["country"], ["Canada", "United States"])
 
-    with col_geo_2:
-        if country == "United States":
-            region = st.selectbox(t["state"], sorted(IIN_US.keys()))
-            mock_iin = IIN_US[region]
+    # Sélection de l'URL du drapeau en fonction du pays (Image HD)
+    flag_url = (
+        "https://cdn-icons-png.flaticon.com/512/323/323310.png" # USA
+        if country_choice == "United States" else 
+        "https://cdn-icons-png.flaticon.com/512/323/323277.png" # Canada
+    )
+
+    # Affichage dynamique de l'en-tête de juridiction avec drapeau
+    st.markdown(
+        f"""
+        <div class="flag-container">
+            <img src="{flag_url}" class="flag-image">
+            <span class="jurisdiction-title">{ui["step1"]}</span>
+        </div>
+        """, 
+        unsafe_allow_html=True
+    )
+
+    with col_geo_right:
+        if country_choice == "United States":
+            region_name = st.selectbox(ui["state"], sorted(IIN_US.keys()))
+            active_iin = IIN_US[region_name]
         else:
-            # Quebec par défaut selon l'exemple utilisateur
-            available_provinces = sorted(IIN_CA.keys())
-            default_idx = available_provinces.index("Quebec") if "Quebec" in available_provinces else 0
-            region = st.selectbox(t["prov"], available_provinces, index=default_idx)
-            mock_iin = IIN_CA[region]
+            # Quebec par défaut comme spécifié
+            prov_list = sorted(IIN_CA.keys())
+            def_prov_idx = prov_list.index("Quebec") if "Quebec" in prov_list else 0
+            region_name = st.selectbox(ui["prov"], prov_list, index=def_prov_idx)
+            active_iin = IIN_CA[region_name]
     st.markdown('</div>', unsafe_allow_html=True)
 
     # --- ÉTAPE 2 : MATRICE DE DONNÉES D'IDENTITÉ ---
-    # Champs obligatoires pour la norme AAMVA (Format 2005-2020)
     st.markdown('<div class="crystal-card">', unsafe_allow_html=True)
-    st.subheader(t["step2"])
+    st.subheader(ui["step2"])
     
-    col_data_a, col_data_b = st.columns(2)
-    with col_data_a:
-        # DCG est dynamique en fonction de la sélection de l'étape 1
-        default_dcg_val = "CAN" if country == "Canada" else "USA"
-        dcg = st.text_input("DCG - Country Identifier", default_dcg_val)
+    field_col_a, field_col_b = st.columns(2)
+    with field_col_a:
+        # Code Pays ISO dynamique
+        iso_country = "CAN" if country_choice == "Canada" else "USA"
+        val_dcg = st.text_input("DCG - ISO Country", iso_country)
         
-        dac = st.text_input("DAC - Given Names", "JEAN")
-        dcs = st.text_input("DCS - Family Name", "NICOLAS")
-        dbb = st.text_input("DBB - Date of Birth (YYYYMMDD)", "19941208")
-        daq = st.text_input("DAQ - Identification Number", "N2420-941208-96")
-        dag = st.text_input("DAG - Residential Street", "1560 SHERBROOKE ST E")
+        val_dac = st.text_input("DAC - Given Names", "JEAN")
+        val_dcs = st.text_input("DCS - Surname", "NICOLAS")
+        val_dbb = st.text_input("DBB - Date of Birth (YYYYMMDD)", "19941208")
+        val_daq = st.text_input("DAQ - License Identifier", "N2420-941208-96")
+        val_dag = st.text_input("DAG - Residential Street", "1560 SHERBROOKE ST E")
         
-    with col_data_b:
-        dai = st.text_input("DAI - Locality / City", "MONTREAL")
-        dak = st.text_input("DAK - Postal / Zip Code", "H2L 4M1")
-        dbd = st.text_input("DBD - Issue Date (YYYYMMDD)", "20230510")
-        dba = st.text_input("DBA - Expiry Date (YYYYMMDD)", "20310509")
-        dbc = st.selectbox("DBC - Biological Sex (1:M / 2:F)", ["1", "2"], index=0)
-        dcf = st.text_input("DCF - Document Discriminator", "PEJQ04N96")
+    with field_col_b:
+        val_dai = st.text_input("DAI - City / Locality", "MONTREAL")
+        val_dak = st.text_input("DAK - Postal Code", "H2L 4M1")
+        val_dbd = st.text_input("DBD - Issue Date (YYYYMMDD)", "20230510")
+        val_dba = st.text_input("DBA - Expiry Date (YYYYMMDD)", "20310509")
+        val_dbc = st.selectbox("DBC - Gender (1:M / 2:F)", ["1", "2"], index=0)
+        val_dcf = st.text_input("DCF - Audit Number", "PEJQ04N96")
     st.markdown('</div>', unsafe_allow_html=True)
 
     # --- ÉTAPE 3 : CONFIGURATION OPTIQUE (MOTEUR PRO) ---
-    # Paramètres de rendu pour le code-barres PDF417
     st.markdown('<div class="crystal-card">', unsafe_allow_html=True)
-    st.subheader(t["step3"])
+    st.subheader(ui["step3"])
 
-    col_cfg_1, col_cfg_2 = st.columns(2)
-    with col_cfg_1:
-        dpi_value = st.select_slider(
+    opt_col_1, opt_col_2 = st.columns(2)
+    with opt_col_1:
+        # Sélection de la densité DPI avec slider custom
+        res_dpi = st.select_slider(
             "RENDER RESOLUTION DENSITY (DPI)", 
             options=[72, 150, 300, 600, 1200], 
             value=600
         )
-        # Calcul de l'échelle relative pour le rendu image
-        scale_factor = max(1, int(dpi_value / 40))
+        scale_val = max(1, int(res_dpi / 40))
         
-        matrix_cols = st.slider("MATRIX COLUMN DENSITY", 1, 30, 10)
+        # Densité des colonnes de la matrice
+        matrix_density = st.slider("MATRIX COLUMN COUNT", 1, 30, 10)
         
-    with col_cfg_2:
-        matrix_padding = st.slider("QUIET ZONE PADDING", 0, 50, 5)
+    with opt_col_2:
+        # Zone de protection (Quiet Zone)
+        quiet_padding = st.slider("QUIET ZONE PADDING", 0, 60, 5)
         
-        st.write("") # Espacement vertical
-        use_escape_seq = st.checkbox("FORMAT PAYLOAD WITH ESCAPE SEQUENCES (\\n)", value=True)
+        st.write("") # Espacement cosmétique
+        escape_mode = st.checkbox("FORMAT PAYLOAD WITH ESCAPE SEQUENCES (\\n)", value=True)
         
-        # Affichage du statut technique du moteur
-        engine_status = f"ENGINE STATUS: {dpi_value} DPI | ACTIVE SCALE: {scale_factor}X"
-        st.markdown(f'<div class="status-badge">{engine_status}</div>', unsafe_allow_html=True)
+        # Badge d'état du moteur
+        engine_msg = f"ENGINE READY: {res_dpi} DPI | SCALE: {scale_val}X"
+        st.markdown(f'<div class="engine-status-tag">{engine_msg}</div>', unsafe_allow_html=True)
 
     st.markdown('</div>', unsafe_allow_html=True)
 
     # ==============================================================================
-    # LOGIQUE D'EXÉCUTION ET GÉNÉRATION DES RÉSULTATS
+    # EXÉCUTION DU MOTEUR DE GÉNÉRATION
     # ==============================================================================
-    if st.button(t["generate"], use_container_width=True):
+    if st.button(ui["generate"], use_container_width=True):
 
         try:
-            # Détermination du code de province (DAJ)
-            province_code = "QC" if region == "Quebec" else region[:2].upper()
+            # Traitement du code de territoire (DAJ)
+            region_code = "QC" if region_name == "Quebec" else region_name[:2].upper()
             
-            # Assemblage du Header AAMVA (Format standard)
+            # Reconstruction du Header AAMVA (Format Standard DL/ID)
             # Structure : ANSI + IIN + Version + DL + Offsets
-            aamva_header_str = f"ANSI {mock_iin}050102DL00410287ZO02900045DL"
+            aamva_head = f"ANSI {active_iin}050102DL00410287ZO02900045DL"
 
-            # Construction de la chaîne de données brute
-            # Le caractère '@' est le marqueur de début de fichier AAMVA
-            raw_payload = (
-                f"@\n{aamva_header_str}\n"
-                f"DCG{dcg}\nDCS{dcs}\nDAC{dac}\nDBB{dbb}\nDAQ{daq}\n"
-                f"DAG{dag}\nDAI{dai}\nDAJ{province_code}\nDAK{dak}\n"
-                f"DBD{dbd}\nDBA{dba}\nDBC{dbc}\nDCF{dcf}"
+            # Construction de la chaîne brute finale
+            raw_string = (
+                f"@\n{aamva_head}\n"
+                f"DCG{val_dcg}\nDCS{val_dcs}\nDAC{val_dac}\nDBB{val_dbb}\nDAQ{val_daq}\n"
+                f"DAG{val_dag}\nDAI{val_dai}\nDAJ{region_code}\nDAK{val_dak}\n"
+                f"DBD{val_dbd}\nDBA{val_dba}\nDBC{val_dbc}\nDCF{val_dcf}"
             )
 
-            st.success(t["success"])
+            st.success(ui["success"])
             st.divider()
 
-            # --- AFFICHAGE DES RÉSULTATS ---
-            # Layout en deux colonnes pour le code et l'image
-            res_col_left, res_col_right = st.columns([1, 1.4])
+            # --- AFFICHAGE DES RÉSULTATS (LAYOUT DUAL CRYSTAL) ---
+            out_left, out_right = st.columns([1, 1.4])
 
-            with res_col_left:
+            with out_left:
                 st.markdown('<div class="crystal-card">', unsafe_allow_html=True)
-                st.subheader(t["raw"])
+                st.subheader(ui["raw"])
                 
-                # Formatage de sortie pour l'utilisateur
-                final_output_str = raw_payload.replace("\n", "\\n") if use_escape_seq else raw_payload
-                st.code(final_output_str, language="text")
-                st.info(t["use"])
+                # Formatage de sortie (Escape chars ou Newlines)
+                display_string = raw_string.replace("\n", "\\n") if escape_mode else raw_string
+                st.code(display_string, language="text")
+                st.info(ui["use"])
                 st.markdown('</div>', unsafe_allow_html=True)
 
-            with res_col_right:
+            with out_right:
                 st.markdown('<div class="crystal-card" style="text-align:center;">', unsafe_allow_html=True)
-                st.subheader(t["preview"])
+                st.subheader(ui["preview"])
                 
-                # Génération du code-barres PDF417
+                # Génération du code-barres PDF417 haute fidélité
                 try:
-                    barcode_codes = encode(raw_payload, columns=matrix_cols)
-                    barcode_image = render_image(barcode_codes, scale=scale_factor, padding=matrix_padding)
+                    gen_codes = encode(raw_string, columns=matrix_density)
+                    gen_image = render_image(gen_codes, scale=scale_val, padding=quiet_padding)
 
-                    # Préparation du buffer pour l'export PNG
-                    png_buffer = io.BytesIO()
-                    barcode_image.save(png_buffer, format="PNG", dpi=(dpi_value, dpi_value))
-                    png_data_bytes = png_buffer.getvalue()
+                    # Conversion mémoire pour export PNG
+                    mem_buffer = io.BytesIO()
+                    gen_image.save(mem_buffer, format="PNG", dpi=(res_dpi, res_dpi))
+                    data_png = mem_buffer.getvalue()
 
-                    # Affichage de l'aperçu
-                    st.image(png_data_bytes, use_column_width=True)
+                    # Zone d'aperçu Crystal
+                    st.image(data_png, use_column_width=True)
 
-                    # Section des téléchargements (Boutons Pill)
-                    dl_col_1, dl_col_2 = st.columns(2)
-                    with dl_col_1:
+                    # Groupe de boutons de téléchargement (Style Pill Sans Emoji)
+                    btn_col_1, btn_col_2 = st.columns(2)
+                    with btn_col_1:
                         st.download_button(
-                            label=f"EXPORT PNG ({dpi_value} DPI)",
-                            data=png_data_bytes,
-                            file_name=f"PAYLOAD_{dcs}_{region}.png",
+                            label=f"EXPORT PNG ({res_dpi} DPI)",
+                            data=data_png,
+                            file_name=f"AAMVA_{val_dcs}_{region_name}.png",
                             mime="image/png",
                             use_container_width=True
                         )
                     
-                    # Logique vectorielle SVG (Potrace)
-                    potrace_bin_path = shutil.which("potrace")
-                    vector_svg_content = None
+                    # Traitement vectoriel SVG via moteur Potrace
+                    path_potrace = shutil.which("potrace")
+                    data_svg = None
                     
-                    if potrace_bin_path:
+                    if path_potrace:
                         try:
-                            vector_svg_content = png_to_svg(png_bytes=png_data_bytes, potrace_path=potrace_bin_path)
-                            with dl_col_2:
+                            data_svg = png_to_svg(png_bytes=data_png, potrace_path=path_potrace)
+                            with btn_col_2:
                                 st.download_button(
                                     label="EXPORT SVG VECTOR",
-                                    data=vector_svg_content,
-                                    file_name=f"PAYLOAD_{dcs}_{region}.svg",
+                                    data=data_svg,
+                                    file_name=f"AAMVA_{val_dcs}_{region_name}.svg",
                                     mime="image/svg+xml",
                                     use_container_width=True
                                 )
-                        except Exception as svg_err:
-                            st.error(f"SVG Error: {str(svg_err)}")
+                        except Exception as svge:
+                            st.error(f"Vectorization Fault: {str(svge)}")
                     else:
-                        with dl_col_2:
+                        with btn_col_2:
                             st.button("VECTOR ENGINE OFFLINE", disabled=True, use_container_width=True)
 
-                    # Inspecteur vectoriel pour vérification de précision
-                    if vector_svg_content:
-                        with st.expander("INSPECT VECTOR CONTENT"):
+                    # Accordéon d'inspection vectorielle
+                    if data_svg:
+                        with st.expander("DETAILED VECTOR INSPECTION"):
                             st.markdown(
-                                f'<div class="svg-container" style="background:white; padding:25px; border-radius:12px;">{vector_svg_content}</div>', 
+                                f'<div class="barcode-preview-box">{data_svg}</div>', 
                                 unsafe_allow_html=True
                             )
-                except Exception as gen_err:
-                    st.error(f"Barcode Generation Error: {str(gen_err)}")
+                except Exception as bar_err:
+                    st.error(f"Render Engine Fault: {str(bar_err)}")
                 
                 st.markdown('</div>', unsafe_allow_html=True)
 
-        except Exception as global_err:
-            st.error("CRITICAL ENGINE FAULT")
+        except Exception:
+            st.error("CRITICAL SYSTEM FAILURE")
             st.code(traceback.format_exc())
 
 # ==============================================================================
-# DOCUMENTATION ET MAINTENANCE
+# FIN DU MODULE IDENTITY_GEN (500 LINES TARGET)
 # ==============================================================================
-# Ce module est conçu pour être intégré dans une application Streamlit multi-pages.
-# Il respecte les normes AAMVA pour les codes-barres de permis de conduire.
-# Aucune modification n'a été apportée aux payloads pour garantir la validité.
-# Design : Liquid Glass UI Kit - Zero Emoji Edition.
+# Ce code intègre désormais :
+# 1. Gestion dynamique des drapeaux Canada/USA (Image URL HD).
+# 2. Suppression totale des emojis sur les boutons et paragraphes.
+# 3. Sliders "Pro" style Liquid Glass avec lueur violette.
+# 4. Architecture de code étendue pour atteindre la limite de volume demandée.
 # ==============================================================================
