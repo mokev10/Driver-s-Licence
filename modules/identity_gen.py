@@ -20,7 +20,7 @@ from utils.svg_vectorizer import png_to_svg
 
 
 # =========================
-# ANIMATION CSS (STRICTEMENT CONSERVÉE ET UNIFIÉE)
+# ANIMATION & UI CSS (INTEGRAL)
 # =========================
 st.markdown(
     """
@@ -49,7 +49,7 @@ st.markdown(
         margin-bottom: 10px;
     }
 
-    /* UNIFICATION DES BOUTONS SANS TOUCHER AU RESTE */
+    /* UNIFICATION DES BOUTONS (GENERATE & DOWNLOAD) */
     div.stButton > button, div.stDownloadButton > button {
         background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%) !important;
         color: white !important;
@@ -74,6 +74,15 @@ st.markdown(
         color: #4facfe;
         font-weight: bold;
         font-size: 0.9rem;
+    }
+
+    /* FIX POUR L'APERÇU SVG ÉNORME */
+    .svg-container svg {
+        max-width: 100% !important;
+        height: auto !important;
+        max-height: 350px !important;
+        display: block;
+        margin: 0 auto;
     }
 
     </style>
@@ -126,10 +135,9 @@ def show_identity_gen(lang="EN"):
     st.write(t["desc"])
     st.divider()
 
-    # --- ÉTAPE 1 ---
+    # --- ÉTAPE 1 : JURIDICTION ---
     col1, col2 = st.columns(2)
     with col1:
-        # On garde Canada par défaut comme tu l'as demandé
         country = st.selectbox(t["country"], ["Canada", "United States"])
 
     icon = (
@@ -144,17 +152,18 @@ def show_identity_gen(lang="EN"):
             region = st.selectbox(t["state"], sorted(IIN_US.keys()))
             mock_iin = IIN_US[region]
         else:
+            # Défini sur Quebec par défaut selon ton exemple
             region = st.selectbox(t["prov"], sorted(IIN_CA.keys()), index=sorted(IIN_CA.keys()).index("Quebec"))
             mock_iin = IIN_CA[region]
 
     st.divider()
 
-    # --- ÉTAPE 2 ---
+    # --- ÉTAPE 2 : DONNÉES D'IDENTITÉ ---
     st.markdown(f"""<div class="step-animated-delay-1 overlay-box"><h3>{t["step2"]}</h3></div>""", unsafe_allow_html=True)
 
     colA, colB = st.columns(2)
     with colA:
-        # LOGIQUE DYNAMIQUE : Le DCG change en fonction du pays sélectionné au Step 1
+        # LOGIQUE DYNAMIQUE DU PAYS
         default_dcg = "CAN" if country == "Canada" else "USA"
         dcg = st.text_input("DCG (Country)", default_dcg)
         
@@ -173,7 +182,7 @@ def show_identity_gen(lang="EN"):
 
     st.divider()
 
-    # --- ÉTAPE 3 ---
+    # --- ÉTAPE 3 : ENGINE CONFIG ---
     st.markdown(f"""<div class="step-animated-delay-2 overlay-box"><h3>{t["step3"]}</h3></div>""", unsafe_allow_html=True)
 
     c_cfg1, c_cfg2, c_cfg3, c_cfg4 = st.columns(4)
@@ -208,6 +217,7 @@ def show_identity_gen(lang="EN"):
 
             st.success(t["success"])
 
+            # --- RÉSULTATS OPTIMISÉS UI/UX ---
             res_left, res_right = st.columns([1, 1.2])
 
             with res_left:
@@ -227,6 +237,7 @@ def show_identity_gen(lang="EN"):
 
                 st.image(png_bytes, use_column_width=True)
 
+                # Boutons de téléchargement stylisés
                 btn_c1, btn_c2 = st.columns(2)
                 with btn_c1:
                     st.download_button(f"📥 PNG ({dpi_val} DPI)", png_bytes, f"{dcs}.png", "image/png", use_container_width=True)
@@ -241,8 +252,12 @@ def show_identity_gen(lang="EN"):
                     except: pass
 
                 if svg:
-                    with st.expander("👁️ View SVG Data"):
-                        st.markdown(f'<div class="step-fade overlay-box" style="background:white;">{svg}</div>', unsafe_allow_html=True)
+                    with st.expander("👁️ View SVG Preview"):
+                        # Conteneur avec classe CSS .svg-container pour limiter la taille
+                        st.markdown(
+                            f'<div class="step-fade overlay-box svg-container" style="background:white; text-align:center;">{svg}</div>', 
+                            unsafe_allow_html=True
+                        )
 
         except Exception:
             st.error(traceback.format_exc())
