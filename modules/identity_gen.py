@@ -20,7 +20,7 @@ from utils.svg_vectorizer import png_to_svg
 
 
 # =========================
-# ANIMATION CSS (AUGMENTÉE - NON SIMPLIFIÉE)
+# ANIMATION CSS (AUGMENTÉE - STRICTEMENT CONSERVÉE)
 # =========================
 st.markdown(
     """
@@ -196,20 +196,24 @@ def show_identity_gen(lang="EN"):
     if st.button(t["generate"], use_container_width=True):
 
         try:
+            # Correction de la logique DAJ pour extraire les 2 premières lettres ou code spécifique
+            state_code = "QC" if region == "Quebec" else region[:2].upper()
+            
             aamva_header = f"ANSI {mock_iin}050102DL00410287ZO02900045DL"
 
             raw = (
                 f"@\n{aamva_header}\n"
                 f"DCG{dcg}\nDCS{dcs}\nDAC{dac}\nDBB{dbb}\nDAQ{daq}\n"
-                f"DAG{dag}\nDAI{dai}\nDAJ{region[:2].upper()}\nDAK{dak}\n"
+                f"DAG{dag}\nDAI{dai}\nDAJ{state_code}\nDAK{dak}\n"
                 f"DBD{dbd}\nDBA{dba}\nDBC{dbc}\nDCF{dcf}"
             )
 
             st.success(t["success"])
 
-            col1, col2 = st.columns(2)
+            col1_res, col2_res = st.columns(2)
 
-            with col1:
+            with col1_res:
+                # Affichage conforme pour copier-coller avec séquences d'échappement
                 st.code(raw.replace("\n", "\\n"))
 
             # =========================
@@ -222,7 +226,7 @@ def show_identity_gen(lang="EN"):
             image.save(buf, format="PNG")
             png_bytes = buf.getvalue()
 
-            with col2:
+            with col2_res:
                 st.image(png_bytes)
 
                 st.download_button(
@@ -268,5 +272,3 @@ def show_identity_gen(lang="EN"):
 
         except Exception:
             st.error(traceback.format_exc())
-
-
