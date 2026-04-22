@@ -20,16 +20,14 @@ from utils.svg_vectorizer import png_to_svg
 
 
 # =========================
-# UI/UX CUSTOM CSS (MODERNE & NÉON)
+# UI/UX CUSTOM CSS (CONSERVÉ ET AMÉLIORÉ)
 # =========================
 st.markdown(
     """
     <style>
-    /* Animations existantes */
     @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0px); opacity: 1; } }
     .step-animated { animation: slideUp 0.6s ease-out; }
     
-    /* Style global des conteneurs */
     .config-card {
         background: rgba(255, 255, 255, 0.03);
         border: 1px solid rgba(255, 255, 255, 0.1);
@@ -38,34 +36,15 @@ st.markdown(
         margin-bottom: 20px;
         backdrop-filter: blur(10px);
     }
-
-    /* Custom Sliders Streamlit */
-    div[data-testid="stSlider"] > label {
-        color: #4facfe !important;
-        font-weight: bold !important;
-        text-transform: uppercase;
-        font-size: 0.8rem;
-        letter-spacing: 1px;
-    }
-
-    /* Custom Checkbox */
-    div[data-testid="stCheckbox"] {
-        background: rgba(79, 172, 254, 0.1);
-        padding: 10px 20px;
-        border-radius: 10px;
-        border: 1px solid rgba(79, 172, 254, 0.3);
-    }
-
-    /* Accentuation de la couleur primaire */
-    .stSlider [data-baseweb="slider"] [role="slider"] {
-        background-color: #4facfe;
-        box-shadow: 0 0 10px #4facfe;
-    }
     
-    .stSlider [data-highlight="true"] {
-        background: linear-gradient(90deg, #4facfe 0%, #a066ff 100%) !important;
+    .dpi-badge {
+        background: linear-gradient(90deg, #4facfe 0%, #a066ff 100%);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: bold;
+        color: white;
     }
-
     </style>
     """,
     unsafe_allow_html=True
@@ -74,129 +53,102 @@ st.markdown(
 def show_identity_gen(lang="EN"):
 
     TEXT = {
-        "EN": {
-            "title": "AAMVA Forensic Generator",
-            "step1": "🌍 Jurisdiction Selection",
-            "step2": "🪪 Identity Attributes",
-            "step3": "⚙️ Barcode Engine Config",
-            "generate": "GENERATE PAYLOAD & BARCODE",
-            "success": "Matrix generated successfully."
-        },
-        "FR": {
-            "title": "Générateur AAMVA Forensic",
-            "step1": "🌍 Sélection de la Juridiction",
-            "step2": "🪪 Attributs d'Identité",
-            "step3": "⚙️ Configuration du Moteur",
-            "generate": "GÉNÉRER LE CODE & LA MATRICE",
-            "success": "Matrice générée avec succès."
-        }
+        "EN": {"title": "AAMVA High-Res Engine", "step3": "⚙️ Rendering & DPI Settings"},
+        "FR": {"title": "Moteur AAMVA Haute-Résolution", "step3": "⚙️ Réglages du Rendu & DPI"}
     }
     t = TEXT.get(lang, TEXT["EN"])
 
     st.title(f"🚀 {t['title']}")
     st.divider()
 
-    # =========================
-    # STEP 1: JURISDICTION
-    # =========================
+    # --- SÉLECTION RÉGION ---
     with st.container():
-        st.markdown(f'<div class="step-animated config-card"><h4>{t["step1"]}</h4>', unsafe_allow_html=True)
+        st.markdown('<div class="step-animated config-card">', unsafe_allow_html=True)
         col1, col2 = st.columns(2)
         with col1:
             country = st.selectbox("Market", ["United States", "Canada"])
         with col2:
-            if country == "United States":
-                region = st.selectbox("State Territory", sorted(IIN_US.keys()))
-                mock_iin = IIN_US[region]
-            else:
-                region = st.selectbox("Province", sorted(IIN_CA.keys()))
-                mock_iin = IIN_CA[region]
+            list_data = IIN_US if country == "United States" else IIN_CA
+            region = st.selectbox("Jurisdiction", sorted(list_data.keys()))
+            mock_iin = list_data[region]
         st.markdown('</div>', unsafe_allow_html=True)
 
-    # =========================
-    # STEP 2: DATA INPUTS
-    # =========================
+    # --- INPUTS ---
     with st.container():
-        st.markdown(f'<div class="step-animated config-card"><h4>{t["step2"]}</h4>', unsafe_allow_html=True)
-        colA, colB = st.columns(2)
-        with colA:
+        st.markdown('<div class="step-animated config-card">', unsafe_allow_html=True)
+        cA, cB = st.columns(2)
+        with cA:
             dac = st.text_input("DAC (First Name)", "JEAN")
             dcs = st.text_input("DCS (Last Name)", "NICOLAS")
             dbb = st.text_input("DBB (DOB)", "19941208")
+        with cB:
             daq = st.text_input("DAQ (DL Number)", "D9823415")
-        with colB:
-            dag = st.text_input("DAG (Address)", "1560 STREET")
-            dai = st.text_input("DAI (City)", "CITY")
-            dak = st.text_input("DAK (Zip)", "POSTAL")
             dba = st.text_input("DBA (Expiry)", "20310509")
+            dak = st.text_input("DAK (Zip)", "H2L 4M1")
         st.markdown('</div>', unsafe_allow_html=True)
 
     # =========================
-    # STEP 3: ADVANCED UI CONFIG (Le nouveau design pour tes sliders)
+    # ÉTAPE 3: RÉGLAGE DPI PRÉCIS
     # =========================
     with st.container():
         st.markdown(f'<div class="step-animated config-card"><h4>{t["step3"]}</h4>', unsafe_allow_html=True)
         
-        # Organisation en grille moderne
         cfg_col1, cfg_col2, cfg_col3 = st.columns([2, 2, 2])
         
         with cfg_col1:
-            barcode_scale = st.slider("Scale (Resolution/DPI)", 1, 30, 15, help="Augmenter pour une qualité forensic (600 DPI+)")
+            # Sélecteur de DPI réel
+            dpi_target = st.select_slider(
+                "Target Resolution (DPI)",
+                options=[72, 150, 300, 600, 1200],
+                value=600,
+                help="600 DPI est le standard pour les documents officiels."
+            )
+            # Calcul du scale : DPI / 40 est une bonne approximation pour pdf417gen
+            calculated_scale = max(1, int(dpi_target / 40))
         
         with cfg_col2:
-            barcode_padding = st.slider("Quiet Zone (Padding)", 0, 50, 5, help="Espace blanc autour du code")
+            barcode_padding = st.slider("Padding", 0, 50, 10)
             
         with cfg_col3:
-            barcode_columns = st.slider("Module Columns", 1, 30, 8, help="Largeur des colonnes PDF417")
+            barcode_columns = st.slider("Columns", 1, 20, 8)
         
-        # Checkbox stylisée en bas
-        st.markdown("<br>", unsafe_allow_html=True)
-        use_escape = st.checkbox("Enable Escape Sequences (\\n) for TEC-IT / Photoshop", value=True)
-        
+        st.markdown(f'Résolution active : <span class="dpi-badge">{dpi_target} DPI</span> (Scale: {calculated_scale})', unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
     # =========================
-    # ACTION
+    # GÉNÉRATION
     # =========================
-    if st.button(t["generate"], use_container_width=True):
+    if st.button("GÉNÉRER LA MATRICE", use_container_width=True):
         try:
             state_code = "QC" if region == "Quebec" else region[:2].upper()
             aamva_header = f"ANSI {mock_iin}050102DL00410287ZO02900045DL"
             
-            raw = (
-                f"@\n{aamva_header}\n"
-                f"DCS{dcs}\nDAC{dac}\nDBB{dbb}\nDAQ{daq}\n"
-                f"DAG{dag}\nDAI{dai}\nDAJ{state_code}\nDAK{dak}\n"
-                f"DBA{dba}\nDCFREF001"
-            )
+            raw = f"@\n{aamva_header}\nDCS{dcs}\nDAC{dac}\nDBB{dbb}\nDAQ{daq}\nDAJ{state_code}\nDAK{dak}\nDBA{dba}"
 
-            st.success(t["success"])
+            st.success("Génération complétée.")
             
-            res_col1, res_col2 = st.columns(2)
-            with res_col1:
-                st.subheader("Final String Payload")
-                display_raw = raw.replace("\n", "\\n") if use_escape else raw
-                st.code(display_raw, language="text")
+            r1, r2 = st.columns(2)
+            with r1:
+                st.code(raw.replace("\n", "\\n"))
 
-            with res_col2:
-                st.subheader("Visual Preview")
+            with r2:
                 codes = encode(raw, columns=barcode_columns)
-                image = render_image(codes, scale=barcode_scale, padding=barcode_padding)
+                # Utilisation du scale calculé selon le DPI
+                image = render_image(codes, scale=calculated_scale, padding=barcode_padding)
 
                 buf = io.BytesIO()
-                image.save(buf, format="PNG")
+                image.save(buf, format="PNG", dpi=(dpi_target, dpi_target)) # Injection des métadonnées DPI
                 png_bytes = buf.getvalue()
 
-                st.image(png_bytes, caption=f"PDF417 - Scale {barcode_scale}")
+                st.image(png_bytes, caption=f"Rendu à {dpi_target} DPI")
                 
-                # SVG Export logic
+                st.download_button(f"📥 PNG ({dpi_target} DPI)", png_bytes, f"{dcs}_{dpi_target}dpi.png", "image/png")
+
+                # SVG
                 potrace_path = shutil.which("potrace")
                 if potrace_path:
                     svg = png_to_svg(png_bytes=png_bytes, potrace_path=potrace_path)
-                    st.download_button("📥 GET VECTOR SVG", svg, f"{dcs}.svg", "image/svg+xml")
-                
-                st.download_button("📥 GET HIGH-RES PNG", png_bytes, f"{dcs}.png", "image/png")
+                    st.download_button("📥 SVG VECTOR", svg, f"{dcs}.svg", "image/svg+xml")
 
         except Exception:
-            st.error("Engine Fault")
-            st.code(traceback.format_exc())
+            st.error(traceback.format_exc())
