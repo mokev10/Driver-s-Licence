@@ -7,7 +7,7 @@ import shutil
 import traceback
 
 # =========================
-# PATH FIX (important pour imports)
+# PATH FIX (STRICTEMENT CONSERVÉ)
 # =========================
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
@@ -20,7 +20,7 @@ from utils.svg_vectorizer import png_to_svg
 
 
 # =========================
-# ANIMATION & BUTTON CSS (STRICTEMENT CONSERVÉE ET UNIFIÉE)
+# ANIMATION CSS (STRICTEMENT CONSERVÉE ET UNIFIÉE)
 # =========================
 st.markdown(
     """
@@ -49,13 +49,13 @@ st.markdown(
         margin-bottom: 10px;
     }
 
-    /* --- UNIFICATION DES BOUTONS (GENERATE & DOWNLOAD) --- */
+    /* UNIFICATION DES BOUTONS SANS TOUCHER AU RESTE */
     div.stButton > button, div.stDownloadButton > button {
         background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%) !important;
         color: white !important;
         font-weight: bold !important;
         border: none !important;
-        border-radius: 25px !important; /* Arrondi moderne */
+        border-radius: 25px !important;
         padding: 10px 25px !important;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
         transition: all 0.3s ease !important;
@@ -126,28 +126,17 @@ def show_identity_gen(lang="EN"):
     st.write(t["desc"])
     st.divider()
 
+    # --- ÉTAPE 1 ---
     col1, col2 = st.columns(2)
-
     with col1:
         country = st.selectbox(t["country"], ["United States", "Canada"])
 
     icon = (
         "https://img.icons8.com/external-justicon-flat-justicon/64/external-united-states-countrys-flags-justicon-flat-justicon.png"
-        if country == "United States"
-        else "https://img.icons8.com/external-justicon-flat-justicon/64/external-canada-countrys-flags-justicon-flat-justicon.png"
+        if country == "United States" else "https://img.icons8.com/external-justicon-flat-justicon/64/external-canada-countrys-flags-justicon-flat-justicon.png"
     )
 
-    st.markdown(
-        f"""
-        <div class="step-animated overlay-box">
-            <div style="display:flex;align-items:center;gap:10px;">
-                <img src="{icon}" width="24">
-                <h3 style="margin:0;">{t["step1"]}</h3>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    st.markdown(f"""<div class="step-animated overlay-box"><div style="display:flex;align-items:center;gap:10px;"><img src="{icon}" width="24"><h3 style="margin:0;">{t["step1"]}</h3></div></div>""", unsafe_allow_html=True)
 
     with col2:
         if country == "United States":
@@ -159,7 +148,8 @@ def show_identity_gen(lang="EN"):
 
     st.divider()
 
-    st.markdown(f'<div class="step-animated-delay-1 overlay-box"><h3>{t["step2"]}</h3></div>', unsafe_allow_html=True)
+    # --- ÉTAPE 2 ---
+    st.markdown(f"""<div class="step-animated-delay-1 overlay-box"><h3>{t["step2"]}</h3></div>""", unsafe_allow_html=True)
 
     colA, colB = st.columns(2)
     with colA:
@@ -179,7 +169,8 @@ def show_identity_gen(lang="EN"):
 
     st.divider()
 
-    st.markdown(f'<div class="step-animated-delay-2 overlay-box"><h3>{t["step3"]}</h3></div>', unsafe_allow_html=True)
+    # --- ÉTAPE 3 ---
+    st.markdown(f"""<div class="step-animated-delay-2 overlay-box"><h3>{t["step3"]}</h3></div>""", unsafe_allow_html=True)
 
     c_cfg1, c_cfg2, c_cfg3, c_cfg4 = st.columns(4)
     with c_cfg1:
@@ -196,7 +187,7 @@ def show_identity_gen(lang="EN"):
     st.divider()
 
     # =========================
-    # GENERATION
+    # GENERATION LOGIC
     # =========================
     if st.button(t["generate"], use_container_width=True):
 
@@ -212,14 +203,17 @@ def show_identity_gen(lang="EN"):
             )
 
             st.success(t["success"])
-            col1_res, col2_res = st.columns(2)
 
-            with col1_res:
+            # --- RÉSULTATS UI/UX OPTIMISÉS ---
+            res_left, res_right = st.columns([1, 1.2])
+
+            with res_left:
                 st.subheader(t["raw"])
                 display_raw = raw.replace("\n", "\\n") if use_escape else raw
                 st.code(display_raw)
+                st.info(t["use"])
 
-            with col2_res:
+            with res_right:
                 st.subheader(t["preview"])
                 codes = encode(raw, columns=barcode_columns)
                 image = render_image(codes, scale=calc_scale, padding=barcode_padding)
@@ -228,35 +222,25 @@ def show_identity_gen(lang="EN"):
                 image.save(buf, format="PNG", dpi=(dpi_val, dpi_val))
                 png_bytes = buf.getvalue()
 
-                st.image(png_bytes)
+                st.image(png_bytes, use_column_width=True)
 
-                # --- BOUTON PNG STYLISÉ ---
-                st.download_button(
-                    f"📥 PNG ({dpi_val} DPI)",
-                    png_bytes,
-                    file_name=f"{dcs}_{dpi_val}dpi.png",
-                    mime="image/png",
-                    use_container_width=True
-                )
-
+                # Boutons de téléchargement côte à côte
+                btn_c1, btn_c2 = st.columns(2)
+                with btn_c1:
+                    st.download_button(f"📥 PNG ({dpi_val} DPI)", png_bytes, f"{dcs}.png", "image/png", use_container_width=True)
+                
                 potrace_path = shutil.which("potrace")
                 svg = None
                 if potrace_path:
                     try:
                         svg = png_to_svg(png_bytes=png_bytes, potrace_path=potrace_path)
-                        # --- BOUTON SVG STYLISÉ ---
-                        st.download_button(
-                            "📥 SVG VECTORIEL",
-                            svg,
-                            file_name=f"{dcs}.svg",
-                            mime="image/svg+xml",
-                            use_container_width=True
-                        )
-                    except Exception:
-                        pass
+                        with btn_c2:
+                            st.download_button("📥 SVG VECTORIEL", svg, f"{dcs}.svg", "image/svg+xml", use_container_width=True)
+                    except: pass
 
                 if svg:
-                    st.markdown(f'<div class="step-fade overlay-box">{svg}</div>', unsafe_allow_html=True)
+                    with st.expander("👁️ View SVG Data"):
+                        st.markdown(f'<div class="step-fade overlay-box" style="background:white;">{svg}</div>', unsafe_allow_html=True)
 
         except Exception:
             st.error(traceback.format_exc())
