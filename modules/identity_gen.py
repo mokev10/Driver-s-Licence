@@ -20,47 +20,26 @@ from utils.svg_vectorizer import png_to_svg
 
 
 # =========================
-# ANIMATION CSS (AUGMENTÉE - STRICTEMENT CONSERVÉE)
+# ANIMATION & BUTTON CSS (STRICTEMENT CONSERVÉE ET UNIFIÉE)
 # =========================
 st.markdown(
     """
     <style>
 
     @keyframes slideUp {
-        from {
-            transform: translateY(80px);
-            opacity: 0;
-        }
-        to {
-            transform: translateY(0px);
-            opacity: 1;
-        }
+        from { transform: translateY(80px); opacity: 0; }
+        to { transform: translateY(0px); opacity: 1; }
     }
 
     @keyframes fadeIn {
-        from {
-            opacity: 0;
-        }
-        to {
-            opacity: 1;
-        }
+        from { opacity: 0; }
+        to { opacity: 1; }
     }
 
-    .step-animated {
-        animation: slideUp 0.8s ease-out;
-    }
-
-    .step-animated-delay-1 {
-        animation: slideUp 1.0s ease-out;
-    }
-
-    .step-animated-delay-2 {
-        animation: slideUp 1.2s ease-out;
-    }
-
-    .step-fade {
-        animation: fadeIn 1.5s ease-in;
-    }
+    .step-animated { animation: slideUp 0.8s ease-out; }
+    .step-animated-delay-1 { animation: slideUp 1.0s ease-out; }
+    .step-animated-delay-2 { animation: slideUp 1.2s ease-out; }
+    .step-fade { animation: fadeIn 1.5s ease-in; }
 
     .overlay-box {
         padding: 14px;
@@ -70,7 +49,27 @@ st.markdown(
         margin-bottom: 10px;
     }
 
-    /* Style spécifique pour les réglages DPI */
+    /* --- UNIFICATION DES BOUTONS (GENERATE & DOWNLOAD) --- */
+    div.stButton > button, div.stDownloadButton > button {
+        background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%) !important;
+        color: white !important;
+        font-weight: bold !important;
+        border: none !important;
+        border-radius: 25px !important; /* Arrondi moderne */
+        padding: 10px 25px !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+        transition: all 0.3s ease !important;
+        text-transform: uppercase !important;
+        letter-spacing: 1px !important;
+        width: 100% !important;
+    }
+
+    div.stButton > button:hover, div.stDownloadButton > button:hover {
+        transform: scale(1.02) !important;
+        box-shadow: 0 6px 20px rgba(37, 117, 252, 0.5) !important;
+        background: linear-gradient(90deg, #2575fc 0%, #6a11cb 100%) !important;
+    }
+
     .dpi-info {
         color: #4facfe;
         font-weight: bold;
@@ -123,9 +122,6 @@ def show_identity_gen(lang="EN"):
 
     t = TEXT.get(lang, TEXT["EN"])
 
-    # =========================
-    # HEADER (STEP 1 FIXED VISIBLE)
-    # =========================
     st.title(t["title"])
     st.write(t["desc"])
     st.divider()
@@ -163,23 +159,9 @@ def show_identity_gen(lang="EN"):
 
     st.divider()
 
-    # =========================
-    # STEP 2 TITLE (ANIMATED LAYER)
-    # =========================
-    st.markdown(
-        f"""
-        <div class="step-animated-delay-1 overlay-box">
-            <h3>{t["step2"]}</h3>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    st.markdown(f'<div class="step-animated-delay-1 overlay-box"><h3>{t["step2"]}</h3></div>', unsafe_allow_html=True)
 
-    # =========================
-    # FORM INPUTS (INTÉGRAUX)
-    # =========================
     colA, colB = st.columns(2)
-
     with colA:
         dcg = st.text_input("DCG", "USA")
         dac = st.text_input("DAC", "JEAN")
@@ -187,7 +169,6 @@ def show_identity_gen(lang="EN"):
         dbb = st.text_input("DBB", "19941208")
         daq = st.text_input("DAQ", "D9823415")
         dag = st.text_input("DAG", "1560 STREET")
-
     with colB:
         dai = st.text_input("DAI", "CITY")
         dak = st.text_input("DAK", "POSTAL")
@@ -198,23 +179,11 @@ def show_identity_gen(lang="EN"):
 
     st.divider()
 
-    # =========================
-    # STEP 3 : PARAMÉTRAGE TECHNIQUE (AJOUTÉ SANS SIMPLIFIER)
-    # =========================
-    st.markdown(
-        f"""
-        <div class="step-animated-delay-2 overlay-box">
-            <h3>{t["step3"]}</h3>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    st.markdown(f'<div class="step-animated-delay-2 overlay-box"><h3>{t["step3"]}</h3></div>', unsafe_allow_html=True)
 
     c_cfg1, c_cfg2, c_cfg3, c_cfg4 = st.columns(4)
     with c_cfg1:
-        # Réglage DPI réel
         dpi_val = st.select_slider("Resolution (DPI)", options=[72, 150, 300, 600, 1200], value=600)
-        # Calcul du scale pour le rendu (Scale 15 = env. 600 DPI)
         calc_scale = max(1, int(dpi_val / 40))
     with c_cfg2:
         barcode_padding = st.slider("Padding", 0, 50, 3)
@@ -232,12 +201,9 @@ def show_identity_gen(lang="EN"):
     if st.button(t["generate"], use_container_width=True):
 
         try:
-            # Code état (DAJ)
             state_code = "QC" if region == "Quebec" else region[:2].upper()
-            
             aamva_header = f"ANSI {mock_iin}050102DL00410287ZO02900045DL"
 
-            # Chaîne brute intégrale
             raw = (
                 f"@\n{aamva_header}\n"
                 f"DCG{dcg}\nDCS{dcs}\nDAC{dac}\nDBB{dbb}\nDAQ{daq}\n"
@@ -246,72 +212,51 @@ def show_identity_gen(lang="EN"):
             )
 
             st.success(t["success"])
-
             col1_res, col2_res = st.columns(2)
 
             with col1_res:
                 st.subheader(t["raw"])
-                # Affichage selon choix échappement
                 display_raw = raw.replace("\n", "\\n") if use_escape else raw
                 st.code(display_raw)
 
-            # =========================
-            # BARCODE GENERATION
-            # =========================
             with col2_res:
                 st.subheader(t["preview"])
-                
                 codes = encode(raw, columns=barcode_columns)
-                # Utilisation du scale dynamique calculé par rapport au DPI
                 image = render_image(codes, scale=calc_scale, padding=barcode_padding)
 
                 buf = io.BytesIO()
-                # Sauvegarde avec injection des métadonnées DPI dans le PNG
                 image.save(buf, format="PNG", dpi=(dpi_val, dpi_val))
                 png_bytes = buf.getvalue()
 
                 st.image(png_bytes)
 
+                # --- BOUTON PNG STYLISÉ ---
                 st.download_button(
                     f"📥 PNG ({dpi_val} DPI)",
                     png_bytes,
                     file_name=f"{dcs}_{dpi_val}dpi.png",
-                    mime="image/png"
+                    mime="image/png",
+                    use_container_width=True
                 )
 
-                # =========================
-                # SVG GENERATION (SAFE + OPTIONAL)
-                # =========================
                 potrace_path = shutil.which("potrace")
                 svg = None
-
                 if potrace_path:
                     try:
-                        svg = png_to_svg(
-                            png_bytes=png_bytes,
-                            potrace_path=potrace_path
+                        svg = png_to_svg(png_bytes=png_bytes, potrace_path=potrace_path)
+                        # --- BOUTON SVG STYLISÉ ---
+                        st.download_button(
+                            "📥 SVG VECTORIEL",
+                            svg,
+                            file_name=f"{dcs}.svg",
+                            mime="image/svg+xml",
+                            use_container_width=True
                         )
-                    except Exception as e:
-                        st.warning(f"SVG error: {e}")
-                else:
-                    st.info("SVG non disponible (potrace absent)")
+                    except Exception:
+                        pass
 
                 if svg:
-                    st.download_button(
-                        "📥 SVG vectoriel",
-                        svg,
-                        file_name=f"{dcs}.svg",
-                        mime="image/svg+xml"
-                    )
-
-                    st.markdown(
-                        f"""
-                        <div class="step-fade overlay-box">
-                            {svg}
-                        </div>
-                        """,
-                        unsafe_allow_html=True
-                    )
+                    st.markdown(f'<div class="step-fade overlay-box">{svg}</div>', unsafe_allow_html=True)
 
         except Exception:
             st.error(traceback.format_exc())
