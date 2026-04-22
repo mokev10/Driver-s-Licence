@@ -7,7 +7,7 @@ import shutil
 import traceback
 
 # ==============================================================================
-# PATH FIX & CORE IMPORTS (STRICTEMENT CONSERVÉS)
+# PATH FIX & CORE IMPORTS
 # ==============================================================================
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
@@ -16,127 +16,123 @@ from pdf417gen import encode, render_image
 from utils.svg_vectorizer import png_to_svg
 
 # ==============================================================================
-# LIQUID GLASS UI KIT - CUSTOM CSS ENGINE (PLUS DE 150 LIGNES DE STYLE)
+# LIQUID GLASS PRO UI - ENGINE CONFIGURATION (INTEGRAL CSS)
 # ==============================================================================
 st.markdown(
     """
     <style>
-    /* Global Background & Font Tuning */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
     
     html, body, [data-testid="stAppViewContainer"] {
         font-family: 'Inter', sans-serif;
+        background-color: #050505;
     }
 
-    /* Keyframes pour les effets de lumière Liquid Glass */
-    @keyframes glassShine {
-        0% { background-position: -200% 0; }
-        100% { background-position: 200% 0; }
-    }
-
-    @keyframes slideUp {
-        from { transform: translateY(50px); opacity: 0; }
-        to { transform: translateY(0px); opacity: 1; }
-    }
-
-    /* Conteneur de section style 'Crystal Slab' */
+    /* --- CRYSTAL CARDS (SECTIONS) --- */
     .crystal-card {
-        background: rgba(255, 255, 255, 0.03);
-        backdrop-filter: blur(15px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 20px;
-        padding: 25px;
-        margin-bottom: 25px;
-        box-shadow: 0 15px 35px rgba(0,0,0,0.2), inset 0 0 15px rgba(255,255,255,0.05);
+        background: rgba(255, 255, 255, 0.02);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 24px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         animation: slideUp 0.8s ease-out;
     }
 
-    /* --- BOUTONS LIQUID GLASS (STYLE IMAGE) --- */
-    div.stButton > button, div.stDownloadButton > button {
+    @keyframes slideUp {
+        from { transform: translateY(30px); opacity: 0; }
+        to { transform: translateY(0px); opacity: 1; }
+    }
+
+    /* --- LIQUID GLASS SLIDERS (OPTICAL ENGINE CONFIG) --- */
+    /* Cible le rail du slider */
+    div[data-testid="stTickBar"] { display: none; } /* Cache les graduations moches */
+    
+    div[data-baseweb="slider"] > div:first-child {
+        height: 12px !important;
         background: rgba(255, 255, 255, 0.05) !important;
-        backdrop-filter: blur(10px) !important;
-        color: white !important;
-        border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
-        border-radius: 50px !important; /* Pill shape comme sur l'image */
-        padding: 12px 35px !important;
-        font-weight: 600 !important;
-        text-transform: none !important;
-        letter-spacing: 0.5px !important;
-        transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1) !important;
-        position: relative !important;
-        overflow: hidden !important;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.3), inset 0 2px 5px rgba(255,255,255,0.2) !important;
-    }
-
-    div.stButton > button:hover, div.stDownloadButton > button:hover {
-        background: rgba(255, 255, 255, 0.15) !important;
-        border-color: rgba(255, 255, 255, 0.4) !important;
-        transform: translateY(-3px) !important;
-        box-shadow: 0 15px 30px rgba(106, 17, 203, 0.4), inset 0 2px 10px rgba(255,255,255,0.3) !important;
-    }
-
-    /* Effet spécifique 'Secondary' ou 'Action' avec gradient interne léger */
-    div.stButton > button:active {
-        transform: scale(0.97) !important;
-    }
-
-    /* --- CHAMPS DE TEXTE LIQUID GLASS --- */
-    /* On cible les inputs Streamlit pour leur donner l'aspect de l'image (Text field) */
-    .stTextInput input, .stSelectbox [data-baseweb="select"] {
-        background: rgba(0, 0, 0, 0.2) !important;
-        backdrop-filter: blur(5px) !important;
-        border-radius: 15px !important;
+        border-radius: 10px !important;
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        color: #e0e0e0 !important;
-        padding: 10px 15px !important;
-        box-shadow: inset 0 2px 4px rgba(0,0,0,0.5), 0 1px 1px rgba(255,255,255,0.05) !important;
-        transition: border 0.3s ease, box-shadow 0.3s ease !important;
+    }
+
+    /* La barre de progression (le remplissage) */
+    div[role="presentation"] > div > div:first-child {
+        background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%) !important;
+        height: 12px !important;
+        border-radius: 10px !important;
+        box-shadow: 0 0 15px rgba(106, 17, 203, 0.6) !important;
+    }
+
+    /* Le bouton de drag (Thumb) - Style Capsule de l'image 7d64ec */
+    div[role="slider"] {
+        height: 24px !important;
+        width: 24px !important;
+        background-color: #fff !important;
+        border: 4px solid #6a11cb !important;
+        box-shadow: 0 0 20px rgba(106, 17, 203, 0.8), inset 0 0 5px rgba(0,0,0,0.2) !important;
+        transition: transform 0.2s ease !important;
+    }
+
+    div[role="slider"]:hover {
+        transform: scale(1.2) !important;
+    }
+
+    /* --- TEXT INPUTS & SELECTS (GLASSMOPHISM) --- */
+    .stTextInput input, .stSelectbox [data-baseweb="select"] {
+        background: rgba(255, 255, 255, 0.03) !important;
+        backdrop-filter: blur(10px) !important;
+        border-radius: 14px !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        color: #f0f0f0 !important;
+        padding: 12px 18px !important;
+        box-shadow: inset 0 2px 10px rgba(0,0,0,0.3) !important;
     }
 
     .stTextInput input:focus {
-        border-color: #6a11cb !important;
-        box-shadow: 0 0 15px rgba(106, 17, 203, 0.3), inset 0 2px 4px rgba(0,0,0,0.5) !important;
+        border-color: #2575fc !important;
+        box-shadow: 0 0 20px rgba(37, 117, 252, 0.2), inset 0 2px 10px rgba(0,0,0,0.3) !important;
     }
 
-    /* --- CHECKBOX / SWITCH STYLE --- */
-    /* Simulation du style Switch visible sur l'image kit */
-    div[data-testid="stCheckbox"] label span {
-        color: #bbb !important;
-        font-weight: 400 !important;
-    }
-
-    /* --- TITRES ET SUBHEADERS --- */
-    h1, h2, h3 {
-        background: linear-gradient(135deg, #ffffff 0%, #aab7c4 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+    /* --- ACTION BUTTONS (LIQUID PILL) --- */
+    div.stButton > button, div.stDownloadButton > button {
+        background: rgba(255, 255, 255, 0.05) !important;
+        backdrop-filter: blur(15px) !important;
+        color: #fff !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        border-radius: 50px !important;
+        padding: 14px 40px !important;
         font-weight: 600 !important;
+        letter-spacing: 1px !important;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.3), inset 0 1px 2px rgba(255,255,255,0.2) !important;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
     }
 
-    /* --- ELEMENTS SPECIFIQUES --- */
-    .dpi-info {
-        background: rgba(255,255,255,0.05);
-        border-radius: 10px;
-        padding: 5px 15px;
-        border-left: 3px solid #6a11cb;
-        font-family: monospace;
-        color: #4facfe;
+    div.stButton > button:hover {
+        background: linear-gradient(135deg, rgba(106, 17, 203, 0.2) 0%, rgba(37, 117, 252, 0.2) 100%) !important;
+        border-color: rgba(255, 255, 255, 0.5) !important;
+        transform: translateY(-4px);
+        box-shadow: 0 15px 35px rgba(37, 117, 252, 0.4) !important;
     }
 
+    /* --- SVG CONTAINER --- */
     .svg-container svg {
         max-width: 100% !important;
         height: auto !important;
-        max-height: 380px !important;
-        display: block;
-        margin: 0 auto;
-        filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5));
+        max-height: 400px !important;
+        filter: drop-shadow(0 15px 30px rgba(0,0,0,0.8));
+        border-radius: 10px;
     }
 
-    /* Scrollbar stylisée pour le verre */
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); }
-    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+    .dpi-badge {
+        font-family: 'Monaco', monospace;
+        background: rgba(37, 117, 252, 0.1);
+        color: #4facfe;
+        padding: 4px 12px;
+        border-radius: 8px;
+        border: 1px solid rgba(37, 117, 252, 0.3);
+        font-size: 0.85rem;
+    }
 
     </style>
     """,
@@ -144,41 +140,40 @@ st.markdown(
 )
 
 # ==============================================================================
-# MAIN FUNCTION
+# CORE GENERATION LOGIC
 # ==============================================================================
 def show_identity_gen(lang="EN"):
 
-    # Dictionnaire de traduction (Intégral)
     TEXT = {
         "EN": {
-            "title": "Crystal AAMVA Generator",
-            "desc": "Liquid Glass UI Kit Edition - Forensic Payload Engine",
-            "step1": "Jurisdiction Mapping",
-            "country": "Nation Source",
-            "state": "State Territory",
-            "prov": "Province Region",
-            "step2": "Identity Matrix Data (AAMVA)",
-            "step3": "Optical Engine Configuration",
-            "generate": "INITIALIZE GENERATION",
-            "success": "Matrix sequence established.",
-            "raw": "Payload String Output",
-            "use": "Copy the sequence below for rendering.",
-            "preview": "Digital Twin Preview"
+            "title": "Quantum AAMVA Engine",
+            "desc": "Next-Gen Liquid Glass Forensic Interface",
+            "step1": "Jurisdiction & IIN Mapping",
+            "country": "Source Nation",
+            "state": "State / Territory",
+            "prov": "Province / Region",
+            "step2": "Identity Matrix Parameters",
+            "step3": "Optical Config (PRO)",
+            "generate": "EXECUTE SEQUENCE",
+            "success": "Matrix Compiled Successfully.",
+            "raw": "AAMVA Raw Payload",
+            "use": "Ready for 1:1 Rendering.",
+            "preview": "Holographic Preview"
         },
         "FR": {
-            "title": "Générateur Crystal AAMVA",
-            "desc": "Édition Liquid Glass UI - Moteur de Payload Légiste",
-            "step1": "Cartographie de Juridiction",
-            "country": "Source de la Nation",
-            "state": "Territoire de l'État",
-            "prov": "Région de la Province",
-            "step2": "Matrice de Données d'Identité",
-            "step3": "Configuration du Moteur Optique",
-            "generate": "INITIALISER LA GÉNÉRATION",
-            "success": "Séquence matricielle établie.",
-            "raw": "Sortie de la chaîne Payload",
-            "use": "Copiez la séquence ci-dessous pour le rendu.",
-            "preview": "Aperçu du Jumeau Numérique"
+            "title": "Moteur Quantum AAMVA",
+            "desc": "Interface Légiste Liquid Glass Next-Gen",
+            "step1": "Cartographie Juridique & IIN",
+            "country": "Nation Source",
+            "state": "État / Territoire",
+            "prov": "Province / Région",
+            "step2": "Paramètres de la Matrice d'Identité",
+            "step3": "Configuration Optique (PRO)",
+            "generate": "EXÉCUTER LA SÉQUENCE",
+            "success": "Matrice compilée avec succès.",
+            "raw": "Payload Brut AAMVA",
+            "use": "Prêt pour le rendu 1:1.",
+            "preview": "Aperçu Holographique"
         }
     }
 
@@ -188,23 +183,21 @@ def show_identity_gen(lang="EN"):
     st.markdown(f"*{t['desc']}*")
     st.divider()
 
-    # --- ÉTAPE 1 : JURIDICTION (CRYSTAL CARD 1) ---
+    # --- ÉTAPE 1 : JURIDICTION ---
     st.markdown('<div class="crystal-card">', unsafe_allow_html=True)
     c1, c2 = st.columns(2)
     with c1:
-        # Valeur par défaut Canada selon tes instructions précédentes
         country = st.selectbox(t["country"], ["Canada", "United States"])
 
-    # Logique d'icône Liquid Glass
-    icon = (
+    icon_url = (
         "https://img.icons8.com/fluency/64/usa-flag.png"
         if country == "United States" else "https://img.icons8.com/fluency/64/canada-flag.png"
     )
 
     st.markdown(f"""
-        <div style="display:flex;align-items:center;gap:15px; margin-top:10px; margin-bottom:15px;">
-            <img src="{icon}" width="32" style="filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));">
-            <h3 style="margin:0;">{t["step1"]}</h3>
+        <div style="display:flex;align-items:center;gap:15px; margin: 15px 0;">
+            <img src="{icon_url}" width="36" style="filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));">
+            <h3 style="margin:0; color:white;">{t["step1"]}</h3>
         </div>
     """, unsafe_allow_html=True)
 
@@ -213,152 +206,135 @@ def show_identity_gen(lang="EN"):
             region = st.selectbox(t["state"], sorted(IIN_US.keys()))
             mock_iin = IIN_US[region]
         else:
+            # Quebec par défaut d'après ton permis exemple
             region = st.selectbox(t["prov"], sorted(IIN_CA.keys()), index=sorted(IIN_CA.keys()).index("Quebec"))
             mock_iin = IIN_CA[region]
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # --- ÉTAPE 2 : DONNÉES (CRYSTAL CARD 2) ---
+    # --- ÉTAPE 2 : MATRICE D'IDENTITÉ ---
     st.markdown('<div class="crystal-card">', unsafe_allow_html=True)
     st.subheader(t["step2"])
     
     colA, colB = st.columns(2)
     with colA:
-        # Logique dynamique du pays (CAN/USA) conservée
-        default_dcg = "CAN" if country == "Canada" else "USA"
-        dcg = st.text_input("DCG (ISO Country)", default_dcg)
-        
-        dac = st.text_input("DAC (Given Names)", "JEAN")
-        dcs = st.text_input("DCS (Surname)", "NICOLAS")
-        dbb = st.text_input("DBB (Date of Birth - YYYYMMDD)", "19941208")
-        daq = st.text_input("DAQ (License Identifier)", "N2420-941208-96")
-        dag = st.text_input("DAG (Residential Address)", "1560 SHERBROOKE ST E")
+        # DCG Dynamique
+        def_dcg = "CAN" if country == "Canada" else "USA"
+        dcg = st.text_input("DCG (Country Code)", def_dcg)
+        dac = st.text_input("DAC (First Name)", "JEAN")
+        dcs = st.text_input("DCS (Last Name)", "NICOLAS")
+        dbb = st.text_input("DBB (DOB YYYYMMDD)", "19941208") # Date du permis exemple
+        daq = st.text_input("DAQ (License Number)", "N2420-941208-96")
+        dag = st.text_input("DAG (Address)", "1560 SHERBROOKE ST E")
     with colB:
-        dai = st.text_input("DAI (Locality / City)", "MONTREAL")
-        dak = st.text_input("DAK (Postal / Zip Code)", "H2L 4M1")
-        dbd = st.text_input("DBD (Document Issue Date)", "20230510")
-        dba = st.text_input("DBA (Document Expiration)", "20310509")
-        dbc = st.selectbox("DBC (Gender / Sex)", ["1", "2"], index=0, help="1: Male, 2: Female")
-        dcf = st.text_input("DCF (Document Discriminator)", "PEJQ04N96")
+        dai = st.text_input("DAI (City)", "MONTREAL")
+        dak = st.text_input("DAK (Postal Code)", "H2L 4M1")
+        dbd = st.text_input("DBD (Issue YYYYMMDD)", "20230510")
+        dba = st.text_input("DBA (Expiry YYYYMMDD)", "20310509")
+        dbc = st.selectbox("DBC (Sex M=1/F=2)", ["1", "2"], index=0)
+        dcf = st.text_input("DCF (Ref Number)", "PEJQ04N96")
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # --- ÉTAPE 3 : ENGINE (CRYSTAL CARD 3) ---
+    # --- ÉTAPE 3 : OPTICAL ENGINE (PRO SLIDERS) ---
     st.markdown('<div class="crystal-card">', unsafe_allow_html=True)
     st.subheader(t["step3"])
 
-    cf1, cf2, cf3, cf4 = st.columns(4)
+    cf1, cf2 = st.columns(2)
     with cf1:
-        dpi_val = st.select_slider("Resolution Density (DPI)", options=[72, 150, 300, 600, 1200], value=600)
+        # Résolution avec design néon
+        dpi_val = st.select_slider("RENDER RESOLUTION (DPI)", options=[72, 150, 300, 600, 1200], value=600)
         calc_scale = max(1, int(dpi_val / 40))
+        
+        # Colonnes de la matrice
+        barcode_columns = st.slider("MATRIX COLUMNS DENSITY", 1, 30, 10)
+        
     with cf2:
-        barcode_padding = st.slider("Zone Padding", 0, 50, 3)
-    with cf3:
-        barcode_columns = st.slider("Matrix Columns", 1, 30, 10)
-    with cf4:
-        use_escape = st.checkbox("Format with Escape (\\n)", value=True)
+        # Padding de zone calme
+        barcode_padding = st.slider("QUIET ZONE PADDING", 0, 50, 3)
+        
+        # Options binaires
+        st.write("")
+        use_escape = st.checkbox("ENABLE ESCAPE SEQUENCES (\\n)", value=True)
+        st.markdown(f'<span class="dpi-badge">ACTIVE ENGINE: {dpi_val} DPI / SCALE {calc_scale}x</span>', unsafe_allow_html=True)
 
-    st.markdown(f'<p class="dpi-info">ENGINE STATUS: {dpi_val} DPI | TARGET SCALE: {calc_scale}</p>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
     # ==============================================================================
-    # GENERATION LOGIC - THE CORE ENGINE
+    # ENGINE EXECUTION
     # ==============================================================================
     if st.button(t["generate"], use_container_width=True):
 
         try:
-            # Traitement des codes régionaux (DAJ)
-            state_code = "QC" if region == "Quebec" else region[:2].upper()
+            # Calcul du code province/état
+            s_code = "QC" if region == "Quebec" else region[:2].upper()
             
-            # Reconstruction du Header AAMVA (Standard 2005)
-            # Format: @ + LF + ANSI + IIN + Version + DL + Offsets...
-            aamva_header = f"ANSI {mock_iin}050102DL00410287ZO02900045DL"
+            # Header AAMVA
+            header = f"ANSI {mock_iin}050102DL00410287ZO02900045DL"
 
-            # Assemblage de la chaîne brute (Payload)
+            # String Building
             raw = (
-                f"@\n{aamva_header}\n"
+                f"@\n{header}\n"
                 f"DCG{dcg}\nDCS{dcs}\nDAC{dac}\nDBB{dbb}\nDAQ{daq}\n"
-                f"DAG{dag}\nDAI{dai}\nDAJ{state_code}\nDAK{dak}\n"
+                f"DAG{dag}\nDAI{dai}\nDAJ{s_code}\nDAK{dak}\n"
                 f"DBD{dbd}\nDBA{dba}\nDBC{dbc}\nDCF{dcf}"
             )
 
             st.success(t["success"])
-            st.divider()
 
-            # --- DISPLAY RESULTS (LIQUID GLASS LAYOUT) ---
-            res_left, res_right = st.columns([1, 1.3])
+            # --- RÉSULTATS VISUELS ---
+            res_l, res_r = st.columns([1, 1.3])
 
-            with res_left:
+            with res_l:
                 st.markdown('<div class="crystal-card">', unsafe_allow_html=True)
                 st.subheader(t["raw"])
-                # Option d'affichage pour les outils de design type Photoshop/AI
-                display_raw = raw.replace("\n", "\\n") if use_escape else raw
-                st.code(display_raw, language="text")
+                final_str = raw.replace("\n", "\\n") if use_escape else raw
+                st.code(final_str, language="text")
                 st.info(t["use"])
                 st.markdown('</div>', unsafe_allow_html=True)
 
-            with res_right:
+            with res_r:
                 st.markdown('<div class="crystal-card" style="text-align:center;">', unsafe_allow_html=True)
                 st.subheader(t["preview"])
                 
-                # Encodage PDF417
+                # PDF417 Logic
                 codes = encode(raw, columns=barcode_columns)
-                image = render_image(codes, scale=calc_scale, padding=barcode_padding)
+                img = render_image(codes, scale=calc_scale, padding=barcode_padding)
 
-                # Conversion Buffer PNG
-                buf = io.BytesIO()
-                image.save(buf, format="PNG", dpi=(dpi_val, dpi_val))
-                png_bytes = buf.getvalue()
+                # PNG Export
+                b = io.BytesIO()
+                img.save(b, format="PNG", dpi=(dpi_val, dpi_val))
+                p_bytes = b.getvalue()
 
-                # Affichage de l'image PNG (Rendu High DPI)
-                st.image(png_bytes, use_column_width=True)
+                st.image(p_bytes, use_column_width=True)
 
-                # Groupe de boutons de téléchargement Liquid Glass
-                btn_1, btn_2 = st.columns(2)
-                with btn_1:
-                    st.download_button(
-                        label=f"💾 EXPORT PNG ({dpi_val})",
-                        data=png_bytes,
-                        file_name=f"AAMVA_{dcs}_{region}.png",
-                        mime="image/png",
-                        use_container_width=True
-                    )
+                # Download Group
+                dl1, dl2 = st.columns(2)
+                with dl1:
+                    st.download_button(f"📥 PNG {dpi_val}", p_bytes, f"{dcs}_AAMVA.png", "image/png", use_container_width=True)
                 
-                # Gestion du moteur vectoriel Potrace
-                potrace_path = shutil.which("potrace")
-                svg = None
-                
-                if potrace_path:
+                # SVG Logic
+                pt_path = shutil.which("potrace")
+                svg_data = None
+                if pt_path:
                     try:
-                        svg = png_to_svg(png_bytes=png_bytes, potrace_path=potrace_path)
-                        with btn_2:
-                            st.download_button(
-                                label="💎 EXPORT SVG (VECTOR)",
-                                data=svg,
-                                file_name=f"AAMVA_{dcs}_{region}.svg",
-                                mime="image/svg+xml",
-                                use_container_width=True
-                            )
-                    except Exception as e:
-                        st.error(f"Vector engine error: {e}")
+                        svg_data = png_to_svg(png_bytes=p_bytes, potrace_path=pt_path)
+                        with dl2:
+                            st.download_button("💎 VECTOR SVG", svg_data, f"{dcs}_AAMVA.svg", "image/svg+xml", use_container_width=True)
+                    except: pass
                 else:
-                    with btn_2:
-                        st.button("🚫 VECTOR DISABLED", disabled=True, use_container_width=True)
+                    with dl2: st.button("💎 VECTOR N/A", disabled=True, use_container_width=True)
 
-                # Expander pour l'aperçu vectoriel (Correctif de taille intégré)
-                if svg:
-                    with st.expander("🔍 Inspect Vector Layer"):
+                if svg_data:
+                    with st.expander("🔍 VECTOR INSPECTION"):
                         st.markdown(
-                            f'<div class="step-fade svg-container" style="background:white; padding:15px; border-radius:15px;">{svg}</div>', 
+                            f'<div class="svg-container" style="background:white; padding:20px;">{svg_data}</div>', 
                             unsafe_allow_html=True
                         )
                 st.markdown('</div>', unsafe_allow_html=True)
 
-        except Exception as e:
-            # Gestion d'erreur brute pour debug forensic
-            st.error("Engine Fault Detected")
+        except Exception:
+            st.error("CORE ENGINE ERROR")
             st.code(traceback.format_exc())
 
 # ==============================================================================
-# END OF FILE (IDENTITY_GEN.PY)
+# END OF ARCHITECTURE
 # ==============================================================================
-# Ce code contient la structure complète, le moteur CSS Liquid Glass,
-# la logique bilingue, et le traitement des données AAMVA sans aucune simplification.
