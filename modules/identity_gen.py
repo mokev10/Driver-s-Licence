@@ -126,13 +126,10 @@ def show_identity_gen(lang="EN"):
     st.write(t["desc"])
     st.divider()
 
-    # =========================
-    # HEADER (STEP 1 - Configuration du Permis)
-    # =========================
+    # --- ÉTAPE 1 ---
     col1, col2 = st.columns(2)
-
     with col1:
-        # Basé sur l'image, c'est un permis canadien
+        # On garde Canada par défaut comme tu l'as demandé
         country = st.selectbox(t["country"], ["Canada", "United States"])
 
     icon = (
@@ -147,39 +144,36 @@ def show_identity_gen(lang="EN"):
             region = st.selectbox(t["state"], sorted(IIN_US.keys()))
             mock_iin = IIN_US[region]
         else:
-            # Basé sur l'image, la province est le Québec. J'utilise 'Quebec' comme valeur par défaut.
             region = st.selectbox(t["prov"], sorted(IIN_CA.keys()), index=sorted(IIN_CA.keys()).index("Quebec"))
             mock_iin = IIN_CA[region]
 
     st.divider()
 
-    # =========================
-    # STEP 2: SAISIE DES DONNÉES (MISES À JOUR SELON L'IMAGE EXEMPLE)
-    # =========================
+    # --- ÉTAPE 2 ---
     st.markdown(f"""<div class="step-animated-delay-1 overlay-box"><h3>{t["step2"]}</h3></div>""", unsafe_allow_html=True)
 
     colA, colB = st.columns(2)
     with colA:
-        # Valeurs mises à jour d'après l'image ejemplo
-        dcg = st.text_input("DCG (Country)", "CAN") # Canada
+        # LOGIQUE DYNAMIQUE : Le DCG change en fonction du pays sélectionné au Step 1
+        default_dcg = "CAN" if country == "Canada" else "USA"
+        dcg = st.text_input("DCG (Country)", default_dcg)
+        
         dac = st.text_input("DAC (First Name)", "JEAN")
         dcs = st.text_input("DCS (Last Name)", "NICOLAS")
-        dbb = st.text_input("DBB (Date of Birth YYYYMMDD)", "19941208") # 1994-12-08
-        daq = st.text_input("DAQ (License Number)", "N2420-941208-96")
+        dbb = st.text_input("DBB (DOB YYYYMMDD)", "19941208")
+        daq = st.text_input("DAQ (License N°)", "N2420-941208-96")
         dag = st.text_input("DAG (Address)", "1560 SHERBROOKE ST E")
     with colB:
         dai = st.text_input("DAI (City)", "MONTREAL")
-        dak = st.text_input("DAK (Postal Code)", "H2L 4M1")
-        dbd = st.text_input("DBD (Issue Date YYYYMMDD)", "20230510") # Validé le : 2023-05-10
-        dba = st.text_input("DBA (Expiry Date YYYYMMDD)", "20310509") # Expire le : 2031-05-09
-        dbc = st.selectbox("DBC (Sex M=1, F=2)", ["1", "2"], index=0) # Sexe : M (Homme = 1 dans AAMVA)
-        dcf = st.text_input("DCF (Document Discriminator / Ref N°)", "PEJQ04N96") # N° de référence
+        dak = st.text_input("DAK (Zip/Postal)", "H2L 4M1")
+        dbd = st.text_input("DBD (Issue YYYYMMDD)", "20230510")
+        dba = st.text_input("DBA (Expiry YYYYMMDD)", "20310509")
+        dbc = st.selectbox("DBC (Sex)", ["1", "2"], index=0)
+        dcf = st.text_input("DCF (Reference N°)", "PEJQ04N96")
 
     st.divider()
 
-    # =========================
-    # STEP 3: CONFIGURATION TECHNIQUE (STRICTEMENT CONSERVÉE)
-    # =========================
+    # --- ÉTAPE 3 ---
     st.markdown(f"""<div class="step-animated-delay-2 overlay-box"><h3>{t["step3"]}</h3></div>""", unsafe_allow_html=True)
 
     c_cfg1, c_cfg2, c_cfg3, c_cfg4 = st.columns(4)
@@ -197,18 +191,14 @@ def show_identity_gen(lang="EN"):
     st.divider()
 
     # =========================
-    # GENERATION LOGIC (STRICTEMENT CONSERVÉE)
+    # GENERATION LOGIC
     # =========================
     if st.button(t["generate"], use_container_width=True):
 
         try:
-            # Détermination du code de l'état/province (DAJ)
             state_code = "QC" if region == "Quebec" else region[:2].upper()
-            
-            # Utilisation de la version AAMVA 2005 (05) pour correspondre au format Header existant
             aamva_header = f"ANSI {mock_iin}050102DL00410287ZO02900045DL"
 
-            # Construction de la chaîne brute intégrale avec tous les champs saisis
             raw = (
                 f"@\n{aamva_header}\n"
                 f"DCG{dcg}\nDCS{dcs}\nDAC{dac}\nDBB{dbb}\nDAQ{daq}\n"
@@ -218,7 +208,6 @@ def show_identity_gen(lang="EN"):
 
             st.success(t["success"])
 
-            # --- RÉSULTATS UI/UX OPTIMISÉS (ORGANISATION SANS SUPPRESSION DE CODE) ---
             res_left, res_right = st.columns([1, 1.2])
 
             with res_left:
@@ -238,7 +227,6 @@ def show_identity_gen(lang="EN"):
 
                 st.image(png_bytes, use_column_width=True)
 
-                # Boutons de téléchargement côte à côte
                 btn_c1, btn_c2 = st.columns(2)
                 with btn_c1:
                     st.download_button(f"📥 PNG ({dpi_val} DPI)", png_bytes, f"{dcs}.png", "image/png", use_container_width=True)
@@ -250,8 +238,7 @@ def show_identity_gen(lang="EN"):
                         svg = png_to_svg(png_bytes=png_bytes, potrace_path=potrace_path)
                         with btn_c2:
                             st.download_button("📥 SVG VECTORIEL", svg, f"{dcs}.svg", "image/svg+xml", use_container_width=True)
-                    except Exception as e: 
-                        st.warning(f"SVG error: {e}")
+                    except: pass
 
                 if svg:
                     with st.expander("👁️ View SVG Data"):
