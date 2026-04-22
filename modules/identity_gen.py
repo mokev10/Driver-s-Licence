@@ -375,7 +375,7 @@ def render_sidebar():
         )
         return country, region, iin, res_dpi, m_cols, m_sec, q_padding, use_escape, auto_gen_id
 
-def show_identity_gen():
+def show_identity_gen(lang=None):
     initialize_session_state()
     inject_quantum_styles()
     
