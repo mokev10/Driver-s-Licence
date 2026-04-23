@@ -1,1 +1,4 @@
-
+User-agent: *
+Disallow: /prive/
+Disallow: /panier/
+Sitemap: https://driver-license.streamlit.app/
