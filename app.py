@@ -102,21 +102,33 @@ div.stButton > button:active {
 
 
 def apply_custom_style(dark_mode=True):
-    bg = "#0E1117" if dark_mode else "#FFFFFF"
-    text = "#FAFAFA" if dark_mode else "#000000"
-    card = "#161B22" if dark_mode else "#F5F5F5"
+    if dark_mode:
+        bg = "#0E1117"
+        text = "#FAFAFA"
+        card = "#161B22"
+    else:
+        bg = "#FFFFFF"
+        text = "#000000"
+        card = "#F5F5F5"
 
     st.markdown(f"""
-        <style>
-            .stApp {{
-                background-color: {bg};
-                color: {text};
-            }}
-            section[data-testid="stSidebar"] {{
-                background-color: {card};
-            }}
-        </style>
+    <style>
+        :root {{
+            --bg-color: {bg};
+            --text-color: {text};
+        }}
+
+        .stApp {{
+            background-color: var(--bg-color) !important;
+            color: var(--text-color) !important;
+        }}
+
+        section[data-testid="stSidebar"] {{
+            background-color: {card} !important;
+        }}
+    </style>
     """, unsafe_allow_html=True)
+
 
 
 def main():
