@@ -116,47 +116,49 @@ font-weight:900 !important;
 
 /* DETAILED VECTOR INSPECTION */
 
-/* Style de base adaptatif */
+/* 1. On cible l'expander global */
 details[data-testid="stExpander"] {
     background: rgba(128, 128, 128, 0.05) !important; 
     border: 1px solid rgba(249, 12, 245, 0.3) !important;
     border-radius: 16px !important;
     backdrop-filter: blur(15px);
-    margin-top: 15px;
-    transition: all 0.5s ease;
+  
 }
 
-/* Fix pour l'invisibilité quand on ouvre l'expander */
-details[data-testid="stExpander"][open] {
-    background: rgba(128, 128, 128, 0.08) !important;
-    border-color: var(--primary-color) !important;
+/* 2. LE FIX CRITIQUE : Cibler la div interne de Streamlit qui bloque tout */
+details[data-testid="stExpander"] > div[role="region"] > div {
+    background-color: transparent !important;
+    color: var(--text-color) !important;
 }
 
-/* Style du texte (Summary) */
-details[data-testid="stExpander"] summary {
-    font-family: 'JetBrains Mono', monospace !important;
-    font-size: 0.85rem !important;
-    letter-spacing: 1.2px;
-    /* Utilise la variable système pour basculer Noir/Blanc selon le mode */
-    color: var(--text-color) !important; 
-    padding: 12px 16px;
-    cursor: pointer;
-    list-style: none; /* Enlève la flèche par défaut selon le navigateur */
+/* 3. Forcer la visibilité du texte du titre */
+details[data-testid="stExpander"] summary span p {
+    color: var(--text-color) !important;
 }
 
-/* Fix pour l'icône de la flèche Streamlit qui peut rester blanche */
+/* 4. Forcer la visibilité de l'icône (chevron) */
 details[data-testid="stExpander"] summary svg {
     fill: var(--text-color) !important;
+    color: var(--text-color) !important;
 }
 
-/* Hover adaptatif */
+/* 5. Ton Hover */
 details[data-testid="stExpander"]:hover {
     border-color: var(--primary-color) !important;
     box-shadow: 0 10px 20px rgba(249, 12, 245, 0.33) !important;
 }
 
-details[data-testid="stExpander"] summary:hover {
-    color: var(--primary-color) !important;
+/* 6. Style pour ton SVG à l'intérieur */
+.barcode-preview-box {
+    padding: 10px;
+    background: transparent !important;
+    display: flex;
+    justify-content: center;
+}
+
+/* Si le SVG lui-même est noir et invisible en mode sombre */
+[data-theme="dark"] .barcode-preview-box svg {
+    filter: invert(1) hue-rotate(180deg);
 }
 
 
