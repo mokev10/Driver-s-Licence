@@ -116,39 +116,6 @@ font-weight:900 !important;
 
 /* DETAILED VECTOR INSPECTION */
 
-/* Style de base adaptatif */
-details[data-testid="stExpander"] {
-    /* Utilise la couleur de fond du texte avec une très faible opacité */
-    background: rgba(128, 128, 128, 0.05); 
-    border: 1px solid rgba(249, 12, 245, 0.3);
-    border-radius: 16px;
-    backdrop-filter: blur(15px);
-    margin-top: 15px;
-    transition: all 0.5s ease;
-}
-
-/* Style du texte (Summary) */
-details[data-testid="stExpander"] summary {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.85rem;
-    letter-spacing: 1.2px;
-    /* Force l'utilisation de la couleur de texte principale du thème actuel */
-    color: var(--text-color); 
-    padding: 12px 16px;
-    cursor: pointer;
-}
-
-/* Hover adaptatif */
-details[data-testid="stExpander"]:hover {
-    /* Utilise la couleur d'accentuation du thème (souvent rouge/orange par défaut) */
-    border-color: var(--primary-color);
-    box-shadow: 0 10px 20px rgba(249, 12, 245, 0.33);
-}
-
-details[data-testid="stExpander"] summary:hover {
-    color: var(--primary-color);
-}
-
 
 
     /* HOVER UNIFIÉ */
