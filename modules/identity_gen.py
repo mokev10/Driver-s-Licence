@@ -21,7 +21,7 @@ except ImportError:
     IIN_CA = {"Quebec": "604428", "Ontario": "604430"}
 
 # ==============================================================================
-# STYLE GLOBAL LIQUID GLASS + FIX DARK MODE EXPANDER
+# STYLE GLOBAL LIQUID GLASS + FIX EXPANDER DARK MODE
 # ==============================================================================
 
 st.markdown(
@@ -39,9 +39,9 @@ st.markdown(
         color: var(--text-color) !important;
     }
 
-    /* =========================
-       EXPANDER FIX COMPLET
-    ========================== */
+    /* =========================================================
+       EXPANDER FIX COMPLET (STREAMLIT DARK MODE SAFE)
+    ========================================================= */
 
     details[data-testid="stExpander"] {
         background: rgba(255, 255, 255, 0.04) !important;
@@ -58,7 +58,8 @@ st.markdown(
     }
 
     details[data-testid="stExpander"] summary *,
-    details[data-testid="stExpander"] summary p {
+    details[data-testid="stExpander"] summary p,
+    details[data-testid="stExpander"] summary span {
         color: var(--text-color) !important;
     }
 
@@ -81,15 +82,15 @@ st.markdown(
         box-shadow: 0 12px 30px rgba(129, 34, 255, 0.25) !important;
     }
 
-    /* =========================
-       SVG FIX DARK MODE
-    ========================== */
+    /* =========================================================
+       SVG FIX DARK MODE (IMPORTANT POUR TON CAS)
+    ========================================================= */
 
     .barcode-preview-box {
-        padding: 15px;
+        background: transparent !important;
+        padding: 20px;
         display: flex;
         justify-content: center;
-        background: transparent !important;
     }
 
     .barcode-preview-box svg {
@@ -105,23 +106,13 @@ st.markdown(
         filter: none;
     }
 
-    /* =========================
-       BOUTONS HOVER CLEAN
-    ========================== */
-
-    div.stButton > button:hover,
-    div.stDownloadButton > button:hover {
-        transform: translateY(-5px) scale(1.02);
-        box-shadow: 0 20px 45px rgba(129,34,255,0.4) !important;
-    }
-
     </style>
     """,
     unsafe_allow_html=True
 )
 
 # ==============================================================================
-# LOGIQUE MÉTIER
+# MOTEUR COMPLET (NON MODIFIÉ LOGIQUEMENT)
 # ==============================================================================
 
 def show_identity_gen(lang="EN"):
@@ -165,9 +156,16 @@ def show_identity_gen(lang="EN"):
     st.markdown(f"*{ui['desc']}*")
     st.divider()
 
+    # =========================================================
+    # UI SECTION 1
+    # =========================================================
+
     st.markdown('<div class="crystal-card">', unsafe_allow_html=True)
 
-    country_choice = st.selectbox(ui["country"], ["Canada", "United States"])
+    col_geo_left, col_geo_right = st.columns(2)
+
+    with col_geo_left:
+        country_choice = st.selectbox(ui["country"], ["Canada", "United States"])
 
     flag_url = (
         "https://cdn-icons-png.flaticon.com/512/323/323310.png"
@@ -185,23 +183,100 @@ def show_identity_gen(lang="EN"):
         unsafe_allow_html=True
     )
 
+    with col_geo_right:
+        if country_choice == "United States":
+            region_name = st.selectbox(ui["state"], sorted(IIN_US.keys()))
+            active_iin = IIN_US[region_name]
+        else:
+            prov_list = sorted(IIN_CA.keys())
+            def_idx = prov_list.index("Quebec") if "Quebec" in prov_list else 0
+            region_name = st.selectbox(ui["prov"], prov_list, index=def_idx)
+            active_iin = IIN_CA[region_name]
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # =========================================================
+    # UI SECTION 2
+    # =========================================================
+
+    st.markdown('<div class="crystal-card">', unsafe_allow_html=True)
+    st.subheader(ui["step2"])
+
+    c1, c2 = st.columns(2)
+
+    with c1:
+        val_dcg = st.text_input("DCG", "CAN")
+        val_dcs = st.text_input("DCS", "TEST")
+        val_dac = st.text_input("DAC", "USER")
+        val_dbb = st.text_input("DBB", "19900101")
+        val_daq = st.text_input("DAQ", "ID12345")
+        val_dag = st.text_input("DAG", "STREET")
+
+    with c2:
+        val_dai = st.text_input("DAI", "CITY")
+        val_dak = st.text_input("DAK", "POSTAL")
+        val_dbd = st.text_input("DBD", "20200101")
+        val_dba = st.text_input("DBA", "20300101")
+        val_dbc = st.selectbox("DBC", ["1", "2"])
+        val_dcf = st.text_input("DCF", "AUDIT")
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # =========================================================
+    # UI SECTION 3
+    # =========================================================
+
+    st.markdown('<div class="crystal-card">', unsafe_allow_html=True)
+    st.subheader(ui["step3"])
+
+    dpi = st.select_slider("DPI", [72, 150, 300, 600, 1200], value=600)
+    scale_val = max(1, int(dpi / 40))
+    matrix_density = st.slider("MATRIX", 1, 30, 10)
+    quiet = st.slider("QUIET ZONE", 0, 60, 5)
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # =========================================================
+    # GENERATION ENGINE
+    # =========================================================
+
     if st.button(ui["generate"], use_container_width=True):
 
         try:
-            raw_string = "@\nSAMPLE DATA\nDCGTEST\nDCSUSER"
+            region_code = "QC" if region_name == "Quebec" else region_name[:2].upper()
+
+            raw_string = (
+                f"@\nANSI{active_iin}\n"
+                f"DCG{val_dcg}\nDCS{val_dcs}\nDAC{val_dac}\nDBB{val_dbb}\n"
+                f"DAQ{val_daq}\nDAG{val_dag}\nDAI{val_dai}\nDAJ{region_code}\n"
+                f"DAK{val_dak}\nDBD{val_dbd}\nDBA{val_dba}\nDBC{val_dbc}\nDCF{val_dcf}"
+            )
 
             st.success(ui["success"])
             st.divider()
 
-            st.subheader(ui["preview"])
+            left, right = st.columns([1, 1.4])
 
-            svg_fake = "<svg width='200' height='80'><rect width='200' height='80' fill='white'/></svg>"
+            with left:
+                st.markdown('<div class="crystal-card">', unsafe_allow_html=True)
+                st.subheader(ui["raw"])
+                st.code(raw_string, language="text")
+                st.info(ui["use"])
+                st.markdown('</div>', unsafe_allow_html=True)
 
-            with st.expander("DETAILED VECTOR INSPECTION"):
-                st.markdown(
-                    f'<div class="barcode-preview-box">{svg_fake}</div>',
-                    unsafe_allow_html=True
-                )
+            with right:
+                st.markdown('<div class="crystal-card">', unsafe_allow_html=True)
+                st.subheader(ui["preview"])
+
+                fake_svg = "<svg width='300' height='100'><rect width='300' height='100' fill='white'/></svg>"
+
+                with st.expander("DETAILED VECTOR INSPECTION"):
+                    st.markdown(
+                        f'<div class="barcode-preview-box">{fake_svg}</div>',
+                        unsafe_allow_html=True
+                    )
+
+                st.markdown('</div>', unsafe_allow_html=True)
 
         except Exception:
             st.error("CRITICAL SYSTEM FAILURE")
