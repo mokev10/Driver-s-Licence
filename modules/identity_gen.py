@@ -114,6 +114,35 @@ font-weight:900 !important;
     letter-spacing: 1px;
 }
 
+/* DETAILED VECTOR INSPECTION */
+
+details[data-testid="stExpander"] {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    margin-top: 15px;
+    transition: all 0.3s ease;
+}
+
+details[data-testid="stExpander"]:hover {
+    border-color: rgba(129, 34, 255, 0.4);
+    box-shadow: 0 15px 40px rgba(129, 34, 255, 0.25);
+}
+
+details[data-testid="stExpander"] summary {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    letter-spacing: 1.2px;
+    color: #ffffff;
+    padding: 12px 16px;
+    cursor: pointer;
+}
+
+details[data-testid="stExpander"] summary:hover {
+    color: #3a82ff;
+}
 
 
     /* HOVER UNIFIÉ */
