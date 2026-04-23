@@ -117,7 +117,7 @@ st.markdown(
         border: 1.5px solid rgba(255, 255, 255, 0.15) !important;
         border-radius: 80px !important;
         padding: 18px 50px !important;
-        font-weight: 900 !important;
+        font-weight: 600 !important;
         text-transform: uppercase !important;
         letter-spacing: 2.5px !important;
         font-size: 0.95rem !important;
@@ -144,7 +144,7 @@ st.markdown(
         margin-bottom: 25px;
         padding: 15px 25px;
         background: rgba(255, 255, 255, 0.03);
-        border-radius: 80px;
+        border-radius: 20px;
         border: 1px solid rgba(255, 255, 255, 0.05);
     }
 
@@ -157,7 +157,7 @@ st.markdown(
 
     .jurisdiction-title {
         font-size: 1.4rem;
-        font-weight: 900;
+        font-weight: 600;
         background: linear-gradient(to right, #fff, #999);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -209,7 +209,7 @@ def show_identity_gen(lang="EN"):
     # Matrice de traduction (SANS EMOJIS)
     DICTIONARY = {
         "EN": {
-            "title": "AI Generator AAMVA",
+            "title": "Quantum AAMVA Studio",
             "desc": "Liquid Glass Forensic Data Synthesis Engine",
             "step1": "Jurisdiction Analysis",
             "country": "Source Nation",
@@ -224,7 +224,7 @@ def show_identity_gen(lang="EN"):
             "preview": "Digital Twin Preview"
         },
         "FR": {
-            "title": "IA Générateur AAMVA",
+            "title": "Studio Quantum AAMVA",
             "desc": "Moteur de synthèse de données légistes Liquid Glass",
             "step1": "Analyse de Juridiction",
             "country": "Nation Source",
@@ -442,7 +442,7 @@ def show_identity_gen(lang="EN"):
             st.code(traceback.format_exc())
 
 # ==============================================================================
-# FIN DU MODULE IDENTITY GEN (500 LINES TARGET)
+# FIN DU MODULE IDENTITY_GEN (500 LINES TARGET)
 # ==============================================================================
 # Ce code intègre désormais :
 # 1. Gestion dynamique des drapeaux Canada/USA (Image URL HD).
