@@ -109,32 +109,49 @@ st.markdown(
         box-shadow: 0 0 25px rgba(58, 130, 255, 0.2), inset 0 2px 10px rgba(0,0,0,0.5) !important;
     }
 
-    /* --- BOUTONS D'ACTION (PILL DESIGN SANS EMOJI) --- */
-    div.stButton > button, div.stDownloadButton > button {
-        background: rgba(255, 255, 255, 0.03) !important;
-        backdrop-filter: blur(25px) !important;
-        color: #ffffff !important;
-        border: 1.5px solid rgba(255, 255, 255, 0.15) !important;
-        border-radius: 80px !important;
-        padding: 18px 50px !important;
-        font-weight: 600 !important;
-        text-transform: uppercase !important;
-        letter-spacing: 2.5px !important;
-        font-size: 0.95rem !important;
-        box-shadow: 0 15px 30px rgba(0,0,0,0.4) !important;
-        transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1) !important;
-    }
+  /* --- BOUTONS D'ACTION (PILL DESIGN UNIFIÉ) --- */
+div.stButton > button,
+div.stDownloadButton > button {
+    background: rgba(255, 255, 255, 0.03) !important;
+    backdrop-filter: blur(25px) !important;
+    color: #ffffff !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 80px !important;
+    padding: 18px 50px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 2.5px !important;
+    font-size: 0.95rem !important;
 
-    div.stButton > button:hover {
-        background: linear-gradient(135deg, rgba(129, 34, 255, 0.15) 0%, rgba(58, 130, 255, 0.15) 100%) !important;
-        border-color: #ffffff !important;
-        transform: translateY(-6px);
-        box-shadow: 0 20px 45px rgba(129, 34, 255, 0.4) !important;
-    }
+    box-shadow: 0 15px 30px rgba(0,0,0,0.4) !important;
 
-    div.stButton > button:active {
-        transform: scale(0.96) translateY(-2px) !important;
-    }
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1) !important;
+}
+
+/* HOVER POUR TOUS LES BOUTONS */
+div.stButton > button:hover,
+div.stDownloadButton > button:hover {
+    background: linear-gradient(
+        135deg,
+        rgba(129, 34, 255, 0.25),
+        rgba(58, 130, 255, 0.25)
+    ) !important;
+
+    border-color: #ffffff !important;
+
+    transform: translateY(-6px) scale(1.02) !important;
+
+    box-shadow:
+        0 20px 45px rgba(129, 34, 255, 0.5),
+        0 0 25px rgba(58, 130, 255, 0.4) !important;
+}
+
+/* ACTIVE */
+div.stButton > button:active,
+div.stDownloadButton > button:active {
+    transform: scale(0.96) translateY(-2px) !important;
+}
+
 
     /* --- ELEMENTS VISUELS DE JURIDICTION --- */
     .flag-container {
