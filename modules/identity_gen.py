@@ -100,7 +100,19 @@ font-weight:900 !important;
         box-shadow:0 15px 30px rgba(0,0,0,0.4) !important;
         transition: all 0.4s ease !important;
     }
+    /* ENGINE READY &  SCALE*/
 
+.engine-status-tag {
+font-family: 'JetBrains Mono', monospace;
+color: #00e5ff;
+background: rgba(0, 229, 255, 0.08);
+padding: 8px 18px;
+border-radius: 12px;
+border: 1px solid rgba(0, 229, 255, 0.3);
+font-size: 0.85rem;
+display: inline-block;
+letter-spacing: 1px;
+}
 
     /* HOVER UNIFIÉ */
     div.stButton > button:hover,
