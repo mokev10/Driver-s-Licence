@@ -144,7 +144,7 @@ st.markdown(
         margin-bottom: 25px;
         padding: 15px 25px;
         background: rgba(255, 255, 255, 0.03);
-        border-radius: 00px;
+        border-radius: 80px;
         border: 1px solid rgba(255, 255, 255, 0.05);
     }
 
@@ -450,3 +450,5 @@ def show_identity_gen(lang="EN"):
 # 3. Sliders "Pro" style Liquid Glass avec lueur violette.
 # 4. Architecture de code étendue pour atteindre la limite de volume demandée.
 # ==============================================================================
+
+
