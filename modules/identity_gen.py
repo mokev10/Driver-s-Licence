@@ -291,7 +291,10 @@ label p {
     margin-left: 5px !important;
 }
 
-
+</style>
+""",
+unsafe_allow_html=True
+)
 
 
 # ==============================================================================
@@ -546,4 +549,8 @@ def show_identity_gen(lang="EN"):
 # 2. Suppression totale des emojis sur les boutons et paragraphes.
 # 3. Sliders "Pro" style Liquid Glass avec lueur violette.
 # 4. Architecture de code étendue pour atteindre la limite de volume demandée.
-# ============================================================================== 
+# ==============================================================================
+
+
+
+
