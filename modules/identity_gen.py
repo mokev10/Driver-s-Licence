@@ -25,188 +25,179 @@ except ImportError:
 # MOTEUR DE STYLE LIQUID GLASS - VERSION PRO 500
 # ==============================================================================
 st.markdown(
-    """
-    <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;500&display=swap');
-    
-    /* Fond de page et conteneur principal */
-    html, body, [data-testid="stAppViewContainer"] {
-        font-family: 'Inter', sans-serif;
-        background-color: #020203;
-        color: #ffffff;
-    }
+"""
 
-    /* Animation de déploiement des cartes Crystal */
-    @keyframes cardGlowFade {
-        0% { transform: translateY(20px); opacity: 0; box-shadow: 0 0 0 rgba(0,0,0,0); }
-        100% { transform: translateY(0px); opacity: 1; box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
-    }
-
-    /* Styles des Cartes Crystal (Sections) */
-    .crystal-card {
-        background: rgba(255, 255, 255, 0.015);
-        backdrop-filter: blur(30px);
-        -webkit-backdrop-filter: blur(30px);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 28px;
-        padding: 40px;
-        margin-bottom: 35px;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.6), inset 0 0 30px rgba(255,255,255,0.01);
-        animation: cardGlowFade 0.9s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    /* --- SLIDERS PROFESSIONNELS (STYLE IMAGE 7D64EC) --- */
-    div[data-testid="stTickBar"] { display: none !important; }
-    
-    /* Rail principal du slider */
-    div[data-baseweb="slider"] > div:first-child {
-        height: 14px !important;
-        background: rgba(255, 255, 255, 0.04) !important;
-        border-radius: 20px !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        box-shadow: inset 0 2px 4px rgba(0,0,0,0.5) !important;
-    }
-
-    /* Barre de progression avec dégradé liquide */
-    div[role="presentation"] > div > div:first-child {
-        background: linear-gradient(90deg, #8122ff 0%, #3a82ff 100%) !important;
-        height: 14px !important;
-        border-radius: 20px !important;
-        box-shadow: 0 0 20px rgba(129, 34, 255, 0.4) !important;
-    }
-
-    /* Curseur (Thumb) style capsule de verre poli */
-    div[role="slider"] {
-        height: 28px !important;
-        width: 28px !important;
-        background-color: #ffffff !important;
-        border: 5px solid #8122ff !important;
-        box-shadow: 0 0 30px rgba(129, 34, 255, 0.9), inset 0 2px 4px rgba(0,0,0,0.3) !important;
-        transition: transform 0.2s ease, box-shadow 0.2s ease !important;
-    }
-
-    div[role="slider"]:hover {
-        transform: scale(1.15) !important;
-        box-shadow: 0 0 40px rgba(129, 34, 255, 1) !important;
-    }
-
-    /* --- INPUTS TEXTE ET CHAMPS DE SELECTION (NOIR GLASS) --- */
-    .stTextInput input, .stSelectbox [data-baseweb="select"] {
-        background: rgba(10, 10, 12, 0.6) !important;
-        backdrop-filter: blur(15px) !important;
-        border-radius: 18px !important;
-        border: 1px solid rgba(255, 255, 255, 0.08) !important;
-        color: #f2f2f2 !important;
-        padding: 14px 22px !important;
-        font-size: 1rem !important;
-        box-shadow: inset 0 2px 10px rgba(0,0,0,0.5) !important;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    }
-
-    .stTextInput input:focus {
-        border-color: #3a82ff !important;
-        background: rgba(15, 15, 20, 0.8) !important;
-        box-shadow: 0 0 25px rgba(58, 130, 255, 0.2), inset 0 2px 10px rgba(0,0,0,0.5) !important;
-    }
-
-    /* --- BOUTONS D'ACTION (PILL DESIGN SANS EMOJI) --- */
-    div.stButton > button, div.stDownloadButton > button {
-        background: rgba(255, 255, 255, 0.03) !important;
-        backdrop-filter: blur(25px) !important;
-        color: #ffffff !important;
-        border: 1.5px solid rgba(255, 255, 255, 0.15) !important;
-        border-radius: 80px !important;
-        padding: 18px 50px !important;
-        font-weight: 900 !important;
-        text-transform: uppercase !important;
-        letter-spacing: 2.5px !important;
-        font-size: 0.95rem !important;
-        box-shadow: 0 15px 30px rgba(0,0,0,0.4) !important;
-        transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1) !important;
-    }
-
-div.stDownloadButton > button:hover {
-    background: linear-gradient(135deg, rgba(129, 34, 255, 0.15) 0%, rgba(58, 130, 255, 0.15) 100%) !important;
-    border-color: #ffffff !important;
-    transform: translateY(-6px);
-    box-shadow: 0 20px 45px rgba(129, 34, 255, 0.4) !important;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;500&display=swap');
+/* Fond global */
+html, body, [data-testid="stAppViewContainer"] {
+    font-family: 'Inter', sans-serif;
+    background-color: #020203;
+    color: #ffffff;
 }
 
+/* Animation cartes */
+@keyframes cardGlowFade {
+    0% { transform: translateY(20px); opacity: 0; box-shadow: 0 0 0 rgba(0,0,0,0); }
+    100% { transform: translateY(0px); opacity: 1; box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
+}
+
+.crystal-card {
+    background: rgba(255, 255, 255, 0.015);
+    backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 28px;
+    padding: 40px;
+    margin-bottom: 35px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.6), inset 0 0 30px rgba(255,255,255,0.01);
+    animation: cardGlowFade 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ===== SLIDERS ===== */
+div[data-testid="stTickBar"] { display: none !important; }
+
+div[data-baseweb="slider"] > div:first-child {
+    height: 14px !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    border-radius: 20px !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.5) !important;
+}
+
+/* Barre slider (progress) */
+div[role="presentation"] > div > div:first-child {
+    background: linear-gradient(90deg, #8122ff 0%, #3a82ff 100%) !important;
+    height: 14px !important;
+    border-radius: 20px !important;
+    box-shadow: 0 0 20px rgba(129, 34, 255, 0.4) !important;
+}
+
+div[role="slider"] {
+    height: 28px !important;
+    width: 28px !important;
+    background-color: #ffffff !important;
+    border: 5px solid #8122ff !important;
+    box-shadow: 0 0 30px rgba(129, 34, 255, 0.9), inset 0 2px 4px rgba(0,0,0,0.3) !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+div[role="slider"]:hover {
+    transform: scale(1.15) !important;
+    box-shadow: 0 0 40px rgba(129, 34, 255, 1) !important;
+}
+
+/* ===== INPUTS ===== */
+.stTextInput input, .stSelectbox [data-baseweb="select"] {
+    background: rgba(10, 10, 12, 0.6) !important;
+    backdrop-filter: blur(15px) !important;
+    border-radius: 18px !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: #f2f2f2 !important;
+    padding: 14px 22px !important;
+    font-size: 1rem !important;
+    box-shadow: inset 0 2px 10px rgba(0,0,0,0.5) !important;
+    transition: all 0.3s ease !important;
+}
+
+.stTextInput input:focus {
+    border-color: #3a82ff !important;
+    background: rgba(15, 15, 20, 0.8) !important;
+    box-shadow: 0 0 25px rgba(58, 130, 255, 0.2), inset 0 2px 10px rgba(0,0,0,0.5) !important;
+}
+
+/* ===== BOUTONS (UNIFIÉS) ===== */
+div.stButton > button, 
+div.stDownloadButton > button {
+    background: linear-gradient(135deg, rgba(129,34,255,0.25), rgba(58,130,255,0.25)) !important;
+    backdrop-filter: blur(25px) !important;
+    color: #ffffff !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 80px !important;
+    padding: 18px 50px !important;
+    font-weight: 900 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 2.5px !important;
+    font-size: 0.95rem !important;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.4) !important;
+    transition: all 0.4s ease !important;
+}
+
+/* Hover (APPLIQUÉ AUX 2 TYPES DE BOUTONS) */
+div.stButton > button:hover, 
+div.stDownloadButton > button:hover {
+    background: linear-gradient(135deg, #8122ff 0%, #3a82ff 100%) !important;
+    border-color: #ffffff !important;
+    transform: translateY(-6px);
+    box-shadow: 0 20px 45px rgba(129, 34, 255, 0.5) !important;
+}
+
+/* Active */
+div.stButton > button:active, 
 div.stDownloadButton > button:active {
     transform: scale(0.96) translateY(-2px) !important;
 }
 
-    div.stButton > button:hover {
-        background: linear-gradient(135deg, rgba(129, 34, 255, 0.15) 0%, rgba(58, 130, 255, 0.15) 100%) !important;
-        border-color: #ffffff !important;
-        transform: translateY(-6px);
-        box-shadow: 0 20px 45px rgba(129, 34, 255, 0.4) !important;
-    }
+/* ===== JURIDICTION ===== */
+.flag-container {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 25px;
+    padding: 15px 25px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 80px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
 
-    div.stButton > button:active {
-        transform: scale(0.96) translateY(-2px) !important;
-    }
+.flag-image {
+    width: 48px;
+    border-radius: 6px;
+    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
+}
 
-    /* --- ELEMENTS VISUELS DE JURIDICTION --- */
-    .flag-container {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-        margin-bottom: 25px;
-        padding: 15px 25px;
-        background: rgba(255, 255, 255, 0.03);
-        border-radius: 80px;
-        border: 1px solid rgba(255, 255, 255, 0.05);
-    }
+.jurisdiction-title {
+    font-size: 1.4rem;
+    font-weight: 900;
+    background: linear-gradient(to right, #fff, #999);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
 
-    .flag-image {
-        width: 48px;
-        height: auto;
-        border-radius: 6px;
-        filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
-    }
+/* ===== RENDU ===== */
+.barcode-preview-box {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+    margin: 20px 0;
+}
 
-    .jurisdiction-title {
-        font-size: 1.4rem;
-        font-weight: 900;
-        background: linear-gradient(to right, #fff, #999);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
+.engine-status-tag {
+    font-family: 'JetBrains Mono', monospace;
+    color: #00e5ff;
+    background: rgba(0, 229, 255, 0.08);
+    padding: 8px 18px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 229, 255, 0.3);
+    font-size: 0.85rem;
+    display: inline-block;
+    letter-spacing: 1px;
+}
 
-    /* --- RENDU TECHNIQUE --- */
-    .barcode-preview-box {
-        background: white;
-        padding: 30px;
-        border-radius: 20px;
-        box-shadow: 0 30px 60px rgba(0,0,0,0.8);
-        margin: 20px 0;
-    }
+/* Fix label */
+label p {
+    color: rgba(200, 200, 255, 0.6) !important;
+    text-transform: uppercase !important;
+    font-size: 0.75rem !important;
+    letter-spacing: 1.5px !important;
+    margin-left: 5px !important;
+}
 
-    .engine-status-tag {
-        font-family: 'JetBrains Mono', monospace;
-        color: #00e5ff;
-        background: rgba(0, 229, 255, 0.08);
-        padding: 8px 18px;
-        border-radius: 12px;
-        border: 1px solid rgba(0, 229, 255, 0.3);
-        font-size: 0.85rem;
-        display: inline-block;
-        letter-spacing: 1px;
-    }
+</style>
+""",
+unsafe_allow_html=True
 
-    label p {
-        color: 0 20px 45px rgba(129, 34, 255, 0.4) !important;
-        text-transform: uppercase !important;
-        font-size: 0.75rem !important;
-        letter-spacing: 1.5px !important;
-        margin-left: 5px !important;
-    }
-    
-    </style>
-    """,
-    unsafe_allow_html=True
 )
+
 
 # ==============================================================================
 # LOGIQUE MÉTIER ET INTERFACE UTILISATEUR
