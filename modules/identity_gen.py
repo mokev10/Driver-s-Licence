@@ -144,7 +144,7 @@ st.markdown(
         margin-bottom: 25px;
         padding: 15px 25px;
         background: rgba(255, 255, 255, 0.03);
-        border-radius: 20px;
+        border-radius: 00px;
         border: 1px solid rgba(255, 255, 255, 0.05);
     }
 
@@ -442,7 +442,7 @@ def show_identity_gen(lang="EN"):
             st.code(traceback.format_exc())
 
 # ==============================================================================
-# FIN DU MODULE IDENTITY_GEN (500 LINES TARGET)
+# FIN DU MODULE IDENTITY GEN (500 LINES TARGET)
 # ==============================================================================
 # Ce code intègre désormais :
 # 1. Gestion dynamique des drapeaux Canada/USA (Image URL HD).
@@ -450,5 +450,3 @@ def show_identity_gen(lang="EN"):
 # 3. Sliders "Pro" style Liquid Glass avec lueur violette.
 # 4. Architecture de code étendue pour atteindre la limite de volume demandée.
 # ==============================================================================
-
-
