@@ -42,11 +42,6 @@ st.markdown(
         100% { transform: translateY(0px); opacity: 1; box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
     }
 
-/* Animation de déploiement des cartes Crystal */
-    @keyframes cardGlowFade {
-        0% { transform: translateY(20px); opacity: 0;  label p: 0 0 0 rgba(0,0,0,0); }
-        100% { transform: translateY(0px); opacity: 1;  label p: 0 20px 40px rgba(0,0,0,0.6); }
-    }
     /* Styles des Cartes Crystal (Sections) */
     .crystal-card {
         background: rgba(255, 255, 255, 0.015);
@@ -129,6 +124,17 @@ st.markdown(
         box-shadow: 0 15px 30px rgba(0,0,0,0.4) !important;
         transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1) !important;
     }
+
+div.stDownloadButton > button:hover {
+    background: linear-gradient(135deg, rgba(129, 34, 255, 0.15) 0%, rgba(58, 130, 255, 0.15) 100%) !important;
+    border-color: #ffffff !important;
+    transform: translateY(-6px);
+    box-shadow: 0 20px 45px rgba(129, 34, 255, 0.4) !important;
+}
+
+div.stDownloadButton > button:active {
+    transform: scale(0.96) translateY(-2px) !important;
+}
 
     div.stButton > button:hover {
         background: linear-gradient(135deg, rgba(129, 34, 255, 0.15) 0%, rgba(58, 130, 255, 0.15) 100%) !important;
