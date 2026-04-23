@@ -109,48 +109,61 @@ st.markdown(
         box-shadow: 0 0 25px rgba(58, 130, 255, 0.2), inset 0 2px 10px rgba(0,0,0,0.5) !important;
     }
 
-  /* --- BOUTONS D'ACTION (PILL DESIGN UNIFIÉ) --- */
+/* --- BOUTONS ULTRA BRILLANTS (VERSION FINAL FIX) --- */
 div.stButton > button,
 div.stDownloadButton > button {
-    background: rgba(255, 255, 255, 0.03) !important;
+    background: linear-gradient(135deg, rgba(129, 34, 255, 0.12), rgba(58, 130, 255, 0.12)) !important;
     backdrop-filter: blur(25px) !important;
     color: #ffffff !important;
-    border: 1.5px solid rgba(255, 255, 255, 0.15) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
     border-radius: 80px !important;
     padding: 18px 50px !important;
-    font-weight: 600 !important;
+    font-weight: 700 !important;
     text-transform: uppercase !important;
-    letter-spacing: 2.5px !important;
+    letter-spacing: 2px !important;
     font-size: 0.95rem !important;
 
-    box-shadow: 0 15px 30px rgba(0,0,0,0.4) !important;
+    /* 🔥 GLOW PERMANENT */
+    box-shadow: 
+        0 0 25px rgba(129, 34, 255, 0.35),
+        0 10px 30px rgba(0,0,0,0.5),
+        inset 0 0 10px rgba(255,255,255,0.05) !important;
 
-    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1) !important;
+    transition: all 0.4s ease !important;
+
+    /* ✨ animation douce continue */
+    animation: glowPulse 3s infinite alternate;
 }
 
-/* HOVER POUR TOUS LES BOUTONS */
+/* 🔥 Animation breathing glow */
+@keyframes glowPulse {
+    0% {
+        box-shadow: 
+            0 0 15px rgba(129, 34, 255, 0.25),
+            0 10px 25px rgba(0,0,0,0.4);
+    }
+    100% {
+        box-shadow: 
+            0 0 35px rgba(129, 34, 255, 0.6),
+            0 15px 40px rgba(0,0,0,0.6);
+    }
+}
+
+/* 🖱 Hover encore plus puissant */
 div.stButton > button:hover,
 div.stDownloadButton > button:hover {
-    background: linear-gradient(
-        135deg,
-        rgba(129, 34, 255, 0.25),
-        rgba(58, 130, 255, 0.25)
-    ) !important;
-
-    border-color: #ffffff !important;
-
-    transform: translateY(-6px) scale(1.02) !important;
-
-    box-shadow:
-        0 20px 45px rgba(129, 34, 255, 0.5),
-        0 0 25px rgba(58, 130, 255, 0.4) !important;
+    transform: translateY(-6px) scale(1.03);
+    box-shadow: 
+        0 0 50px rgba(129, 34, 255, 0.9),
+        0 25px 60px rgba(129, 34, 255, 0.5) !important;
 }
 
-/* ACTIVE */
+/* 🖱 Click */
 div.stButton > button:active,
 div.stDownloadButton > button:active {
-    transform: scale(0.96) translateY(-2px) !important;
+    transform: scale(0.96);
 }
+
 
 
     /* --- ELEMENTS VISUELS DE JURIDICTION --- */
