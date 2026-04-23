@@ -528,10 +528,16 @@ def show_identity_gen(lang="EN"):
                     # Accordéon d'inspection vectorielle
                     if data_svg:
                         with st.expander("DETAILED VECTOR INSPECTION"):
-                            st.markdown(
-                                f'<div class="barcode-preview-box">{data_svg}</div>', 
-                                unsafe_allow_html=True
-                            )
+                            st.components.v1.html(
+    f"""
+    <div class="barcode-preview-box">
+        {str(data_svg)}
+    </div>
+    """,
+    height=500,
+    scrolling=True
+)
+
                 except Exception as bar_err:
                     st.error(f"Render Engine Fault: {str(bar_err)}")
                 
