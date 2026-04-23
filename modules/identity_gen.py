@@ -42,6 +42,11 @@ st.markdown(
         100% { transform: translateY(0px); opacity: 1; box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
     }
 
+/* Animation de déploiement des cartes Crystal */
+    @keyframes cardGlowFade {
+        0% { transform: translateY(20px); opacity: 0;  label p: 0 0 0 rgba(0,0,0,0); }
+        100% { transform: translateY(0px); opacity: 1;  label p: 0 20px 40px rgba(0,0,0,0.6); }
+    }
     /* Styles des Cartes Crystal (Sections) */
     .crystal-card {
         background: rgba(255, 255, 255, 0.015);
