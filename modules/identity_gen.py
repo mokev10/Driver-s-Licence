@@ -182,9 +182,9 @@ def show_identity_gen(lang="EN"):
 
     # Sélection de l'URL du drapeau en fonction du pays (Image HD)
     flag_url = (
-        "https://cdn-icons-png.flaticon.com/512/323/323310.png" # USA
+        "https://img.icons8.com/fluency/48/usa-circular.png" # USA
         if country_choice == "United States" else 
-        "https://cdn-icons-png.flaticon.com/512/323/323277.png" # Canada
+        "https://img.icons8.com/fluency/48/canada-circular.png" # Canada
     )
 
     # Affichage dynamique de l'en-tête de juridiction avec drapeau
