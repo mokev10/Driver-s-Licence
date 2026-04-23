@@ -198,7 +198,7 @@ div.stDownloadButton > button:active {
         -webkit-text-fill-color: transparent;
     }
 /* ================================
-   FIX SVG EXPANDER DARK MODE (FINAL)
+   SVG INSIDE EXPANDER FIX
 ================================== */
 
 .barcode-preview-box {
@@ -209,13 +209,18 @@ div.stDownloadButton > button:active {
     backdrop-filter: blur(10px);
 }
 
-/* Force le SVG à être visible en dark mode */
+/* SVG rendu lisible en dark mode */
 .barcode-preview-box svg {
-   /* ================================
-   FIX EXPANDER STREAMLIT DARK MODE
+    max-width: 100% !important;
+    height: auto !important;
+    filter: brightness(1.6) contrast(1.2) !important;
+}
+
+/* ================================
+   STREAMLIT EXPANDER FIX (IMPORTANT)
 ================================== */
 
-/* Header (la petite flèche + titre) */
+/* HEADER (titre + flèche) */
 details[data-testid="stExpander"] > summary {
     background: rgba(255, 255, 255, 0.04) !important;
     border: 1px solid rgba(255,255,255,0.08) !important;
@@ -225,24 +230,24 @@ details[data-testid="stExpander"] > summary {
     backdrop-filter: blur(10px) !important;
 }
 
-/* Contenu ouvert de l'expander */
+/* CONTENU OUVERT */
 details[data-testid="stExpander"] > div[role="region"] {
-    background: rgba(0, 0, 0, 0.25) !important;
+    background: rgba(10, 10, 15, 0.65) !important;
     border: 1px solid rgba(255,255,255,0.08) !important;
     border-radius: 14px !important;
     padding: 15px !important;
-    color: var(--text-color) !important;
 }
 
-/* Texte interne */
+/* TEXTE INTERNE */
 details[data-testid="stExpander"] * {
-    color: var(--text-color) !important;
+    color: #ffffff !important;
 }
 
-/* Flèche (chevron) */
+/* FLÈCHE */
 details[data-testid="stExpander"] svg {
     fill: white !important;
 }
+
 
     .engine-status-tag {
         font-family: 'JetBrains Mono', monospace;
@@ -523,4 +528,8 @@ def show_identity_gen(lang="EN"):
 # 2. Suppression totale des emojis sur les boutons et paragraphes.
 # 3. Sliders "Pro" style Liquid Glass avec lueur violette.
 # 4. Architecture de code étendue pour atteindre la limite de volume demandée.
-# ============================================================================== 
+# ==============================================================================
+
+
+
+
