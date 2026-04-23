@@ -22,215 +22,189 @@ except ImportError:
     IIN_CA = {"Quebec": "604428", "Ontario": "604430"}
 
 # ==============================================================================
-# MOTEUR DE STYLE LIQUID GLASS - VERSION PRO 500
+# CSS FINAL CORRIGÉ (BOUTONS FIXÉS + UNIFIÉS)
 # ==============================================================================
 st.markdown(
     """
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;500&display=swap');
     
-    /* Fond de page et conteneur principal */
-   :root {
-    --bg-color: #0E1117;
-    --text-color: #FAFAFA;
-}
-
-.stApp {
-    background-color: var(--bg-color) !important;
-    color: var(--text-color) !important;
-}
-
-
-    /* Animation de déploiement des cartes Crystal */
-    @keyframes cardGlowFade {
-        0% { transform: translateY(20px); opacity: 0; box-shadow: 0 0 0 rgba(0,0,0,0); }
-        100% { transform: translateY(0px); opacity: 1; box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
+    html, body, [data-testid="stAppViewContainer"] {
+        font-family: 'Inter', sans-serif;
+        background-color: #020203;
+        color: #ffffff;
     }
 
-    /* Styles des Cartes Crystal (Sections) */
+    @keyframes cardGlowFade {
+        0% { transform: translateY(20px); opacity: 0; }
+        100% { transform: translateY(0px); opacity: 1; }
+    }
+
     .crystal-card {
-        background: rgba(255, 255, 255, 0.015);
+        background: rgba(255,255,255,0.015);
         backdrop-filter: blur(30px);
-        -webkit-backdrop-filter: blur(30px);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255,255,255,0.08);
         border-radius: 28px;
         padding: 40px;
         margin-bottom: 35px;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.6), inset 0 0 30px rgba(255,255,255,0.01);
-        animation: cardGlowFade 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+        animation: cardGlowFade 0.8s ease;
     }
 
-    /* --- SLIDERS PROFESSIONNELS (STYLE IMAGE 7D64EC) --- */
-    div[data-testid="stTickBar"] { display: none !important; }
-    
-    /* Rail principal du slider */
+DICTIONARY {        
+font-weight:900 !important;
+}
+
+    /* ===== SLIDER ===== */
+    div[data-testid="stTickBar"] { display:none !important; }
+
     div[data-baseweb="slider"] > div:first-child {
-        height: 14px !important;
-        background: rgba(255, 255, 255, 0.04) !important;
-        border-radius: 20px !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        box-shadow: inset 0 2px 4px rgba(0,0,0,0.5) !important;
+        height:14px !important;
+        background:rgba(255,255,255,0.04) !important;
+        border-radius:20px !important;
     }
 
-    /* Barre de progression avec dégradé liquide */
     div[role="presentation"] > div > div:first-child {
-        background: linear-gradient(90deg, #8122ff 0%, #3a82ff 100%) !important;
-        height: 14px !important;
-        border-radius: 20px !important;
-        box-shadow: 0 0 20px rgba(129, 34, 255, 0.4) !important;
+        background: linear-gradient(90deg,#8122ff,#3a82ff) !important;
+        border-radius:20px !important;
     }
 
-    /* Curseur (Thumb) style capsule de verre poli */
     div[role="slider"] {
-        height: 28px !important;
-        width: 28px !important;
-        background-color: #ffffff !important;
-        border: 5px solid #8122ff !important;
-        box-shadow: 0 0 30px rgba(129, 34, 255, 0.9), inset 0 2px 4px rgba(0,0,0,0.3) !important;
-        transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+        height:28px !important;
+        width:28px !important;
+        background:#fff !important;
+        border:5px solid #8122ff !important;
+        box-shadow:0 0 25px rgba(129,34,255,0.8) !important;
     }
 
-    div[role="slider"]:hover {
-        transform: scale(1.15) !important;
-        box-shadow: 0 0 40px rgba(129, 34, 255, 1) !important;
-    }
-
-    /* --- INPUTS TEXTE ET CHAMPS DE SELECTION (NOIR GLASS) --- */
+    /* ===== INPUT ===== */
     .stTextInput input, .stSelectbox [data-baseweb="select"] {
-        background: rgba(10, 10, 12, 0.6) !important;
-        backdrop-filter: blur(15px) !important;
-        border-radius: 18px !important;
-        border: 1px solid rgba(255, 255, 255, 0.08) !important;
-        color: #f2f2f2 !important;
-        padding: 14px 22px !important;
-        font-size: 1rem !important;
-        box-shadow: inset 0 2px 10px rgba(0,0,0,0.5) !important;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        background:rgba(10,10,12,0.6) !important;
+        border-radius:18px !important;
+        border:1px solid rgba(255,255,255,0.08) !important;
+        color:#f2f2f2 !important;
     }
 
-    .stTextInput input:focus {
-        border-color: #3a82ff !important;
-        background: rgba(15, 15, 20, 0.8) !important;
-        box-shadow: 0 0 25px rgba(58, 130, 255, 0.2), inset 0 2px 10px rgba(0,0,0,0.5) !important;
+    /* ===== BOUTONS (FIX GLOBAL) ===== */
+    div.stButton > button,
+    div.stDownloadButton > button {
+        background: linear-gradient(135deg, rgba(129,34,255,0.25), rgba(58,130,255,0.25)) !important;
+        backdrop-filter: blur(25px) !important;
+        color:#fff !important;
+        border:1.5px solid rgba(255,255,255,0.2) !important;
+        border-radius:80px !important;
+        padding:18px 50px !important;
+        font-weight:900 !important;
+        text-transform:uppercase !important;
+        letter-spacing:2px !important;
+        box-shadow:0 15px 30px rgba(0,0,0,0.4) !important;
+        transition: all 0.4s ease !important;
     }
+    /* ENGINE READY &  SCALE*/
 
-/* --- BOUTONS ULTRA BRILLANTS (VERSION FINAL FIX) --- */
-div.stButton > button,
-div.stDownloadButton > button {
-    background: linear-gradient(135deg, rgba(129, 34, 255, 0.12), rgba(58, 130, 255, 0.12)) !important;
-    backdrop-filter: blur(25px) !important;
-    color: #ffffff !important;
-    border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
-    border-radius: 80px !important;
-    padding: 18px 50px !important;
-    font-weight: 700 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 2px !important;
-    font-size: 0.95rem !important;
-
-    /* 🔥 GLOW PERMANENT */
-    box-shadow: 
-        0 0 25px rgba(129, 34, 255, 0.35),
-        0 10px 30px rgba(0,0,0,0.5),
-        inset 0 0 10px rgba(255,255,255,0.05) !important;
-
-    transition: all 0.4s ease !important;
-
-    /* ✨ animation douce continue */
-    animation: glowPulse 3s infinite alternate;
+.engine-status-tag {
+    font-family: 'JetBrains Mono', monospace;
+    color: #00e5ff;
+    background: rgba(0, 229, 255, 0.08);
+    padding: 8px 18px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 229, 255, 0.3);
+    font-size: 0.85rem;
+    display: inline-block;
+    letter-spacing: 1px;
 }
 
-/* 🔥 Animation breathing glow */
-@keyframes glowPulse {
-    0% {
-        box-shadow: 
-            0 0 15px rgba(129, 34, 255, 0.25),
-            0 10px 25px rgba(0,0,0,0.4);
-    }
-    100% {
-        box-shadow: 
-            0 0 35px rgba(129, 34, 255, 0.6),
-            0 15px 40px rgba(0,0,0,0.6);
-    }
+/* ================= DETAILED VECTOR INSPECTION - FINAL FIX ================= */
+
+/* 1. EXPANDER GLOBAL (compatible toutes versions Streamlit) */
+div[data-testid="stExpander"],
+details[data-testid="stExpander"] {
+    background: rgba(128, 128, 128, 0.05) !important; 
+    border: 1px solid rgba(249, 12, 245, 0.3) !important;
+    border-radius: 16px !important;
+    backdrop-filter: blur(15px);
+    overflow: hidden;
+    transition: all 0.3s ease;
 }
 
-/* 🖱 Hover encore plus puissant */
+/* 2. HOVER EFFECT */
+div[data-testid="stExpander"]:hover,
+details[data-testid="stExpander"]:hover {
+    border-color: rgba(249, 12, 245, 0.6) !important;
+    box-shadow: 0 10px 25px rgba(249, 12, 245, 0.35) !important;
+}
+
+/* 3. HEADER (bouton cliquable) */
+div[data-testid="stExpander"] summary,
+details[data-testid="stExpander"] summary {
+    background: rgba(255,255,255,0.04) !important;
+    color: var(--text-color) !important;
+    padding: 14px 20px !important;
+    font-weight: 600 !important;
+    border-radius: 16px !important;
+    cursor: pointer;
+}
+
+/* 4. TEXTE + ICÔNE (chevron) */
+div[data-testid="stExpander"] summary *,
+details[data-testid="stExpander"] summary * {
+    color: var(--text-color) !important;
+    fill: var(--text-color) !important;
+}
+
+/* 5. CONTENU INTERNE (FIX DARK MODE CRITIQUE) */
+div[data-testid="stExpanderDetails"],
+details[data-testid="stExpander"] > div {
+    background: transparent !important;
+    color: var(--text-color) !important;
+    padding: 20px !important;
+}
+
+/* 6. SVG CONTAINER */
+.barcode-preview-box {
+    padding: 15px;
+    background: transparent !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 7. SVG RESPONSIVE */
+.barcode-preview-box svg {
+    width: 100%;
+    height: auto;
+}
+
+/* 8. FIX VISIBILITÉ SVG (dark/light auto) */
+.barcode-preview-box svg path {
+    fill: var(--text-color) !important;
+}
+
+/* ================= BOUTONS ================= */
+
+/* HOVER */
 div.stButton > button:hover,
 div.stDownloadButton > button:hover {
-    transform: translateY(-6px) scale(1.03);
-    box-shadow: 
-        0 0 50px rgba(129, 34, 255, 0.9),
-        0 25px 60px rgba(129, 34, 255, 0.5) !important;
+    background: linear-gradient(135deg,#8122ff,#3a82ff) !important;
+    transform: translateY(-6px);
+    box-shadow:0 20px 45px rgba(129,34,255,0.5) !important;
 }
 
-/* 🖱 Click */
+/* ACTIVE */
 div.stButton > button:active,
 div.stDownloadButton > button:active {
-    transform: scale(0.96);
+    transform: scale(0.96) translateY(-2px) !important;
+}
+
+/* ================= LABEL FIX ================= */
+label p {
+    color: rgba(200,200,255,0.6) !important;
+    font-size:0.75rem !important;
 }
 
 
 
-    /* --- ELEMENTS VISUELS DE JURIDICTION --- */
-    .flag-container {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-        margin-bottom: 25px;
-        padding: 15px 25px;
-        background: rgba(255, 255, 255, 0.03);
-        border-radius: 20px;
-        border: 1px solid rgba(255, 255, 255, 0.05);
-    }
 
-    .flag-image {
-        width: 48px;
-        height: auto;
-        border-radius: 6px;
-        filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
-    }
-
-    .jurisdiction-title {
-        font-size: 1.4rem;
-        font-weight: 600;
-        background: linear-gradient(to right, #fff, #999);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-
-    /* --- RENDU TECHNIQUE --- */
-  .barcode-preview-box {
-    background: var(--bg-color);
-    color: var(--text-color);
-    padding: 30px;
-    border-radius: 20px;
-    border: 1px solid rgba(255,255,255,0.1);
-}
-
-    .engine-status-tag {
-        font-family: 'JetBrains Mono', monospace;
-        color: #00e5ff;
-        background: rgba(0, 229, 255, 0.08);
-        padding: 8px 18px;
-        border-radius: 12px;
-        border: 1px solid rgba(0, 229, 255, 0.3);
-        font-size: 0.85rem;
-        display: inline-block;
-        letter-spacing: 1px;
-    }
-
-    label p {
-        color: rgba(255, 255, 255, 0.6) !important;
-        text-transform: uppercase !important;
-        font-size: 0.75rem !important;
-        letter-spacing: 1.5px !important;
-        margin-left: 5px !important;
-    }
-    
-    </style>
-    """,
-    unsafe_allow_html=True
-)
 
 # ==============================================================================
 # LOGIQUE MÉTIER ET INTERFACE UTILISATEUR
@@ -244,30 +218,30 @@ def show_identity_gen(lang="EN"):
     # Matrice de traduction (SANS EMOJIS)
     DICTIONARY = {
         "EN": {
-            "title": "Quantum AAMVA Studio",
-            "desc": "Liquid Glass Forensic Data Synthesis Engine",
-            "step1": "Jurisdiction Analysis",
+            "title": "AI Generator AAMVA",
+            "desc": "Generating matrix data in a driver's license",
+            "step1": "COUNTRY SELECTION",
             "country": "Source Nation",
             "state": "Regional State",
             "prov": "Regional Province",
             "step2": "Identity Matrix Parameters",
-            "step3": "Optical Engine Configuration",
+            "step3": "ADVANCED CONFIGURATION SETTINGS FOR PDF417",
             "generate": "Initialize Generation Sequence",
-            "success": "Payload matrix successfully compiled.",
+            "success": "AAMVA generated successfully!.",
             "raw": "AAMVA Raw String Output",
             "use": "Standardized payload for external renderers.",
             "preview": "Digital Twin Preview"
         },
         "FR": {
-            "title": "Studio Quantum AAMVA",
-            "desc": "Moteur de synthèse de données légistes Liquid Glass",
-            "step1": "Analyse de Juridiction",
+            "title": "IA Générateur AAMVA",
+            "desc": "Générer des données matricielles dans un permis de conduire",
+            "step1": "SÉLECTION DU PAYS",
             "country": "Nation Source",
             "state": "État Régional",
             "prov": "Province Régionale",
             "step2": "Paramètres de la Matrice d'Identité",
-            "step3": "Configuration du Moteur Optique",
-            "generate": "Initialiser la séquence de génération",
+            "step3": "PARAMÈTRES AVANCÉS DE CONFIGURATION DU PDF417",
+            "generate": "AAMVA généré avec succès!",
             "success": "Matrice du payload compilée avec succès.",
             "raw": "Sortie de chaîne brute AAMVA",
             "use": "Payload standardisé pour moteurs de rendu externes.",
@@ -291,9 +265,9 @@ def show_identity_gen(lang="EN"):
 
     # Sélection de l'URL du drapeau en fonction du pays (Image HD)
     flag_url = (
-        "https://cdn-icons-png.flaticon.com/512/323/323310.png" # USA
+        "https://img.icons8.com/fluency/48/usa-circular.png" # USA
         if country_choice == "United States" else 
-        "https://cdn-icons-png.flaticon.com/512/323/323277.png" # Canada
+        "https://img.icons8.com/fluency/48/canada-circular.png" # Canada
     )
 
     # Affichage dynamique de l'en-tête de juridiction avec drapeau
@@ -477,7 +451,7 @@ def show_identity_gen(lang="EN"):
             st.code(traceback.format_exc())
 
 # ==============================================================================
-# FIN DU MODULE IDENTITY_GEN (500 LINES TARGET)
+# FIN DU MODULE IDENTITY GEN (500 LINES TARGET)
 # ==============================================================================
 # Ce code intègre désormais :
 # 1. Gestion dynamique des drapeaux Canada/USA (Image URL HD).
