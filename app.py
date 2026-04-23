@@ -102,9 +102,48 @@ div.stButton > button:active {
 
 
 def apply_custom_style(dark_mode=True):
+    # Définition des couleurs selon le mode
     bg = "#0E1117" if dark_mode else "#FFFFFF"
-    text = "#FAFAFA" if dark_mode else "#000000"
-    card = "#161B22" if dark_mode else "#F5F5F5"
+    text = "#FAFAFA" if dark_mode else "#262730"  # Un gris très foncé pour le mode clair
+    border_color = "rgba(249, 12, 245, 0.3)" # Ton rose/violet
+
+    st.markdown(f"""
+    <style>
+    /* Style de base de l'expander */
+    details[data-testid="stExpander"] {{
+        background: {bg} !important;
+        border: 1px solid {border_color} !important;
+        border-radius: 16px !important;
+        transition: all 0.5s ease;
+    }}
+
+    /* FORCE la couleur du texte du titre */
+    details[data-testid="stExpander"] summary, 
+    details[data-testid="stExpander"] summary span,
+    details[data-testid="stExpander"] summary p {{
+        color: {text} !important;
+        font-family: 'JetBrains Mono', monospace !important;
+    }}
+
+    /* FORCE la couleur de l'icône (le chevron) */
+    details[data-testid="stExpander"] summary svg {{
+        fill: {text} !important;
+    }}
+
+    /* État au survol */
+    details[data-testid="stExpander"]:hover {{
+        border-color: #F90CF5 !important;
+        box-shadow: 0 10px 20px rgba(249, 12, 245, 0.2);
+    }}
+
+    /* Fix pour l'effet de clic (ton bouton n'impactera plus l'expander) */
+    details[data-testid="stExpander"]:active {{
+        transform: scale(1) !important; /* On empêche l'expander de rétrécir */
+    }}
+    </style>
+    """, unsafe_allow_html=True)
+
+
 
     st.markdown(f"""
         <style>
@@ -161,5 +200,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
+    
