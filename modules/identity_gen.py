@@ -103,16 +103,17 @@ font-weight:900 !important;
     /* ENGINE READY &  SCALE*/
 
 .engine-status-tag {
-font-family: 'JetBrains Mono', monospace;
-color: #00e5ff;
-background: rgba(0, 229, 255, 0.08);
-padding: 8px 18px;
-border-radius: 12px;
-border: 1px solid rgba(0, 229, 255, 0.3);
-font-size: 0.85rem;
-display: inline-block;
-letter-spacing: 1px;
+    font-family: 'JetBrains Mono', monospace;
+    color: #4BB9C9;
+    background: rgba(165, 227, 234, 0.13);
+    padding: 8px 18px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 229, 255, 0.3);
+    font-size: 0.85rem;
+    display: inline-block;
+    letter-spacing: 1px;
 }
+
 
     /* HOVER UNIFIÉ */
     div.stButton > button:hover,
