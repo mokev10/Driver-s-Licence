@@ -104,8 +104,8 @@ font-weight:900 !important;
 
 .engine-status-tag {
     font-family: 'JetBrains Mono', monospace;
-    color: #4BB9C9;
-    background: rgba(165, 227, 234, 0.13);
+    color: #00e5ff;
+    background: rgba(0, 229, 255, 0.08);
     padding: 8px 18px;
     border-radius: 12px;
     border: 1px solid rgba(0, 229, 255, 0.3);
@@ -113,6 +113,7 @@ font-weight:900 !important;
     display: inline-block;
     letter-spacing: 1px;
 }
+
 
 
     /* HOVER UNIFIÉ */
