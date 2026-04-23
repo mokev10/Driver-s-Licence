@@ -114,93 +114,31 @@ font-weight:900 !important;
     letter-spacing: 1px;
 }
 
+st.markdown("""
+<style>
+
 /* ================= DETAILED VECTOR INSPECTION - FINAL FIX ================= */
 
-/* 1. EXPANDER GLOBAL (compatible toutes versions Streamlit) */
 div[data-testid="stExpander"],
 details[data-testid="stExpander"] {
     background: rgba(128, 128, 128, 0.05) !important; 
     border: 1px solid rgba(249, 12, 245, 0.3) !important;
     border-radius: 16px !important;
     backdrop-filter: blur(15px);
-    overflow: hidden;
-    transition: all 0.3s ease;
 }
 
-/* 2. HOVER EFFECT */
-div[data-testid="stExpander"]:hover,
-details[data-testid="stExpander"]:hover {
-    border-color: rgba(249, 12, 245, 0.6) !important;
-    box-shadow: 0 10px 25px rgba(249, 12, 245, 0.35) !important;
-}
-
-/* 3. HEADER (bouton cliquable) */
-div[data-testid="stExpander"] summary,
-details[data-testid="stExpander"] summary {
-    background: rgba(255,255,255,0.04) !important;
-    color: var(--text-color) !important;
-    padding: 14px 20px !important;
-    font-weight: 600 !important;
-    border-radius: 16px !important;
-    cursor: pointer;
-}
-
-/* 4. TEXTE + ICÔNE (chevron) */
-div[data-testid="stExpander"] summary *,
-details[data-testid="stExpander"] summary * {
-    color: var(--text-color) !important;
-    fill: var(--text-color) !important;
-}
-
-/* 5. CONTENU INTERNE (FIX DARK MODE CRITIQUE) */
-div[data-testid="stExpanderDetails"],
-details[data-testid="stExpander"] > div {
+div[data-testid="stExpanderDetails"] {
     background: transparent !important;
     color: var(--text-color) !important;
     padding: 20px !important;
 }
 
-/* 6. SVG CONTAINER */
-.barcode-preview-box {
-    padding: 15px;
-    background: transparent !important;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-/* 7. SVG RESPONSIVE */
-.barcode-preview-box svg {
-    width: 100%;
-    height: auto;
-}
-
-/* 8. FIX VISIBILITÉ SVG (dark/light auto) */
 .barcode-preview-box svg path {
     fill: var(--text-color) !important;
 }
 
-/* ================= BOUTONS ================= */
-
-/* HOVER */
-div.stButton > button:hover,
-div.stDownloadButton > button:hover {
-    background: linear-gradient(135deg,#8122ff,#3a82ff) !important;
-    transform: translateY(-6px);
-    box-shadow:0 20px 45px rgba(129,34,255,0.5) !important;
-}
-
-/* ACTIVE */
-div.stButton > button:active,
-div.stDownloadButton > button:active {
-    transform: scale(0.96) translateY(-2px) !important;
-}
-
-/* ================= LABEL FIX ================= */
-label p {
-    color: rgba(200,200,255,0.6) !important;
-    font-size:0.75rem !important;
-}
+</style>
+""", unsafe_allow_html=True)
 
 
 
