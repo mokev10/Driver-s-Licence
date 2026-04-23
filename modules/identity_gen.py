@@ -117,7 +117,7 @@ st.markdown(
         border: 1.5px solid rgba(255, 255, 255, 0.15) !important;
         border-radius: 80px !important;
         padding: 18px 50px !important;
-        font-weight: 600 !important;
+        font-weight: 900 !important;
         text-transform: uppercase !important;
         letter-spacing: 2.5px !important;
         font-size: 0.95rem !important;
@@ -157,7 +157,7 @@ st.markdown(
 
     .jurisdiction-title {
         font-size: 1.4rem;
-        font-weight: 600;
+        font-weight: 900;
         background: linear-gradient(to right, #fff, #999);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -185,7 +185,7 @@ st.markdown(
     }
 
     label p {
-        color: rgba(255, 255, 255, 0.6) !important;
+        color: 0 20px 45px rgba(129, 34, 255, 0.4) !important;
         text-transform: uppercase !important;
         font-size: 0.75rem !important;
         letter-spacing: 1.5px !important;
