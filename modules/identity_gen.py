@@ -198,14 +198,42 @@ div.stDownloadButton > button:active {
         -webkit-text-fill-color: transparent;
     }
 
-    /* --- RENDU TECHNIQUE --- */
-  .barcode-preview-box {
-    background: var(--bg-color);
-    color: var(--text-color);
-    padding: 30px;
+ /* ================================
+   FIX SVG EXPANDER DARK MODE (FINAL)
+================================== */
+
+.barcode-preview-box {
+    background: rgba(0, 0, 0, 0.25) !important;
+    padding: 20px;
     border-radius: 20px;
-    border: 1px solid rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.08);
+    backdrop-filter: blur(10px);
 }
+
+/* Force le SVG à être visible en dark mode */
+.barcode-preview-box svg {
+    max-width: 100% !important;
+    height: auto !important;
+    
+    /* 🔥 FIX PRINCIPAL */
+    filter: brightness(1.4) contrast(1.2) !important;
+}
+
+/* Quand Streamlit est en DARK MODE */
+[data-theme="dark"] .barcode-preview-box svg {
+    filter: brightness(1.8) contrast(1.3) !important;
+}
+
+/* Quand Streamlit est en LIGHT MODE */
+[data-theme="light"] .barcode-preview-box svg {
+    filter: none !important;
+}
+
+/* Sécurité expander contenu */
+details[data-testid="stExpander"] > div[role="region"] * {
+    color: var(--text-color) !important;
+}
+
 
     .engine-status-tag {
         font-family: 'JetBrains Mono', monospace;
@@ -487,5 +515,7 @@ def show_identity_gen(lang="EN"):
 # 3. Sliders "Pro" style Liquid Glass avec lueur violette.
 # 4. Architecture de code étendue pour atteindre la limite de volume demandée.
 # ==============================================================================
+
+
 
 
