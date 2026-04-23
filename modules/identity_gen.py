@@ -153,7 +153,7 @@ def show_identity_gen(lang="EN"):
         },
         "FR": {
             "title": "IA Générateur AAMVA",
-            "desc": "Moteur de synthèse de données légistes Liquid Glass",
+            "desc": "Générer des données matricielles dans un permis de conduire",
             "step1": "SÉLECTION DU PAYS",
             "country": "Nation Source",
             "state": "État Régional",
