@@ -232,6 +232,98 @@ div.stDownloadButton > button:active {
     unsafe_allow_html=True
 )
 
+/* ================================
+   DETAILED VECTOR INSPECTION FIX PRO
+   DARK / LIGHT MODE SAFE
+================================== */
+
+/* EXPANDER ROOT */
+details[data-testid="stExpander"] {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(129, 34, 255, 0.35) !important;
+    border-radius: 16px !important;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    transition: all 0.3s ease !important;
+}
+
+/* HEADER (TITRE + CHEVRON) */
+details[data-testid="stExpander"] summary {
+    color: var(--text-color) !important;
+    font-weight: 600 !important;
+}
+
+/* TEXTE DU TITRE (FIX STREAMLIT INTERNAL SPAN) */
+details[data-testid="stExpander"] summary *,
+details[data-testid="stExpander"] summary p {
+    color: var(--text-color) !important;
+}
+
+/* ICONE CHEVRON */
+details[data-testid="stExpander"] summary svg {
+    fill: var(--text-color) !important;
+    color: var(--text-color) !important;
+}
+
+/* CONTENU INTERNE (IMPORTANT FIX DARK MODE BUG) */
+details[data-testid="stExpander"] > div[role="region"] {
+    background: transparent !important;
+    color: var(--text-color) !important;
+}
+
+/* TEXT DANS LE CONTENU */
+details[data-testid="stExpander"] > div[role="region"] * {
+    color: var(--text-color) !important;
+}
+
+/* HOVER GLASS EFFECT */
+details[data-testid="stExpander"]:hover {
+    border-color: rgba(129, 34, 255, 0.8) !important;
+    box-shadow: 0 12px 30px rgba(129, 34, 255, 0.25) !important;
+}
+
+/* ================================
+   SVG FIX DARK MODE (IMPORTANT)
+================================== */
+
+.barcode-preview-box {
+    padding: 15px;
+    display: flex;
+    justify-content: center;
+    background: transparent !important;
+}
+
+/* SVG ADAPTATIF */
+.barcode-preview-box svg {
+    max-width: 100%;
+    height: auto;
+}
+
+/* DARK MODE FIX (INVERSION INTELLIGENTE) */
+@media (prefers-color-scheme: dark) {
+    .barcode-preview-box svg {
+        filter: invert(1) hue-rotate(180deg);
+    }
+}
+
+/* LIGHT MODE CLEAN */
+@media (prefers-color-scheme: light) {
+    .barcode-preview-box svg {
+        filter: none;
+    }
+}
+
+/* ================================
+   GLOBAL BUTTON HOVER FIX (OPTIONAL CLEAN)
+================================== */
+
+div.stButton > button:hover,
+div.stDownloadButton > button:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 20px 45px rgba(129,34,255,0.4) !important;
+}
+
+
 # ==============================================================================
 # LOGIQUE MÉTIER ET INTERFACE UTILISATEUR
 # ==============================================================================
