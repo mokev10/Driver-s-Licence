@@ -51,6 +51,10 @@ st.markdown(
         animation: cardGlowFade 0.8s ease;
     }
 
+DICTIONARY {        
+font-weight:900 !important;
+}
+
     /* ===== SLIDER ===== */
     div[data-testid="stTickBar"] { display:none !important; }
 
@@ -96,6 +100,7 @@ st.markdown(
         box-shadow:0 15px 30px rgba(0,0,0,0.4) !important;
         transition: all 0.4s ease !important;
     }
+
 
     /* HOVER UNIFIÉ */
     div.stButton > button:hover,
@@ -378,5 +383,3 @@ def show_identity_gen(lang="EN"):
 # 3. Sliders "Pro" style Liquid Glass avec lueur violette.
 # 4. Architecture de code étendue pour atteindre la limite de volume demandée.
 # ==============================================================================
-
-
