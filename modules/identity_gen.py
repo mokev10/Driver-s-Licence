@@ -116,33 +116,39 @@ font-weight:900 !important;
 
 /* DETAILED VECTOR INSPECTION */
 
+/* Style de base adaptatif */
 details[data-testid="stExpander"] {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    /* Utilise la couleur de fond du texte avec une très faible opacité */
+    background: rgba(128, 128, 128, 0.05); 
+    border: 1px solid rgba(249, 12, 245, 0.3);
     border-radius: 16px;
     backdrop-filter: blur(15px);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
     margin-top: 15px;
-    transition: all 0.3s ease;
+    transition: all 0.5s ease;
 }
 
-details[data-testid="stExpander"]:hover {
-    border-color: rgba(129, 34, 255, 0.4);
-    box-shadow: 0 15px 40px rgba(129, 34, 255, 0.25);
-}
-
+/* Style du texte (Summary) */
 details[data-testid="stExpander"] summary {
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.85rem;
     letter-spacing: 1.2px;
-    color: #ffffff;
+    /* Force l'utilisation de la couleur de texte principale du thème actuel */
+    color: var(--text-color); 
     padding: 12px 16px;
     cursor: pointer;
 }
 
-details[data-testid="stExpander"] summary:hover {
-    color: #3a82ff;
+/* Hover adaptatif */
+details[data-testid="stExpander"]:hover {
+    /* Utilise la couleur d'accentuation du thème (souvent rouge/orange par défaut) */
+    border-color: var(--primary-color);
+    box-shadow: 0 10px 20px rgba(249, 12, 245, 0.33);
 }
+
+details[data-testid="stExpander"] summary:hover {
+    color: var(--primary-color);
+}
+
 
 
     /* HOVER UNIFIÉ */
