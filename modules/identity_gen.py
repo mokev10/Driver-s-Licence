@@ -199,13 +199,13 @@ div.stDownloadButton > button:active {
     }
 
     /* --- RENDU TECHNIQUE --- */
-    .barcode-preview-box {
-        background: white;
-        padding: 30px;
-        border-radius: 20px;
-        box-shadow: 0 30px 60px rgba(0,0,0,0.8);
-        margin: 20px 0;
-    }
+  .barcode-preview-box {
+    background: var(--bg-color);
+    color: var(--text-color);
+    padding: 30px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.1);
+}
 
     .engine-status-tag {
         font-family: 'JetBrains Mono', monospace;
@@ -485,5 +485,3 @@ def show_identity_gen(lang="EN"):
 # 3. Sliders "Pro" style Liquid Glass avec lueur violette.
 # 4. Architecture de code étendue pour atteindre la limite de volume demandée.
 # ==============================================================================
-
-
