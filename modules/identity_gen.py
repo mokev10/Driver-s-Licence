@@ -198,81 +198,99 @@ div.stDownloadButton > button:active {
         -webkit-text-fill-color: transparent;
     }
 /* ================================
-   SVG INSIDE EXPANDER FIX
+   SVG INSIDE EXPANDER FIX (STABLE DARK MODE)
 ================================== */
 
 .barcode-preview-box {
-    background: rgba(0, 0, 0, 0.25) !important;
+    background: rgba(0, 0, 0, 0.35) !important;
     padding: 20px;
     border-radius: 20px;
     border: 1px solid rgba(255,255,255,0.08);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
 }
 
-/* SVG rendu lisible en dark mode */
+/* SVG RENDER FIX */
 .barcode-preview-box svg {
     max-width: 100% !important;
     height: auto !important;
-    filter: brightness(1.6) contrast(1.2) !important;
+    display: block !important;
+    filter: brightness(1.7) contrast(1.25) !important;
 }
 
 /* ================================
-   STREAMLIT EXPANDER FIX (IMPORTANT)
+   STREAMLIT EXPANDER FIX (LOCK DARK MODE)
 ================================== */
 
-/* HEADER (titre + flèche) */
+/* HEADER */
 details[data-testid="stExpander"] > summary {
-    background: rgba(255, 255, 255, 0.04) !important;
-    border: 1px solid rgba(255,255,255,0.08) !important;
+    background: rgba(15, 15, 20, 0.75) !important;
+    border: 1px solid rgba(255,255,255,0.10) !important;
     border-radius: 14px !important;
     padding: 10px 14px !important;
     color: #ffffff !important;
-    backdrop-filter: blur(10px) !important;
+    font-weight: 600 !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
 }
 
-/* CONTENU OUVERT */
+/* FORCE TEXT COLOR INSIDE HEADER */
+details[data-testid="stExpander"] > summary * {
+    color: #ffffff !important;
+}
+
+/* CONTENT AREA */
 details[data-testid="stExpander"] > div[role="region"] {
-    background: rgba(10, 10, 15, 0.65) !important;
+    background: rgba(10, 10, 15, 0.80) !important;
     border: 1px solid rgba(255,255,255,0.08) !important;
     border-radius: 14px !important;
     padding: 15px !important;
 }
 
-/* TEXTE INTERNE */
+/* GLOBAL TEXT INSIDE EXPANDER */
 details[data-testid="stExpander"] * {
     color: #ffffff !important;
 }
 
-/* FLÈCHE */
+/* ICON FIX */
 details[data-testid="stExpander"] svg {
     fill: white !important;
 }
 
+/* ANTI LIGHT MODE GLITCH AFTER SVG RENDER */
+details[data-testid="stExpander"][open] > summary {
+    background: rgba(15, 15, 20, 0.85) !important;
+    color: #ffffff !important;
+}
 
-    .engine-status-tag {
-        font-family: 'JetBrains Mono', monospace;
-        color: #00e5ff;
-        background: rgba(0, 229, 255, 0.08);
-        padding: 8px 18px;
-        border-radius: 12px;
-        border: 1px solid rgba(0, 229, 255, 0.3);
-        font-size: 0.85rem;
-        display: inline-block;
-        letter-spacing: 1px;
-    }
+/* ================================
+   ENGINE TAG
+================================== */
 
-    label p {
-        color: rgba(255, 255, 255, 0.6) !important;
-        text-transform: uppercase !important;
-        font-size: 0.75rem !important;
-        letter-spacing: 1.5px !important;
-        margin-left: 5px !important;
-    }
-    
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+.engine-status-tag {
+    font-family: 'JetBrains Mono', monospace;
+    color: #00e5ff;
+    background: rgba(0, 229, 255, 0.08);
+    padding: 8px 18px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 229, 255, 0.3);
+    font-size: 0.85rem;
+    display: inline-block;
+    letter-spacing: 1px;
+}
+
+/* ================================
+   LABEL STYLE FIX (KEEP THIS)
+================================== */
+
+label p {
+    color: rgba(255, 255, 255, 0.6) !important;
+    text-transform: uppercase !important;
+    font-size: 0.75rem !important;
+    letter-spacing: 1.5px !important;
+    margin-left: 5px !important;
+}
+
 
 
 
@@ -528,8 +546,4 @@ def show_identity_gen(lang="EN"):
 # 2. Suppression totale des emojis sur les boutons et paragraphes.
 # 3. Sliders "Pro" style Liquid Glass avec lueur violette.
 # 4. Architecture de code étendue pour atteindre la limite de volume demandée.
-# ==============================================================================
-
-
-
-
+# ============================================================================== 
