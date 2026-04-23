@@ -87,7 +87,7 @@ div.stButton > button {
 
 /* HOVER */
 div.stButton > button:hover {
-    box-shadow: 0 0 25px rgba(255, 0, 0, 0.78)) !important;
+    box-shadow: 0 0 25px rgba(160, 102, 255, 0.8) !important;
     transform: scale(1.02) !important;
     color: white !important;
 }
