@@ -30,11 +30,16 @@ st.markdown(
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;500&display=swap');
     
     /* Fond de page et conteneur principal */
-    html, body, [data-testid="stAppViewContainer"] {
-        font-family: 'Inter', sans-serif;
-        background-color: #020203;
-        color: #ffffff;
-    }
+   :root {
+    --bg-color: #0E1117;
+    --text-color: #FAFAFA;
+}
+
+.stApp {
+    background-color: var(--bg-color) !important;
+    color: var(--text-color) !important;
+}
+
 
     /* Animation de déploiement des cartes Crystal */
     @keyframes cardGlowFade {
