@@ -27,143 +27,155 @@ except ImportError:
 st.markdown(
     """
     <style>
-    @import url('https://googleapis.com');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;500&display=swap');
     
-    :root {
-        --bg-color: #0E1117;
-        --text-color: #FAFAFA;
-    }
+    /* Fond de page et conteneur principal */
+   :root {
+    --bg-color: #0E1117;
+    --text-color: #FAFAFA;
+}
 
-    .stApp {
-        background-color: var(--bg-color) !important;
-        color: var(--text-color) !important;
-    }
+.stApp {
+    background-color: var(--bg-color) !important;
+    color: var(--text-color) !important;
+}
 
-    /* Animation de déploiement des cartes Crystal */
-    @keyframes cardGlowFade {
-        0% { transform: translateY(20px); opacity: 0; box-shadow: 0 0 0 rgba(0,0,0,0); }
-        100% { transform: translateY(0px); opacity: 1; box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
-    }
+/* Animation de déploiement des cartes Crystal */
+@keyframes cardGlowFade {
+    0% { transform: translateY(20px); opacity: 0; box-shadow: 0 0 0 rgba(0,0,0,0); }
+    100% { transform: translateY(0px); opacity: 1; box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
+}
 
-    .crystal-card {
-        background: rgba(255, 255, 255, 0.015);
-        backdrop-filter: blur(30px);
-        -webkit-backdrop-filter: blur(30px);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 28px;
-        padding: 40px;
-        margin-bottom: 35px;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.6), inset 0 0 30px rgba(255,255,255,0.01);
-        animation: cardGlowFade 0.9s cubic-bezier(0.16, 1, 0.3, 1);
-    }
+/* Styles des Cartes Crystal (Sections) */
+.crystal-card {
+    background: rgba(255, 255, 255, 0.015);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 28px;
+    padding: 40px;
+    margin-bottom: 35px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.6), inset 0 0 30px rgba(255,255,255,0.01);
+    animation: cardGlowFade 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
 
-    /* --- SLIDERS PROFESSIONNELS --- */
-    div[data-testid="stTickBar"] { display: none !important; }
-    div[data-baseweb="slider"] > div:first-child {
-        height: 14px !important;
-        background: rgba(255, 255, 255, 0.04) !important;
-        border-radius: 20px !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        box-shadow: inset 0 2px 4px rgba(0,0,0,0.5) !important;
-    }
-    div[role="presentation"] > div > div:first-child {
-        background: linear-gradient(90deg, #8122ff 0%, #3a82ff 100%) !important;
-        height: 14px !important;
-        border-radius: 20px !important;
-        box-shadow: 0 0 20px rgba(129, 34, 255, 0.4) !important;
-    }
-    div[role="slider"] {
-        height: 28px !important;
-        width: 28px !important;
-        background-color: #ffffff !important;
-        border: 5px solid #8122ff !important;
-        box-shadow: 0 0 30px rgba(129, 34, 255, 0.9), inset 0 2px 4px rgba(0,0,0,0.3) !important;
-        transition: transform 0.2s ease, box-shadow 0.2s ease !important;
-    }
-    div[role="slider"]:hover { transform: scale(1.15) !important; box-shadow: 0 0 40px rgba(129, 34, 255, 1) !important; }
+/* --- SLIDERS --- */
+div[data-testid="stTickBar"] { display: none !important; }
 
-    /* --- INPUTS TEXTE ET CHAMPS DE SELECTION --- */
-    .stTextInput input, .stSelectbox [data-baseweb="select"] {
-        background: rgba(10, 10, 12, 0.6) !important;
-        backdrop-filter: blur(15px) !important;
-        border-radius: 18px !important;
-        border: 1px solid rgba(255, 255, 255, 0.08) !important;
-        color: #f2f2f2 !important;
-        padding: 14px 22px !important;
-        font-size: 1rem !important;
-        box-shadow: inset 0 2px 10px rgba(0,0,0,0.5) !important;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    }
-    .stTextInput input:focus { border-color: #3a82ff !important; background: rgba(15, 15, 20, 0.8) !important; }
+div[data-baseweb="slider"] > div:first-child {
+    height: 14px !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    border-radius: 20px !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.5) !important;
+}
 
-    /* --- BOUTONS ULTRA BRILLANTS --- */
-    div.stButton > button, div.stDownloadButton > button {
-        background: linear-gradient(135deg, rgba(129, 34, 255, 0.12), rgba(58, 130, 255, 0.12)) !important;
-        backdrop-filter: blur(25px) !important;
-        color: #ffffff !important;
-        border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
-        border-radius: 80px !important;
-        padding: 18px 50px !important;
-        font-weight: 700 !important;
-        text-transform: uppercase !important;
-        letter-spacing: 2px !important;
-        box-shadow: 0 0 25px rgba(129, 34, 255, 0.35), 0 10px 30px rgba(0,0,0,0.5) !important;
-        transition: all 0.4s ease !important;
-        animation: glowPulse 3s infinite alternate;
-    }
-    @keyframes glowPulse { 0% { box-shadow: 0 0 15px rgba(129, 34, 255, 0.25); } 100% { box-shadow: 0 0 35px rgba(129, 34, 255, 0.6); } }
-    div.stButton > button:hover { transform: translateY(-6px) scale(1.03); box-shadow: 0 0 50px rgba(129, 34, 255, 0.9) !important; }
+div[role="presentation"] > div > div:first-child {
+    background: linear-gradient(90deg, #8122ff 0%, #3a82ff 100%) !important;
+    height: 14px !important;
+    border-radius: 20px !important;
+    box-shadow: 0 0 20px rgba(129, 34, 255, 0.4) !important;
+}
 
-    /* --- JURIDICTION ET SVG --- */
-    .flag-container { display: flex; align-items: center; gap: 20px; margin-bottom: 25px; padding: 15px 25px; background: rgba(255, 255, 255, 0.03); border-radius: 20px; }
-    .barcode-preview-box { background: rgba(0, 0, 0, 0.35) !important; padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.08); }
-    .barcode-preview-box svg { max-width: 100% !important; filter: brightness(1.7) !important; }
+div[role="slider"] {
+    height: 28px !important;
+    width: 28px !important;
+    background-color: #ffffff !important;
+    border: 5px solid #8122ff !important;
+    box-shadow: 0 0 30px rgba(129, 34, 255, 0.9), inset 0 2px 4px rgba(0,0,0,0.3) !important;
+}
 
-    /* --- EXPANDER FIX --- */
-    details[data-testid="stExpander"] > summary { background: rgba(15, 15, 20, 0.75) !important; border: 1px solid rgba(255,255,255,0.10) !important; border-radius: 14px !important; color: #ffffff !important; }
-    details[data-testid="stExpander"] > div[role="region"] { background: rgba(10, 10, 15, 0.80) !important; border: 1px solid rgba(255,255,255,0.08) !important; border-radius: 14px !important; padding: 15px !important; }
-    details[data-testid="stExpander"] * { color: #ffffff !important; }
-    details[data-testid="stExpander"] svg { fill: white !important; }
+/* INPUTS */
+.stTextInput input, .stSelectbox [data-baseweb="select"] {
+    background: rgba(10, 10, 12, 0.6) !important;
+    backdrop-filter: blur(15px) !important;
+    border-radius: 18px !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: #f2f2f2 !important;
+    padding: 14px 22px !important;
+}
 
-    /* --- ENGINE TAG ET LABELS --- */
-    .engine-status-tag { font-family: 'JetBrains Mono', monospace; color: #00e5ff; background: rgba(0, 229, 255, 0.08); padding: 8px 18px; border-radius: 12px; border: 1px solid rgba(0, 229, 255, 0.3); }
-    label p { color: rgba(255, 255, 255, 0.6) !important; text-transform: uppercase !important; font-size: 0.75rem !important; letter-spacing: 1.5px !important; }
+/* BUTTONS */
+div.stButton > button,
+div.stDownloadButton > button {
+    background: linear-gradient(135deg, rgba(129, 34, 255, 0.12), rgba(58, 130, 255, 0.12)) !important;
+    backdrop-filter: blur(25px) !important;
+    color: #ffffff !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 80px !important;
+}
 
-    /* --- NOUVEAU : TRANSITION ET STYLE DATE PICKER (STYLE US) --- */
-    @keyframes datePickerFadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    div[data-baseweb="popover"] {
-        animation: datePickerFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
-    }
-    .stDateInput div[data-baseweb="input"] {
-        background: rgba(10, 10, 12, 0.6) !important;
-        border-radius: 18px !important;
-        border: 1px solid rgba(255, 255, 255, 0.08) !important;
-        color: #f2f2f2 !important;
-        transition: all 0.3s ease !important;
-    }
-    .stDateInput div[data-baseweb="input"]:focus-within {
-        border-color: #3a82ff !important;
-        box-shadow: 0 0 25px rgba(58, 130, 255, 0.2) !important;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
+/* FLAGS */
+.flag-container {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.flag-image {
+    width: 48px;
+}
+
+/* ENGINE TAG */
+.engine-status-tag {
+    font-family: 'JetBrains Mono', monospace;
+    color: #00e5ff;
+}
+
+/* EXPANDER */
+details[data-testid="stExpander"] > summary {
+    background: rgba(15, 15, 20, 0.75) !important;
+    color: #ffffff !important;
+}
+
+/* LABELS */
+label p {
+    color: rgba(255, 255, 255, 0.6) !important;
+    text-transform: uppercase !important;
+}
+
+/* =========================================================
+   ✨ AJOUT : DATE DISPLAY MODERNE (MM/DD/YYYY VISUAL STYLE)
+   ========================================================= */
+
+/* container date moderne */
+.modern-date-box {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 18px 22px;
+    border-radius: 16px;
+    backdrop-filter: blur(12px);
+    margin-top: 10px;
+    font-family: 'Inter', sans-serif;
+}
+
+/* label date */
+.modern-date-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+}
+
+/* valeur date */
+.modern-date-value {
+    font-size: 16px;
+    font-weight: 600;
+    color: #ffffff;
+    margin-top: 4px;
+}
+
+/* highlight format US */
+.us-format {
+    color: #3a82ff;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+</style>
+""",
+unsafe_allow_html=True
 )
-
-# ==============================================================================
-# EXEMPLE D'UTILISATION DU CHAMP DATE (FORMAT AMÉRICAIN)
-# ==============================================================================
-with st.container():
-    st.markdown('<div class="crystal-card">', unsafe_allow_html=True)
-    date_naissance = st.date_input(
-        "DATE DE NAISSANCE",
-        value=datetime.date(2000, 1, 1),
-        format="MM/DD/YYYY"
-    )
-    st.markdown('</div>', unsafe_allow_html=True)
 
 
 
