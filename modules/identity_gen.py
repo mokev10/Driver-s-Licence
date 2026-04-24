@@ -239,6 +239,18 @@ details[data-testid="stExpander"] > summary * {
     color: #ffffff !important;
 }
 
+/* HEADER */
+details[data-testid="stExpander"] > summary {
+    background: rgba(15, 15, 20, 0.75) !important;
+    border: 1px solid rgba(255,255,255,0.10) !important;
+    border-radius: 14px !important;
+    padding: 10px 14px !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+}
+
 /* CONTENT AREA */
 details[data-testid="stExpander"] > div[role="region"] {
     background: rgba(10, 10, 15, 0.80) !important;
@@ -247,23 +259,7 @@ details[data-testid="stExpander"] > div[role="region"] {
     padding: 15px !important;
 }
 
-/* GLOBAL TEXT INSIDE EXPANDER */
-details[data-testid="stExpander"] * {
-    color: #ffffff !important;
-}
-
-/* ICON FIX */
-details[data-testid="stExpander"] svg {
-    fill: white !important;
-}
-
-/* ANTI LIGHT MODE GLITCH */
-details[data-testid="stExpander"][open] > summary {
-    background: rgba(15, 15, 20, 0.85) !important;
-    color: #ffffff !important;
-}
-
-/* --- ANIMATION DATE PICKER --- */
+/* --- ANIMATION ET LOOK DU DATE PICKER --- */
 @keyframes datePickerFadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
@@ -281,6 +277,9 @@ div[data-baseweb="popover"] {
 }
 </style>
 """, unsafe_allow_html=True)
+
+# --- ZONE D'UTILISATION (CONTRÔLEUR DE DATE) ---
+st.date_input("DATE DE NAISSANCE", format="MM/DD/YYYY")
 
 
 
