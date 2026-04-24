@@ -247,27 +247,6 @@ details[data-testid="stExpander"] > div[role="region"] {
     padding: 15px !important;
 }
 
-/* --- ANIMATION ET LOOK DU DATE PICKER --- */
-@keyframes fadeInSlide {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-div[data-baseweb="popover"] {
-    animation: fadeInSlide 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
-}
-
-.stDateInput div[data-baseweb="input"] {
-    background: rgba(10, 10, 12, 0.6) !important;
-    border-radius: 18px !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    color: #f2f2f2 !important;
-    transition: all 0.3s ease !important;
-}
-</style>
-""", unsafe_allow_html=True)
-
-
 /* GLOBAL TEXT INSIDE EXPANDER */
 details[data-testid="stExpander"] * {
     color: #ffffff !important;
