@@ -278,8 +278,18 @@ div[data-baseweb="popover"] {
 </style>
 """, unsafe_allow_html=True)
 
-# --- ZONE D'UTILISATION (CONTRÔLEUR DE DATE) ---
-st.date_input("DATE DE NAISSANCE", format="MM/DD/YYYY")
+# ==============================================================================
+# SECTION SÉLECTION DE LA DATE (FORMAT US MM/DD/YYYY)
+# ==============================================================================
+with st.container():
+    st.markdown('<div class="crystal-card">', unsafe_allow_html=True)
+    date_naissance = st.date_input(
+        "DATE DE NAISSANCE",
+        value=datetime.date(2000, 1, 1),
+        format="MM/DD/YYYY",
+        help="Format américain : Mois/Jour/Année"
+    )
+    st.markdown('</div>', unsafe_allow_html=True)
 
 
 
