@@ -257,41 +257,28 @@ details[data-testid="stExpander"] svg {
     fill: white !important;
 }
 
-/* ANTI LIGHT MODE GLITCH AFTER SVG RENDER */
+/* ANTI LIGHT MODE GLITCH */
 details[data-testid="stExpander"][open] > summary {
     background: rgba(15, 15, 20, 0.85) !important;
     color: #ffffff !important;
 }
 
-/* ==============================================================================
-   SECTION DATE : ANIMATION FLUIDE ET LOOK US
-   ============================================================================== */
-
-/* Animation de glissement (slide-up) quand on ouvre le calendrier */
+/* --- ANIMATION DATE PICKER --- */
 @keyframes datePickerFadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Applique l'animation au calendrier de l'image (le popover) */
 div[data-baseweb="popover"] {
     animation: datePickerFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
-/* Style de l'input date pour matcher ton thème Liquid Glass */
 .stDateInput div[data-baseweb="input"] {
     background: rgba(10, 10, 12, 0.6) !important;
     border-radius: 18px !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    transition: all 0.3s ease !important;
 }
-
-/* Effet au survol et clic sur la date */
-.stDateInput div[data-baseweb="input"]:focus-within {
-    border-color: #3a82ff !important;
-    box-shadow: 0 0 25px rgba(58, 130, 255, 0.2) !important;
-}
-
 </style>
 """, unsafe_allow_html=True)
 
