@@ -177,6 +177,29 @@ label p {
 unsafe_allow_html=True
 )
 
+# Affichage moderne des dates (format US)
+st.markdown(f"""
+<div class="modern-date-box">
+    <div class="modern-date-label">Date of Birth</div>
+    <div class="modern-date-value us-format">
+        {val_dbb_date.strftime("%m/%d/%Y")}
+    </div>
+</div>
+
+<div class="modern-date-box">
+    <div class="modern-date-label">Issue Date</div>
+    <div class="modern-date-value us-format">
+        {val_dbd_date.strftime("%m/%d/%Y")}
+    </div>
+</div>
+
+<div class="modern-date-box">
+    <div class="modern-date-label">Expiry Date</div>
+    <div class="modern-date-value us-format">
+        {val_dba_date.strftime("%m/%d/%Y")}
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
 
 # ==============================================================================
@@ -428,30 +451,6 @@ def show_identity_gen(lang="EN"):
         except Exception:
             st.error("CRITICAL SYSTEM FAILURE")
             st.code(traceback.format_exc())
-
-# Affichage moderne des dates (format US)
-st.markdown(f"""
-<div class="modern-date-box">
-    <div class="modern-date-label">Date of Birth</div>
-    <div class="modern-date-value us-format">
-        {val_dbb_date.strftime("%m/%d/%Y")}
-    </div>
-</div>
-
-<div class="modern-date-box">
-    <div class="modern-date-label">Issue Date</div>
-    <div class="modern-date-value us-format">
-        {val_dbd_date.strftime("%m/%d/%Y")}
-    </div>
-</div>
-
-<div class="modern-date-box">
-    <div class="modern-date-label">Expiry Date</div>
-    <div class="modern-date-value us-format">
-        {val_dba_date.strftime("%m/%d/%Y")}
-    </div>
-</div>
-""", unsafe_allow_html=True)
 
 # ==============================================================================
 # FIN DU MODULE IDENTITY_GEN (500 LINES TARGET)DETAILED VECTOR INSPECTION
