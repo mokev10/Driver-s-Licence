@@ -384,33 +384,30 @@ def show_identity_gen(lang="EN"):
             active_iin = IIN_CA[region_name]
     st.markdown('</div>', unsafe_allow_html=True)
 
-   # --- ÉTAPE 2 : MATRICE DE DONNÉES D'IDENTITÉ ---
-st.markdown('<div class="crystal-card">', unsafe_allow_html=True)
-st.subheader(ui["step2"])
-
-field_col_a, field_col_b = st.columns(2)
-
-with field_col_a:
-    # Code Pays ISO dynamique
-    iso_country = "CAN" if country_choice == "Canada" else "USA"
-    val_dcg = st.text_input("DCG - ISO Country", iso_country)
-
-    val_dac = st.text_input("DAC - Given Names", "JEAN")
-    val_dcs = st.text_input("DCS - Surname", "NICOLAS")
-    val_dbb_date = st.date_input("DBB - Date of Birth", datetime.date(1994, 12, 8))
-    val_daq = st.text_input("DAQ - License Identifier", "N2420-941208-96")
-    val_dag = st.text_input("DAG - Residential Street", "1560 SHERBROOKE ST E")
-
-with field_col_b:
-    val_dai = st.text_input("DAI - City / Locality", "MONTREAL")
-    val_dak = st.text_input("DAK - Postal Code", "H2L 4M1")
-    val_dbd_date = st.date_input("DBD - Issue Date", datetime.date(2023, 5, 10))
-    val_dba_date = st.date_input("DBA - Expiry Date", datetime.date(2031, 5, 9))
-    val_dbc = st.selectbox("DBC - Gender (1:M / 2:F)", ["1", "2"], index=0)
-    val_dcf = st.text_input("DCF - Audit Number", "PEJQ04N96")
-
-st.markdown('</div>', unsafe_allow_html=True)
-
+    # --- ÉTAPE 2 : MATRICE DE DONNÉES D'IDENTITÉ ---
+    st.markdown('<div class="crystal-card">', unsafe_allow_html=True)
+    st.subheader(ui["step2"])
+    
+    field_col_a, field_col_b = st.columns(2)
+    with field_col_a:
+        # Code Pays ISO dynamique
+        iso_country = "CAN" if country_choice == "Canada" else "USA"
+        val_dcg = st.text_input("DCG - ISO Country", iso_country)
+        
+        val_dac = st.text_input("DAC - Given Names", "JEAN")
+        val_dcs = st.text_input("DCS - Surname", "NICOLAS")
+        val_dbb = st.text_input("DBB - Date of Birth (YYYYMMDD)", "19941208")
+        val_daq = st.text_input("DAQ - License Identifier", "N2420-941208-96")
+        val_dag = st.text_input("DAG - Residential Street", "1560 SHERBROOKE ST E")
+        
+    with field_col_b:
+        val_dai = st.text_input("DAI - City / Locality", "MONTREAL")
+        val_dak = st.text_input("DAK - Postal Code", "H2L 4M1")
+        val_dbd = st.text_input("DBD - Issue Date (YYYYMMDD)", "20230510")
+        val_dba = st.text_input("DBA - Expiry Date (YYYYMMDD)", "20310509")
+        val_dbc = st.selectbox("DBC - Gender (1:M / 2:F)", ["1", "2"], index=0)
+        val_dcf = st.text_input("DCF - Audit Number", "PEJQ04N96")
+    st.markdown('</div>', unsafe_allow_html=True)
 
     # --- ÉTAPE 3 : CONFIGURATION OPTIQUE (MOTEUR PRO) ---
     st.markdown('<div class="crystal-card">', unsafe_allow_html=True)
@@ -442,40 +439,26 @@ st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown('</div>', unsafe_allow_html=True)
 
-  # EXÉCUTION DU MOTEUR DE GÉNÉRATION
-# ==============================================================================
-if st.button(ui["generate"], use_container_width=True):
+    # ==============================================================================
+    # EXÉCUTION DU MOTEUR DE GÉNÉRATION
+    # ==============================================================================
+    if st.button(ui["generate"], use_container_width=True):
 
-    try:
-        # Traitement du code de territoire (DAJ)
-        region_code = "QC" if region_name == "Quebec" else region_name[:2].upper()
+        try:
+            # Traitement du code de territoire (DAJ)
+            region_code = "QC" if region_name == "Quebec" else region_name[:2].upper()
+            
+            # Reconstruction du Header AAMVA (Format Standard DL/ID)
+            # Structure : ANSI + IIN + Version + DL + Offsets
+            aamva_head = f"ANSI {active_iin}050102DL00410287ZO02900045DL"
 
-        # Conversion des dates (IMPORTANT: format AAMVA)
-        val_dbb = val_dbb_date.strftime("%Y%m%d")
-        val_dbd = val_dbd_date.strftime("%Y%m%d")
-        val_dba = val_dba_date.strftime("%Y%m%d")
-
-        # Reconstruction du Header AAMVA
-        aamva_head = f"ANSI {active_iin}050102DL00410287ZO02900045DL"
-
-        # Construction de la chaîne brute finale
-        raw_string = (
-            f"@\n{aamva_head}\n"
-            f"DCG{val_dcg}\n"
-            f"DCS{val_dcs}\n"
-            f"DAC{val_dac}\n"
-            f"DBB{val_dbb}\n"
-            f"DAQ{val_daq}\n"
-            f"DAG{val_dag}\n"
-            f"DAI{val_dai}\n"
-            f"DAJ{region_code}\n"
-            f"DAK{val_dak}\n"
-            f"DBD{val_dbd}\n"
-            f"DBA{val_dba}\n"
-            f"DBC{val_dbc}\n"
-            f"DCF{val_dcf}"
-        )
-
+            # Construction de la chaîne brute finale
+            raw_string = (
+                f"@\n{aamva_head}\n"
+                f"DCG{val_dcg}\nDCS{val_dcs}\nDAC{val_dac}\nDBB{val_dbb}\nDAQ{val_daq}\n"
+                f"DAG{val_dag}\nDAI{val_dai}\nDAJ{region_code}\nDAK{val_dak}\n"
+                f"DBD{val_dbd}\nDBA{val_dba}\nDBC{val_dbc}\nDCF{val_dcf}"
+            )
 
             st.success(ui["success"])
             st.divider()
@@ -573,5 +556,4 @@ if st.button(ui["generate"], use_container_width=True):
 # 3. Sliders "Pro" style Liquid Glass avec lueur violette.
 # 4. Architecture de code étendue pour atteindre la limite de volume demandée.
 # ==============================================================================
-
 
