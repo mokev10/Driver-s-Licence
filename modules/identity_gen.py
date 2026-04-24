@@ -27,19 +27,17 @@ except ImportError:
 st.markdown(
     """
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;500&display=swap');
+    @import url('https://googleapis.com');
     
-    /* Fond de page et conteneur principal */
-   :root {
-    --bg-color: #0E1117;
-    --text-color: #FAFAFA;
-}
+    :root {
+        --bg-color: #0E1117;
+        --text-color: #FAFAFA;
+    }
 
-.stApp {
-    background-color: var(--bg-color) !important;
-    color: var(--text-color) !important;
-}
-
+    .stApp {
+        background-color: var(--bg-color) !important;
+        color: var(--text-color) !important;
+    }
 
     /* Animation de déploiement des cartes Crystal */
     @keyframes cardGlowFade {
@@ -47,7 +45,6 @@ st.markdown(
         100% { transform: translateY(0px); opacity: 1; box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
     }
 
-    /* Styles des Cartes Crystal (Sections) */
     .crystal-card {
         background: rgba(255, 255, 255, 0.015);
         backdrop-filter: blur(30px);
@@ -60,10 +57,8 @@ st.markdown(
         animation: cardGlowFade 0.9s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    /* --- SLIDERS PROFESSIONNELS (STYLE IMAGE 7D64EC) --- */
+    /* --- SLIDERS PROFESSIONNELS --- */
     div[data-testid="stTickBar"] { display: none !important; }
-    
-    /* Rail principal du slider */
     div[data-baseweb="slider"] > div:first-child {
         height: 14px !important;
         background: rgba(255, 255, 255, 0.04) !important;
@@ -71,16 +66,12 @@ st.markdown(
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
         box-shadow: inset 0 2px 4px rgba(0,0,0,0.5) !important;
     }
-
-    /* Barre de progression avec dégradé liquide */
     div[role="presentation"] > div > div:first-child {
         background: linear-gradient(90deg, #8122ff 0%, #3a82ff 100%) !important;
         height: 14px !important;
         border-radius: 20px !important;
         box-shadow: 0 0 20px rgba(129, 34, 255, 0.4) !important;
     }
-
-    /* Curseur (Thumb) style capsule de verre poli */
     div[role="slider"] {
         height: 28px !important;
         width: 28px !important;
@@ -89,13 +80,9 @@ st.markdown(
         box-shadow: 0 0 30px rgba(129, 34, 255, 0.9), inset 0 2px 4px rgba(0,0,0,0.3) !important;
         transition: transform 0.2s ease, box-shadow 0.2s ease !important;
     }
+    div[role="slider"]:hover { transform: scale(1.15) !important; box-shadow: 0 0 40px rgba(129, 34, 255, 1) !important; }
 
-    div[role="slider"]:hover {
-        transform: scale(1.15) !important;
-        box-shadow: 0 0 40px rgba(129, 34, 255, 1) !important;
-    }
-
-    /* --- INPUTS TEXTE ET CHAMPS DE SELECTION (NOIR GLASS) --- */
+    /* --- INPUTS TEXTE ET CHAMPS DE SELECTION --- */
     .stTextInput input, .stSelectbox [data-baseweb="select"] {
         background: rgba(10, 10, 12, 0.6) !important;
         backdrop-filter: blur(15px) !important;
@@ -107,224 +94,77 @@ st.markdown(
         box-shadow: inset 0 2px 10px rgba(0,0,0,0.5) !important;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     }
+    .stTextInput input:focus { border-color: #3a82ff !important; background: rgba(15, 15, 20, 0.8) !important; }
 
-    .stTextInput input:focus {
+    /* --- BOUTONS ULTRA BRILLANTS --- */
+    div.stButton > button, div.stDownloadButton > button {
+        background: linear-gradient(135deg, rgba(129, 34, 255, 0.12), rgba(58, 130, 255, 0.12)) !important;
+        backdrop-filter: blur(25px) !important;
+        color: #ffffff !important;
+        border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
+        border-radius: 80px !important;
+        padding: 18px 50px !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 2px !important;
+        box-shadow: 0 0 25px rgba(129, 34, 255, 0.35), 0 10px 30px rgba(0,0,0,0.5) !important;
+        transition: all 0.4s ease !important;
+        animation: glowPulse 3s infinite alternate;
+    }
+    @keyframes glowPulse { 0% { box-shadow: 0 0 15px rgba(129, 34, 255, 0.25); } 100% { box-shadow: 0 0 35px rgba(129, 34, 255, 0.6); } }
+    div.stButton > button:hover { transform: translateY(-6px) scale(1.03); box-shadow: 0 0 50px rgba(129, 34, 255, 0.9) !important; }
+
+    /* --- JURIDICTION ET SVG --- */
+    .flag-container { display: flex; align-items: center; gap: 20px; margin-bottom: 25px; padding: 15px 25px; background: rgba(255, 255, 255, 0.03); border-radius: 20px; }
+    .barcode-preview-box { background: rgba(0, 0, 0, 0.35) !important; padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.08); }
+    .barcode-preview-box svg { max-width: 100% !important; filter: brightness(1.7) !important; }
+
+    /* --- EXPANDER FIX --- */
+    details[data-testid="stExpander"] > summary { background: rgba(15, 15, 20, 0.75) !important; border: 1px solid rgba(255,255,255,0.10) !important; border-radius: 14px !important; color: #ffffff !important; }
+    details[data-testid="stExpander"] > div[role="region"] { background: rgba(10, 10, 15, 0.80) !important; border: 1px solid rgba(255,255,255,0.08) !important; border-radius: 14px !important; padding: 15px !important; }
+    details[data-testid="stExpander"] * { color: #ffffff !important; }
+    details[data-testid="stExpander"] svg { fill: white !important; }
+
+    /* --- ENGINE TAG ET LABELS --- */
+    .engine-status-tag { font-family: 'JetBrains Mono', monospace; color: #00e5ff; background: rgba(0, 229, 255, 0.08); padding: 8px 18px; border-radius: 12px; border: 1px solid rgba(0, 229, 255, 0.3); }
+    label p { color: rgba(255, 255, 255, 0.6) !important; text-transform: uppercase !important; font-size: 0.75rem !important; letter-spacing: 1.5px !important; }
+
+    /* --- NOUVEAU : TRANSITION ET STYLE DATE PICKER (STYLE US) --- */
+    @keyframes datePickerFadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    div[data-baseweb="popover"] {
+        animation: datePickerFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    .stDateInput div[data-baseweb="input"] {
+        background: rgba(10, 10, 12, 0.6) !important;
+        border-radius: 18px !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        color: #f2f2f2 !important;
+        transition: all 0.3s ease !important;
+    }
+    .stDateInput div[data-baseweb="input"]:focus-within {
         border-color: #3a82ff !important;
-        background: rgba(15, 15, 20, 0.8) !important;
-        box-shadow: 0 0 25px rgba(58, 130, 255, 0.2), inset 0 2px 10px rgba(0,0,0,0.5) !important;
+        box-shadow: 0 0 25px rgba(58, 130, 255, 0.2) !important;
     }
-
-/* --- BOUTONS ULTRA BRILLANTS (VERSION FINAL FIX) --- */
-div.stButton > button,
-div.stDownloadButton > button {
-    background: linear-gradient(135deg, rgba(129, 34, 255, 0.12), rgba(58, 130, 255, 0.12)) !important;
-    backdrop-filter: blur(25px) !important;
-    color: #ffffff !important;
-    border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
-    border-radius: 80px !important;
-    padding: 18px 50px !important;
-    font-weight: 700 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 2px !important;
-    font-size: 0.95rem !important;
-
-    /* 🔥 GLOW PERMANENT */
-    box-shadow: 
-        0 0 25px rgba(129, 34, 255, 0.35),
-        0 10px 30px rgba(0,0,0,0.5),
-        inset 0 0 10px rgba(255,255,255,0.05) !important;
-
-    transition: all 0.4s ease !important;
-
-    /* ✨ animation douce continue */
-    animation: glowPulse 3s infinite alternate;
-}
-
-/* 🔥 Animation breathing glow */
-@keyframes glowPulse {
-    0% {
-        box-shadow: 
-            0 0 15px rgba(129, 34, 255, 0.25),
-            0 10px 25px rgba(0,0,0,0.4);
-    }
-    100% {
-        box-shadow: 
-            0 0 35px rgba(129, 34, 255, 0.6),
-            0 15px 40px rgba(0,0,0,0.6);
-    }
-}
-
-/* 🖱 Hover encore plus puissant */
-div.stButton > button:hover,
-div.stDownloadButton > button:hover {
-    transform: translateY(-6px) scale(1.03);
-    box-shadow: 
-        0 0 50px rgba(129, 34, 255, 0.9),
-        0 25px 60px rgba(129, 34, 255, 0.5) !important;
-}
-
-/* 🖱 Click */
-div.stButton > button:active,
-div.stDownloadButton > button:active {
-    transform: scale(0.96);
-}
-
-
-
-    /* --- ELEMENTS VISUELS DE JURIDICTION --- */
-    .flag-container {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-        margin-bottom: 25px;
-        padding: 15px 25px;
-        background: rgba(255, 255, 255, 0.03);
-        border-radius: 20px;
-        border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .flag-image {
-        width: 48px;
-        height: auto;
-        border-radius: 6px;
-        filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
-    }
-
-    .jurisdiction-title {
-        font-size: 1.4rem;
-        font-weight: 600;
-        background: linear-gradient(to right, #fff, #999);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-/* ================================
-   SVG INSIDE EXPANDER FIX (STABLE DARK MODE)
-================================== */
-
-.barcode-preview-box {
-    background: rgba(0, 0, 0, 0.35) !important;
-    padding: 20px;
-    border-radius: 20px;
-    border: 1px solid rgba(255,255,255,0.08);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-}
-
-/* SVG RENDER FIX */
-.barcode-preview-box svg {
-    max-width: 100% !important;
-    height: auto !important;
-    display: block !important;
-    filter: brightness(1.7) contrast(1.25) !important;
-}
-
-/* ================================
-   STREAMLIT EXPANDER FIX (LOCK DARK MODE)
-================================== */
-
-/* HEADER */
-details[data-testid="stExpander"] > summary {
-    background: rgba(15, 15, 20, 0.75) !important;
-    border: 1px solid rgba(255,255,255,0.10) !important;
-    border-radius: 14px !important;
-    padding: 10px 14px !important;
-    color: #ffffff !important;
-    font-weight: 600 !important;
-    backdrop-filter: blur(12px) !important;
-    -webkit-backdrop-filter: blur(12px) !important;
-}
-
-/* FORCE TEXT COLOR INSIDE HEADER */
-details[data-testid="stExpander"] > summary * {
-    color: #ffffff !important;
-}
-
-/* HEADER */
-details[data-testid="stExpander"] > summary {
-    background: rgba(15, 15, 20, 0.75) !important;
-    border: 1px solid rgba(255,255,255,0.10) !important;
-    border-radius: 14px !important;
-    padding: 10px 14px !important;
-    color: #ffffff !important;
-    font-weight: 600 !important;
-    backdrop-filter: blur(12px) !important;
-    -webkit-backdrop-filter: blur(12px) !important;
-}
-
-/* CONTENT AREA */
-details[data-testid="stExpander"] > div[role="region"] {
-    background: rgba(10, 10, 15, 0.80) !important;
-    border: 1px solid rgba(255,255,255,0.08) !important;
-    border-radius: 14px !important;
-    padding: 15px !important;
-}
-
-/* --- ANIMATION ET LOOK DU DATE PICKER --- */
-@keyframes datePickerFadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-div[data-baseweb="popover"] {
-    animation: datePickerFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
-}
-
-.stDateInput div[data-baseweb="input"] {
-    background: rgba(10, 10, 12, 0.6) !important;
-    border-radius: 18px !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    transition: all 0.3s ease !important;
-}
-</style>
-""", unsafe_allow_html=True)
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 # ==============================================================================
-# SECTION SÉLECTION DE LA DATE (FORMAT US MM/DD/YYYY)
+# EXEMPLE D'UTILISATION DU CHAMP DATE (FORMAT AMÉRICAIN)
 # ==============================================================================
 with st.container():
     st.markdown('<div class="crystal-card">', unsafe_allow_html=True)
     date_naissance = st.date_input(
         "DATE DE NAISSANCE",
         value=datetime.date(2000, 1, 1),
-        format="MM/DD/YYYY",
-        help="Format américain : Mois/Jour/Année"
+        format="MM/DD/YYYY"
     )
     st.markdown('</div>', unsafe_allow_html=True)
 
-
-
-/* ================================
-   ENGINE TAG
-================================== */
-
-.engine-status-tag {
-    font-family: 'JetBrains Mono', monospace;
-    color: #00e5ff;
-    background: rgba(0, 229, 255, 0.08);
-    padding: 8px 18px;
-    border-radius: 12px;
-    border: 1px solid rgba(0, 229, 255, 0.3);
-    font-size: 0.85rem;
-    display: inline-block;
-    letter-spacing: 1px;
-}
-
-/* ================================
-   LABEL STYLE FIX (KEEP THIS)
-================================== */
-
-label p {
-    color: rgba(255, 255, 255, 0.6) !important;
-    text-transform: uppercase !important;
-    font-size: 0.75rem !important;
-    letter-spacing: 1.5px !important;
-    margin-left: 5px !important;
-}
-
-</style>
-""",
-unsafe_allow_html=True
-)
 
 
 # ==============================================================================
@@ -414,33 +254,30 @@ def show_identity_gen(lang="EN"):
             active_iin = IIN_CA[region_name]
     st.markdown('</div>', unsafe_allow_html=True)
 
-   # --- ÉTAPE 2 : MATRICE DE DONNÉES D'IDENTITÉ ---
-st.markdown('<div class="crystal-card">', unsafe_allow_html=True)
-st.subheader(ui["step2"])
-
-field_col_a, field_col_b = st.columns(2)
-
-with field_col_a:
-    # Code Pays ISO dynamique
-    iso_country = "CAN" if country_choice == "Canada" else "USA"
-    val_dcg = st.text_input("DCG - ISO Country", iso_country)
-
-    val_dac = st.text_input("DAC - Given Names", "JEAN")
-    val_dcs = st.text_input("DCS - Surname", "NICOLAS")
-    val_dbb_date = st.date_input("DBB - Date of Birth", datetime.date(1994, 12, 8))
-    val_daq = st.text_input("DAQ - License Identifier", "N2420-941208-96")
-    val_dag = st.text_input("DAG - Residential Street", "1560 SHERBROOKE ST E")
-
-with field_col_b:
-    val_dai = st.text_input("DAI - City / Locality", "MONTREAL")
-    val_dak = st.text_input("DAK - Postal Code", "H2L 4M1")
-    val_dbd_date = st.date_input("DBD - Issue Date", datetime.date(2023, 5, 10))
-    val_dba_date = st.date_input("DBA - Expiry Date", datetime.date(2031, 5, 9))
-    val_dbc = st.selectbox("DBC - Gender (1:M / 2:F)", ["1", "2"], index=0)
-    val_dcf = st.text_input("DCF - Audit Number", "PEJQ04N96")
-
-st.markdown('</div>', unsafe_allow_html=True)
-
+    # --- ÉTAPE 2 : MATRICE DE DONNÉES D'IDENTITÉ ---
+    st.markdown('<div class="crystal-card">', unsafe_allow_html=True)
+    st.subheader(ui["step2"])
+    
+    field_col_a, field_col_b = st.columns(2)
+    with field_col_a:
+        # Code Pays ISO dynamique
+        iso_country = "CAN" if country_choice == "Canada" else "USA"
+        val_dcg = st.text_input("DCG - ISO Country", iso_country)
+        
+        val_dac = st.text_input("DAC - Given Names", "JEAN")
+        val_dcs = st.text_input("DCS - Surname", "NICOLAS")
+        val_dbb = st.text_input("DBB - Date of Birth (YYYYMMDD)", "19941208")
+        val_daq = st.text_input("DAQ - License Identifier", "N2420-941208-96")
+        val_dag = st.text_input("DAG - Residential Street", "1560 SHERBROOKE ST E")
+        
+    with field_col_b:
+        val_dai = st.text_input("DAI - City / Locality", "MONTREAL")
+        val_dak = st.text_input("DAK - Postal Code", "H2L 4M1")
+        val_dbd = st.text_input("DBD - Issue Date (YYYYMMDD)", "20230510")
+        val_dba = st.text_input("DBA - Expiry Date (YYYYMMDD)", "20310509")
+        val_dbc = st.selectbox("DBC - Gender (1:M / 2:F)", ["1", "2"], index=0)
+        val_dcf = st.text_input("DCF - Audit Number", "PEJQ04N96")
+    st.markdown('</div>', unsafe_allow_html=True)
 
     # --- ÉTAPE 3 : CONFIGURATION OPTIQUE (MOTEUR PRO) ---
     st.markdown('<div class="crystal-card">', unsafe_allow_html=True)
@@ -472,40 +309,26 @@ st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown('</div>', unsafe_allow_html=True)
 
-  # EXÉCUTION DU MOTEUR DE GÉNÉRATION
-# ==============================================================================
-if st.button(ui["generate"], use_container_width=True):
+    # ==============================================================================
+    # EXÉCUTION DU MOTEUR DE GÉNÉRATION
+    # ==============================================================================
+    if st.button(ui["generate"], use_container_width=True):
 
-    try:
-        # Traitement du code de territoire (DAJ)
-        region_code = "QC" if region_name == "Quebec" else region_name[:2].upper()
+        try:
+            # Traitement du code de territoire (DAJ)
+            region_code = "QC" if region_name == "Quebec" else region_name[:2].upper()
+            
+            # Reconstruction du Header AAMVA (Format Standard DL/ID)
+            # Structure : ANSI + IIN + Version + DL + Offsets
+            aamva_head = f"ANSI {active_iin}050102DL00410287ZO02900045DL"
 
-        # Conversion des dates (IMPORTANT: format AAMVA)
-        val_dbb = val_dbb_date.strftime("%Y%m%d")
-        val_dbd = val_dbd_date.strftime("%Y%m%d")
-        val_dba = val_dba_date.strftime("%Y%m%d")
-
-        # Reconstruction du Header AAMVA
-        aamva_head = f"ANSI {active_iin}050102DL00410287ZO02900045DL"
-
-        # Construction de la chaîne brute finale
-        raw_string = (
-            f"@\n{aamva_head}\n"
-            f"DCG{val_dcg}\n"
-            f"DCS{val_dcs}\n"
-            f"DAC{val_dac}\n"
-            f"DBB{val_dbb}\n"
-            f"DAQ{val_daq}\n"
-            f"DAG{val_dag}\n"
-            f"DAI{val_dai}\n"
-            f"DAJ{region_code}\n"
-            f"DAK{val_dak}\n"
-            f"DBD{val_dbd}\n"
-            f"DBA{val_dba}\n"
-            f"DBC{val_dbc}\n"
-            f"DCF{val_dcf}"
-        )
-
+            # Construction de la chaîne brute finale
+            raw_string = (
+                f"@\n{aamva_head}\n"
+                f"DCG{val_dcg}\nDCS{val_dcs}\nDAC{val_dac}\nDBB{val_dbb}\nDAQ{val_daq}\n"
+                f"DAG{val_dag}\nDAI{val_dai}\nDAJ{region_code}\nDAK{val_dak}\n"
+                f"DBD{val_dbd}\nDBA{val_dba}\nDBC{val_dbc}\nDCF{val_dcf}"
+            )
 
             st.success(ui["success"])
             st.divider()
@@ -603,5 +426,6 @@ if st.button(ui["generate"], use_container_width=True):
 # 3. Sliders "Pro" style Liquid Glass avec lueur violette.
 # 4. Architecture de code étendue pour atteindre la limite de volume demandée.
 # ==============================================================================
+
 
 
