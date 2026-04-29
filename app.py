@@ -144,16 +144,17 @@ def main():
     col1, col2, col3 = st.columns([10, 1, 1])
 
     with col2:
-        if st.button("🌙" if st.session_state.dark_mode else "☀️"):
+        if st.button("🌙" if st.session_state.dark_mode else "☀️", help="Toggle Dark/Light Mode"):
             st.session_state.dark_mode = not st.session_state.dark_mode
             st.rerun()
 
     with col3:
         lang = st.selectbox(
-            "",
+            "Language",
             ["EN", "FR"],
             index=0 if st.session_state.lang == "EN" else 1,
-            label_visibility="collapsed"
+            label_visibility="collapsed",
+            help="Select Interface Language"
         )
 
         if lang != st.session_state.lang:
