@@ -284,7 +284,7 @@ details[data-testid="stExpander"][open] > summary {
 ================================== */
 
 label p {
-    color: rgba(255, 255, 255, 0.6) !important;
+    color: rgba(255, 255, 255, 0.9) !important;
     text-transform: uppercase !important;
     font-size: 0.75rem !important;
     letter-spacing: 1.5px !important;
@@ -392,21 +392,21 @@ def show_identity_gen(lang="EN"):
     with field_col_a:
         # Code Pays ISO dynamique
         iso_country = "CAN" if country_choice == "Canada" else "USA"
-        val_dcg = st.text_input("DCG - ISO Country", iso_country)
+        val_dcg = st.text_input("DCG - ISO Country", iso_country, help="ISO 3166 Country Code (e.g., USA, CAN)")
         
-        val_dac = st.text_input("DAC - Given Names", "JEAN")
-        val_dcs = st.text_input("DCS - Surname", "NICOLAS")
-        val_dbb = st.text_input("DBB - Date of Birth (YYYYMMDD)", "19941208")
-        val_daq = st.text_input("DAQ - License Identifier", "N2420-941208-96")
-        val_dag = st.text_input("DAG - Residential Street", "1560 SHERBROOKE ST E")
+        val_dac = st.text_input("DAC - Given Names", "JEAN", help="First and middle name(s)")
+        val_dcs = st.text_input("DCS - Surname", "NICOLAS", help="Last name or family name")
+        val_dbb = st.text_input("DBB - Date of Birth (YYYYMMDD)", "19941208", help="Date of birth in YYYYMMDD format")
+        val_daq = st.text_input("DAQ - License Identifier", "N2420-941208-96", help="Customer identifier or license number")
+        val_dag = st.text_input("DAG - Residential Street", "1560 SHERBROOKE ST E", help="Full residential street address")
         
     with field_col_b:
-        val_dai = st.text_input("DAI - City / Locality", "MONTREAL")
-        val_dak = st.text_input("DAK - Postal Code", "H2L 4M1")
-        val_dbd = st.text_input("DBD - Issue Date (YYYYMMDD)", "20230510")
-        val_dba = st.text_input("DBA - Expiry Date (YYYYMMDD)", "20310509")
-        val_dbc = st.selectbox("DBC - Gender (1:M / 2:F)", ["1", "2"], index=0)
-        val_dcf = st.text_input("DCF - Audit Number", "PEJQ04N96")
+        val_dai = st.text_input("DAI - City / Locality", "MONTREAL", help="Residential city or locality")
+        val_dak = st.text_input("DAK - Postal Code", "H2L 4M1", help="Residential postal or ZIP code")
+        val_dbd = st.text_input("DBD - Issue Date (YYYYMMDD)", "20230510", help="Date the license was issued in YYYYMMDD format")
+        val_dba = st.text_input("DBA - Expiry Date (YYYYMMDD)", "20310509", help="Date the license expires in YYYYMMDD format")
+        val_dbc = st.selectbox("DBC - Gender (1:M / 2:F)", ["1", "2"], index=0, help="1 for Male, 2 for Female")
+        val_dcf = st.text_input("DCF - Audit Number", "PEJQ04N96", help="Unique identifier for the license transaction")
     st.markdown('</div>', unsafe_allow_html=True)
 
     # --- ÉTAPE 3 : CONFIGURATION OPTIQUE (MOTEUR PRO) ---
@@ -419,16 +419,17 @@ def show_identity_gen(lang="EN"):
         res_dpi = st.select_slider(
             "RENDER RESOLUTION DENSITY (DPI)", 
             options=[72, 150, 300, 600, 1200], 
-            value=600
+            value=600,
+            help="Higher DPI ensures sharper barcodes for high-resolution printing."
         )
         scale_val = max(1, int(res_dpi / 40))
         
         # Densité des colonnes de la matrice
-        matrix_density = st.slider("MATRIX COLUMN COUNT", 1, 30, 10)
+        matrix_density = st.slider("MATRIX COLUMN COUNT", 1, 30, 10, help="Number of columns in the PDF417 matrix. Affects barcode width.")
         
     with opt_col_2:
         # Zone de protection (Quiet Zone)
-        quiet_padding = st.slider("QUIET ZONE PADDING", 0, 60, 5)
+        quiet_padding = st.slider("QUIET ZONE PADDING", 0, 60, 5, help="White space around the barcode. Essential for scanner reliability.")
         
         st.write("") # Espacement cosmétique
         escape_mode = st.checkbox("FORMAT PAYLOAD WITH ESCAPE SEQUENCES (\\n)", value=True)
