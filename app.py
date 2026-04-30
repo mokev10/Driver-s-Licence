@@ -144,7 +144,9 @@ def main():
     col1, col2, col3 = st.columns([10, 1, 1])
 
     with col2:
-        if st.button("🌙" if st.session_state.dark_mode else "☀️"):
+        theme_icon = "🌙" if st.session_state.dark_mode else "☀️"
+        theme_label = "Switch to Light Mode" if st.session_state.dark_mode else "Switch to Dark Mode"
+        if st.button(theme_icon, help=theme_label):
             st.session_state.dark_mode = not st.session_state.dark_mode
             st.rerun()
 
