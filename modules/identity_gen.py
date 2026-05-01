@@ -284,11 +284,29 @@ details[data-testid="stExpander"][open] > summary {
 ================================== */
 
 label p {
-    color: rgba(255, 255, 255, 0.6) !important;
+    color: rgba(255, 255, 255, 0.9) !important;
     text-transform: uppercase !important;
     font-size: 0.75rem !important;
     letter-spacing: 1.5px !important;
     margin-left: 5px !important;
+}
+
+/* ================================
+   NOTIFICATION ACCESSIBILITY
+================================== */
+
+div[data-testid="stNotification"] {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(10px) !important;
+}
+
+div[data-testid="stNotification"] * {
+    color: #ffffff !important;
+}
+
+div[data-testid="stNotification"] {
+    font-weight: 500 !important;
 }
 
 </style>
@@ -321,7 +339,19 @@ def show_identity_gen(lang="EN"):
             "success": "Payload matrix successfully compiled.",
             "raw": "AAMVA Raw String Output",
             "use": "Standardized payload for external renderers.",
-            "preview": "Digital Twin Preview"
+            "preview": "Digital Twin Preview",
+            "help_dcg": "ISO Country Code (3 letters)",
+            "help_dac": "First and middle names of the individual",
+            "help_dcs": "Family name of the individual",
+            "help_dbb": "Date of Birth in YYYYMMDD format",
+            "help_daq": "Unique driver's license or identification number",
+            "help_dag": "Full residential street address",
+            "help_dai": "City or locality of residence",
+            "help_dak": "Postal or Zip code",
+            "help_dbd": "Date the document was issued (YYYYMMDD)",
+            "help_dba": "Date the document expires (YYYYMMDD)",
+            "help_dbc": "Gender of the individual (1 for Male, 2 for Female)",
+            "help_dcf": "Audit or inventory control number"
         },
         "FR": {
             "title": "Studio Quantum AAMVA",
@@ -336,7 +366,19 @@ def show_identity_gen(lang="EN"):
             "success": "Matrice du payload compilée avec succès.",
             "raw": "Sortie de chaîne brute AAMVA",
             "use": "Payload standardisé pour moteurs de rendu externes.",
-            "preview": "Aperçu du jumeau numérique"
+            "preview": "Aperçu du jumeau numérique",
+            "help_dcg": "Code pays ISO (3 lettres)",
+            "help_dac": "Prénoms de l'individu",
+            "help_dcs": "Nom de famille de l'individu",
+            "help_dbb": "Date de naissance au format AAAAMMJJ",
+            "help_daq": "Numéro unique du permis ou de la pièce d'identité",
+            "help_dag": "Adresse résidentielle complète",
+            "help_dai": "Ville ou localité de résidence",
+            "help_dak": "Code postal",
+            "help_dbd": "Date d'émission du document (AAAAMMJJ)",
+            "help_dba": "Date d'expiration du document (AAAAMMJJ)",
+            "help_dbc": "Sexe de l'individu (1 pour Homme, 2 pour Femme)",
+            "help_dcf": "Numéro d'audit ou de contrôle d'inventaire"
         }
     }
 
@@ -392,21 +434,21 @@ def show_identity_gen(lang="EN"):
     with field_col_a:
         # Code Pays ISO dynamique
         iso_country = "CAN" if country_choice == "Canada" else "USA"
-        val_dcg = st.text_input("DCG - ISO Country", iso_country)
+        val_dcg = st.text_input("DCG - ISO Country", iso_country, help=ui["help_dcg"])
         
-        val_dac = st.text_input("DAC - Given Names", "JEAN")
-        val_dcs = st.text_input("DCS - Surname", "NICOLAS")
-        val_dbb = st.text_input("DBB - Date of Birth (YYYYMMDD)", "19941208")
-        val_daq = st.text_input("DAQ - License Identifier", "N2420-941208-96")
-        val_dag = st.text_input("DAG - Residential Street", "1560 SHERBROOKE ST E")
+        val_dac = st.text_input("DAC - Given Names", "JEAN", help=ui["help_dac"])
+        val_dcs = st.text_input("DCS - Surname", "NICOLAS", help=ui["help_dcs"])
+        val_dbb = st.text_input("DBB - Date of Birth (YYYYMMDD)", "19941208", help=ui["help_dbb"])
+        val_daq = st.text_input("DAQ - License Identifier", "N2420-941208-96", help=ui["help_daq"])
+        val_dag = st.text_input("DAG - Residential Street", "1560 SHERBROOKE ST E", help=ui["help_dag"])
         
     with field_col_b:
-        val_dai = st.text_input("DAI - City / Locality", "MONTREAL")
-        val_dak = st.text_input("DAK - Postal Code", "H2L 4M1")
-        val_dbd = st.text_input("DBD - Issue Date (YYYYMMDD)", "20230510")
-        val_dba = st.text_input("DBA - Expiry Date (YYYYMMDD)", "20310509")
-        val_dbc = st.selectbox("DBC - Gender (1:M / 2:F)", ["1", "2"], index=0)
-        val_dcf = st.text_input("DCF - Audit Number", "PEJQ04N96")
+        val_dai = st.text_input("DAI - City / Locality", "MONTREAL", help=ui["help_dai"])
+        val_dak = st.text_input("DAK - Postal Code", "H2L 4M1", help=ui["help_dak"])
+        val_dbd = st.text_input("DBD - Issue Date (YYYYMMDD)", "20230510", help=ui["help_dbd"])
+        val_dba = st.text_input("DBA - Expiry Date (YYYYMMDD)", "20310509", help=ui["help_dba"])
+        val_dbc = st.selectbox("DBC - Gender (1:M / 2:F)", ["1", "2"], index=0, help=ui["help_dbc"])
+        val_dcf = st.text_input("DCF - Audit Number", "PEJQ04N96", help=ui["help_dcf"])
     st.markdown('</div>', unsafe_allow_html=True)
 
     # --- ÉTAPE 3 : CONFIGURATION OPTIQUE (MOTEUR PRO) ---

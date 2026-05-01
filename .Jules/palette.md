@@ -1,0 +1,3 @@
+## 2025-05-14 - AAMVA Field Accessibility and Notification Contrast
+**Learning:** Technical AAMVA field acronyms (DCG, DAC, etc.) are cryptic to general users. Providing localized tooltips via the `help` parameter in Streamlit significantly improves usability without cluttering the UI. Additionally, Streamlit's default notification styles can have poor contrast in custom dark 'Liquid Glass' themes, necessitating explicit CSS overrides using wildcards (`*`) to target inner elements.
+**Action:** Always include descriptive tooltips for technical fields and verify notification readability when using custom background/blur effects in Streamlit.
