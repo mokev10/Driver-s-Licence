@@ -45,14 +45,14 @@ st.set_page_config(
 # =========================
 TEXTS = {
     "EN": {
-        "theme_dark": "🌙 Dark",
-        "theme_light": "☀️ Light",
+        "theme_toggle": "Toggle light/dark theme",
+        "lang_select": "Select language",
         "sidebar_title": "🪪 Identity Gen",
         "sidebar_info": "Identity generation module is active.",
     },
     "FR": {
-        "theme_dark": "🌙 Sombre",
-        "theme_light": "☀️ Clair",
+        "theme_toggle": "Changer le thème clair/sombre",
+        "lang_select": "Choisir la langue",
         "sidebar_title": "🪪 Générateur d'identité",
         "sidebar_info": "Module de génération actif.",
     }
@@ -144,13 +144,13 @@ def main():
     col1, col2, col3 = st.columns([10, 1, 1])
 
     with col2:
-        if st.button("🌙" if st.session_state.dark_mode else "☀️"):
+        if st.button("🌙" if st.session_state.dark_mode else "☀️", help=t["theme_toggle"]):
             st.session_state.dark_mode = not st.session_state.dark_mode
             st.rerun()
 
     with col3:
         lang = st.selectbox(
-            "",
+            t["lang_select"],
             ["EN", "FR"],
             index=0 if st.session_state.lang == "EN" else 1,
             label_visibility="collapsed"

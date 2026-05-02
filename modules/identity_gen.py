@@ -284,11 +284,16 @@ details[data-testid="stExpander"][open] > summary {
 ================================== */
 
 label p {
-    color: rgba(255, 255, 255, 0.6) !important;
+    color: rgba(255, 255, 255, 0.9) !important;
     text-transform: uppercase !important;
     font-size: 0.75rem !important;
     letter-spacing: 1.5px !important;
     margin-left: 5px !important;
+}
+
+/* HIGH CONTRAST FOR NOTIFICATIONS */
+div[data-testid="stNotification"] * {
+    color: #ffffff !important;
 }
 
 </style>
