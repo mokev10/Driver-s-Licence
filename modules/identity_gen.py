@@ -365,7 +365,7 @@ def show_identity_gen(lang="EN"):
     st.markdown(
         f"""
         <div class="flag-container">
-            <img src="{flag_url}" class="flag-image">
+            <img src="{flag_url}" class="flag-image" alt="{country_choice} flag">
             <span class="jurisdiction-title">{ui["step1"]}</span>
         </div>
         """, 
@@ -392,21 +392,21 @@ def show_identity_gen(lang="EN"):
     with field_col_a:
         # Code Pays ISO dynamique
         iso_country = "CAN" if country_choice == "Canada" else "USA"
-        val_dcg = st.text_input("DCG - ISO Country", iso_country)
+        val_dcg = st.text_input("DCG - ISO Country", iso_country, help="Country Identification (ISO 3166-1 alpha-3)")
         
-        val_dac = st.text_input("DAC - Given Names", "JEAN")
-        val_dcs = st.text_input("DCS - Surname", "NICOLAS")
-        val_dbb = st.text_input("DBB - Date of Birth (YYYYMMDD)", "19941208")
-        val_daq = st.text_input("DAQ - License Identifier", "N2420-941208-96")
-        val_dag = st.text_input("DAG - Residential Street", "1560 SHERBROOKE ST E")
+        val_dac = st.text_input("DAC - Given Names", "JEAN", help="The first or middle name(s) of the cardholder")
+        val_dcs = st.text_input("DCS - Surname", "NICOLAS", help="The last name or family name of the cardholder")
+        val_dbb = st.text_input("DBB - Date of Birth (YYYYMMDD)", "19941208", help="The date on which the cardholder was born")
+        val_daq = st.text_input("DAQ - License Identifier", "N2420-941208-96", help="The unique number assigned to the cardholder's license or ID")
+        val_dag = st.text_input("DAG - Residential Street", "1560 SHERBROOKE ST E", help="The cardholder's residential street address")
         
     with field_col_b:
-        val_dai = st.text_input("DAI - City / Locality", "MONTREAL")
-        val_dak = st.text_input("DAK - Postal Code", "H2L 4M1")
-        val_dbd = st.text_input("DBD - Issue Date (YYYYMMDD)", "20230510")
-        val_dba = st.text_input("DBA - Expiry Date (YYYYMMDD)", "20310509")
-        val_dbc = st.selectbox("DBC - Gender (1:M / 2:F)", ["1", "2"], index=0)
-        val_dcf = st.text_input("DCF - Audit Number", "PEJQ04N96")
+        val_dai = st.text_input("DAI - City / Locality", "MONTREAL", help="The cardholder's city or town of residence")
+        val_dak = st.text_input("DAK - Postal Code", "H2L 4M1", help="The postal or ZIP code of the cardholder's residence")
+        val_dbd = st.text_input("DBD - Issue Date (YYYYMMDD)", "20230510", help="The date the license or ID was issued")
+        val_dba = st.text_input("DBA - Expiry Date (YYYYMMDD)", "20310509", help="The date the license or ID expires")
+        val_dbc = st.selectbox("DBC - Gender (1:M / 2:F)", ["1", "2"], index=0, help="Physical Description - Sex (1 for Male, 2 for Female)")
+        val_dcf = st.text_input("DCF - Audit Number", "PEJQ04N96", help="Document Discriminator / Audit Number for security tracking")
     st.markdown('</div>', unsafe_allow_html=True)
 
     # --- ÉTAPE 3 : CONFIGURATION OPTIQUE (MOTEUR PRO) ---
