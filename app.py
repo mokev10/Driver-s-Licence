@@ -126,6 +126,7 @@ def apply_custom_style(dark_mode=True):
         section[data-testid="stSidebar"] {{
             background-color: {card} !important;
         }}
+
     </style>
     """, unsafe_allow_html=True)
 
@@ -144,7 +145,9 @@ def main():
     col1, col2, col3 = st.columns([10, 1, 1])
 
     with col2:
-        if st.button("🌙" if st.session_state.dark_mode else "☀️"):
+        theme_icon = "🌙" if st.session_state.dark_mode else "☀️"
+        theme_help = "Switch to Light Mode" if st.session_state.dark_mode else "Switch to Dark Mode"
+        if st.button(theme_icon, help=theme_help):
             st.session_state.dark_mode = not st.session_state.dark_mode
             st.rerun()
 
@@ -153,7 +156,8 @@ def main():
             "",
             ["EN", "FR"],
             index=0 if st.session_state.lang == "EN" else 1,
-            label_visibility="collapsed"
+            label_visibility="collapsed",
+            help="Select Language / Choisir la langue"
         )
 
         if lang != st.session_state.lang:
