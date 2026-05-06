@@ -35,7 +35,7 @@ show_identity_gen = identity_gen.show_identity_gen
 # =========================
 st.set_page_config(
     page_title="AI Generator PDF417",
-    page_icon="img.icons8.com/external-inipagistudio-mixed-inipagistudio/24/external-ai-web-programmer-inipagistudio-mixed-inipagistudio.png",
+    page_icon="https://img.icons8.com/external-inipagistudio-mixed-inipagistudio/60/external-ai-web-programmer-inipagistudio-mixed-inipagistudio.png",
     layout="wide",
     initial_sidebar_state="expanded",
 )
