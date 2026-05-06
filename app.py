@@ -1,132 +1,175 @@
 import streamlit as st
-from scripts.generate_datamatrix import generate_datamatrix
+import os
+import sys
 
-# ---------------- CONFIG ----------------
+# =========================
+# FORCE ROOT PATH
+# =========================
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, BASE_DIR)
+
+# =========================
+# IMPORTS SAFE (NO PACKAGE IMPORT)
+# =========================
+import importlib.util
+
+# Load utils/helpers.py
+helpers_path = os.path.join(BASE_DIR, "utils", "helpers.py")
+spec_helpers = importlib.util.spec_from_file_location("helpers", helpers_path)
+helpers = importlib.util.module_from_spec(spec_helpers)
+spec_helpers.loader.exec_module(helpers)
+
+header_component = helpers.header_component
+
+# Load modules/identity_gen.py
+identity_path = os.path.join(BASE_DIR, "modules", "identity_gen.py")
+spec_identity = importlib.util.spec_from_file_location("identity_gen", identity_path)
+identity_gen = importlib.util.module_from_spec(spec_identity)
+spec_identity.loader.exec_module(identity_gen)
+
+show_identity_gen = identity_gen.show_identity_gen
+
+
+# =========================
+# STREAMLIT CONFIG
+# =========================
 st.set_page_config(
-    page_title="Générateur 2D-Codes Data Matrix",
-    page_icon="img.icons8.com/external-duo-tone-yogi-aprelliyanto/60/external-search-file-document-duo-tone-yogi-aprelliyanto.png",
+    page_title="AI Generator PDF417",
+    page_icon="img.icons8.com/external-inipagistudio-mixed-inipagistudio/24/external-ai-web-programmer-inipagistudio-mixed-inipagistudio.png",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
-# ---------------- CSS ----------------
+# =========================
+# TEXTS
+# =========================
+TEXTS = {
+    "EN": {
+        "theme_dark": "🌙 Dark",
+        "theme_light": "☀️ Light",
+        "sidebar_title": "🪪 Identity Gen",
+        "sidebar_info": "Identity generation module is active.",
+    },
+    "FR": {
+        "theme_dark": "🌙 Sombre",
+        "theme_light": "☀️ Clair",
+        "sidebar_title": "🪪 Générateur d'identité",
+        "sidebar_info": "Module de génération actif.",
+    }
+}
+
+
+# =========================
+# BUTTON STYLE + CENTER FIX
+# =========================
 st.markdown("""
 <style>
 
-/* Fond global */
-.stApp {
-    background: linear-gradient(135deg, #0f172a, #111827);
-    color: white;
-}
-
-/* Titre */
-h1 {
-    text-align: center;
-    color: white;
-    font-weight: 700;
-    margin-bottom: 25px;
-}
-
-/* Text area */
-textarea {
-    border-radius: 12px !important;
-    border: 2px solid #334155 !important;
-    background-color: #0b1220 !important;
-    color: white !important;
-    transition: all 0.3s ease-in-out;
-}
-
-textarea:focus {
-    border-color: #3b82f6 !important;
-    box-shadow: 0 0 12px rgba(59, 130, 246, 0.5);
-    transform: scale(1.01);
-}
-
-/* Slider */
-.stSlider > div {
-    color: white;
-}
-
-/* bouton */
-.stButton > button {
-    background: linear-gradient(90deg, #3b82f6, #6366f1);
-    color: white;
-    border: none;
-    padding: 0.7rem 2rem;
-    border-radius: 12px;
-    font-weight: bold;
-    transition: all 0.3s ease-in-out;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-}
-
-.stButton > button:hover {
-    transform: scale(1.05);
-}
-
-/* ---------------- CENTRAGE IMAGE ---------------- */
-.center-img {
+/* CENTRAGE RÉEL DU BOUTON */
+div.stButton {
     display: flex;
     justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    margin-top: 20px;
 }
 
-/* force image centrée */
-.center-img img {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
+/* STYLE DU BOUTON */
+div.stButton > button {
+    background: linear-gradient(135deg, #4facfe 0%, #a066ff 100%) !important;
+    color: white !important;
+    border: none !important;
+    padding: 10px 25px !important;
+    border-radius: 50px !important;
+    font-weight: bold !important;
+    box-shadow: 0 0 15px rgba(160, 102, 255, 0.5) !important;
+    transition: all 0.3s ease !important;
+    height: auto !important;
+    width: auto !important;
+}
+
+/* HOVER */
+div.stButton > button:hover {
+    box-shadow: 0 0 25px rgba(160, 102, 255, 0.8) !important;
+    transform: scale(1.02) !important;
+    color: white !important;
+}
+
+/* CLICK */
+div.stButton > button:active {
+    transform: scale(0.98) !important;
 }
 
 </style>
 """, unsafe_allow_html=True)
 
-# ---------------- UI ----------------
 
-st.title("Générateur DataMatrix")
+def apply_custom_style(dark_mode=True):
+    if dark_mode:
+        bg = "#0E1117"
+        text = "#FAFAFA"
+        card = "#161B22"
+    else:
+        bg = "#FFFFFF"
+        text = "#000000"
+        card = "#F5F5F5"
 
-data = st.text_area("Texte à encoder")
+    st.markdown(f"""
+    <style>
+        :root {{
+            --bg-color: {bg};
+            --text-color: {text};
+        }}
 
-dpi = st.slider(
-    "Image Resolution (DPI)",
-    min_value=72,
-    max_value=300,
-    value=150,
-    step=1
-)
+        .stApp {{
+            background-color: var(--bg-color) !important;
+            color: var(--text-color) !important;
+        }}
 
-use_escape = st.checkbox("Activer escape sequences (\\n = retour ligne)")
+        section[data-testid="stSidebar"] {{
+            background-color: {card} !important;
+        }}
+    </style>
+    """, unsafe_allow_html=True)
 
-# ---------------- BOUTON CENTRÉ ----------------
-col1, col2, col3 = st.columns([1, 1, 1])
 
-with col2:
-    generate = st.button("Générer")
 
-# ---------------- RESULT ----------------
+def main():
 
-if generate:
-    if data.strip():
+    if "dark_mode" not in st.session_state:
+        st.session_state.dark_mode = True
 
-        if use_escape:
-            data = data.encode().decode("unicode_escape")
+    if "lang" not in st.session_state:
+        st.session_state.lang = "EN"
 
-        img_buffer = generate_datamatrix(data, dpi=dpi)
+    t = TEXTS[st.session_state.lang]
 
-        # 🔥 WRAPPER CENTRÉ COMPLET
-        st.markdown('<div class="center-img">', unsafe_allow_html=True)
+    col1, col2, col3 = st.columns([10, 1, 1])
 
-        st.image(img_buffer, caption="DataMatrix généré")
+    with col2:
+        if st.button("🌙" if st.session_state.dark_mode else "☀️"):
+            st.session_state.dark_mode = not st.session_state.dark_mode
+            st.rerun()
 
-        st.download_button(
-            label="Télécharger l'image",
-            data=img_buffer,
-            file_name=f"datamatrix_{dpi}dpi.png",
-            mime="image/png"
+    with col3:
+        lang = st.selectbox(
+            "",
+            ["EN", "FR"],
+            index=0 if st.session_state.lang == "EN" else 1,
+            label_visibility="collapsed"
         )
 
-        st.markdown('</div>', unsafe_allow_html=True)
+        if lang != st.session_state.lang:
+            st.session_state.lang = lang
+            st.rerun()
 
-    else:
-        st.warning("Veuillez entrer un texte à encoder")
+    apply_custom_style(st.session_state.dark_mode)
+
+    with st.sidebar:
+        st.markdown(f"### {t['sidebar_title']}")
+        st.info(t["sidebar_info"])
+
+    header_component()
+
+    show_identity_gen(st.session_state.lang)
+
+
+if __name__ == "__main__":
+    main()
