@@ -103,7 +103,7 @@ def inject_advanced_css():
             margin: 2rem 0 !important;
         }
 
-        /* ===== CRYSTAL CARD ANIMATION ===== */
+        /* ===== ANIMATIONS ===== */
         @keyframes cardGlowFade {
             0% {
                 transform: translateY(20px);
@@ -194,8 +194,10 @@ def inject_advanced_css():
             outline: none !important;
         }
 
-        /* ===== SLIDERS (PRO STYLE) ===== */
-        div[data-testid="stTickBar"] { display: none !important; }
+        /* ===== SLIDERS ===== */
+        div[data-testid="stTickBar"] { 
+            display: none !important; 
+        }
 
         div[data-baseweb="slider"] > div:first-child {
             height: 6px !important;
@@ -224,11 +226,6 @@ def inject_advanced_css():
         div[role="slider"]:hover {
             transform: scale(1.15) !important;
             box-shadow: 0 0 40px rgba(129, 34, 255, 1) !important;
-        }
-
-        /* ===== SELECT SLIDER ===== */
-        div[data-testid="stSelectSlider"] {
-            padding: 1rem 0 !important;
         }
 
         /* ===== CHECKBOXES ===== */
@@ -266,20 +263,20 @@ def inject_advanced_css():
 
         div.stButton > button:hover,
         div.stDownloadButton > button:hover {
-            transform: translateY(-4px) scale(1.02);
+            transform: translateY(-4px) scale(1.02) !important;
             border-color: rgba(129, 34, 255, 0.5) !important;
             box-shadow: 0 0 50px rgba(129, 34, 255, 0.9), 0 25px 60px rgba(129, 34, 255, 0.5) !important;
         }
 
         div.stButton > button:active,
         div.stDownloadButton > button:active {
-            transform: scale(0.96);
+            transform: scale(0.96) !important;
         }
 
         div.stButton > button:disabled,
         div.stDownloadButton > button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+            opacity: 0.5 !important;
+            cursor: not-allowed !important;
         }
 
         /* ===== FLAG CONTAINER ===== */
@@ -334,12 +331,6 @@ def inject_advanced_css():
         }
 
         /* ===== CODE BLOCKS ===== */
-        .stCodeBlock {
-            background: rgba(10, 10, 12, 0.8) !important;
-            border-radius: 12px !important;
-            border: 1px solid var(--border-color) !important;
-        }
-
         code {
             background: rgba(255, 255, 255, 0.05) !important;
             color: var(--accent-color) !important;
@@ -355,4 +346,8 @@ def inject_advanced_css():
             border: 1px solid var(--border-color) !important;
             border-radius: 12px !important;
             padding: 14px 16px !important;
-            color: var(--text-primary) !important
+            color: var(--text-primary) !important;
+            cursor: pointer !important;
+            transition: all 0.3s ease !important;
+            font-weight: 600 !important;
+        
