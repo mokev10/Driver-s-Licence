@@ -1,0 +1,3 @@
+## 2025-05-15 - Enhancing AAMVA Form Accessibility
+**Learning:** Technical domain-specific acronyms (like AAMVA's DCG, DAC, etc.) can be a significant barrier to usability and accessibility. Providing immediate, contextual explanations via tooltips (`help` in Streamlit) significantly improves the experience without cluttering the UI. High-contrast labels (moving from 0.6 to 0.9 opacity) are essential for readability in "Glassmorphism" or "Liquid Glass" themes where transparency can sometimes reduce legibility.
+**Action:** Always check for technical jargon in forms and provide tooltips. Ensure label contrast meets accessibility standards, especially when using translucent backgrounds.
