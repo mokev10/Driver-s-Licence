@@ -327,6 +327,18 @@ def apply_modern_css(dark_mode=True):
             background: var(--accent-secondary);
         }}
 
+        /* TOOLTIP ACCESSIBILITY */
+        div[data-testid="stTooltipContent"] {{
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            border: 1px solid var(--accent-primary) !important;
+            border-radius: 4px !important;
+        }}
+
+        div[data-testid="stTooltipContent"] p {{
+            color: #000000 !important;
+        }}
+
     </style>
     """, unsafe_allow_html=True)
 
@@ -341,7 +353,8 @@ def render_header(lang, dark_mode):
         st.markdown(f"<h1 style='margin: 0;'>✨ AI Generator PDF417</h1>", unsafe_allow_html=True)
     
     with col2:
-        if st.button("🌙" if dark_mode else "☀️", key="theme_toggle", use_container_width=True):
+        theme_tip = t["theme_light"] if dark_mode else t["theme_dark"]
+        if st.button("🌙" if dark_mode else "☀️", key="theme_toggle", use_container_width=True, help=theme_tip):
             st.session_state.dark_mode = not st.session_state.dark_mode
             st.rerun()
     
