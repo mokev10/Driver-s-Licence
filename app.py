@@ -347,7 +347,7 @@ def render_header(lang, dark_mode):
     
     with col3:
         lang_val = st.selectbox(
-            "",
+            "Language",
             ["EN", "FR"],
             index=0 if lang == "EN" else 1,
             label_visibility="collapsed",
