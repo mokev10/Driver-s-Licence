@@ -341,7 +341,8 @@ def render_header(lang, dark_mode):
         st.markdown(f"<h1 style='margin: 0;'>✨ AI Generator PDF417</h1>", unsafe_allow_html=True)
     
     with col2:
-        if st.button("🌙" if dark_mode else "☀️", key="theme_toggle", use_container_width=True):
+        theme_tip = "Switch to light mode" if dark_mode else "Switch to dark mode"
+        if st.button("🌙" if dark_mode else "☀️", key="theme_toggle", use_container_width=True, help=theme_tip):
             st.session_state.dark_mode = not st.session_state.dark_mode
             st.rerun()
     
