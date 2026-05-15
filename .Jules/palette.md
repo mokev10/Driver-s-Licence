@@ -1,0 +1,3 @@
+## 2024-05-13 - Tooltip Accessibility for Technical Standards
+**Learning:** For forms involving specialized industry standards (like AAMVA), providing localized tooltips for technical acronyms significantly improves accessibility for non-expert users without cluttering the UI. In custom dark themes ('Liquid Glass'), the default Streamlit tooltip icon contrast can be low; explicitly styling `div[data-testid="stTooltipIcon"]` with higher opacity/brightness (e.g., `rgba(255, 255, 255, 0.9)`) ensures feature discoverability.
+**Action:** Always provide localized help text for industry-specific acronyms and verify tooltip icon contrast against custom backgrounds using the `help` parameter in Streamlit.
