@@ -321,7 +321,13 @@ def show_identity_gen(lang="EN"):
             "success": "Payload matrix successfully compiled.",
             "raw": "AAMVA Raw String Output",
             "use": "Standardized payload for external renderers.",
-            "preview": "Digital Twin Preview"
+            "preview": "Digital Twin Preview",
+            "tips": {
+                "DCG": "ISO Country Code (e.g., USA, CAN)", "DAC": "First and Middle Names", "DCS": "Family Name / Surname",
+                "DBB": "Date of Birth (Format: YYYYMMDD)", "DAQ": "Unique License or ID Number", "DAG": "Full Residential Address",
+                "DAI": "City of Residence", "DAK": "Zip or Postal Code", "DBD": "Document Issue Date",
+                "DBA": "Document Expiry Date", "DBC": "Gender: 1 for Male, 2 for Female", "DCF": "Security / Audit Number"
+            }
         },
         "FR": {
             "title": "Studio Quantum AAMVA",
@@ -336,7 +342,13 @@ def show_identity_gen(lang="EN"):
             "success": "Matrice du payload compilée avec succès.",
             "raw": "Sortie de chaîne brute AAMVA",
             "use": "Payload standardisé pour moteurs de rendu externes.",
-            "preview": "Aperçu du jumeau numérique"
+            "preview": "Aperçu du jumeau numérique",
+            "tips": {
+                "DCG": "Code pays ISO (ex: USA, CAN)", "DAC": "Prénoms", "DCS": "Nom de famille",
+                "DBB": "Date de naissance (Format: AAAAMMJJ)", "DAQ": "Numéro de permis ou ID", "DAG": "Adresse résidentielle complète",
+                "DAI": "Ville de résidence", "DAK": "Code postal", "DBD": "Date d'émission du document",
+                "DBA": "Date d'expiration du document", "DBC": "Sexe: 1 pour Homme, 2 pour Femme", "DCF": "Numéro de sécurité / audit"
+            }
         }
     }
 
@@ -392,21 +404,20 @@ def show_identity_gen(lang="EN"):
     with field_col_a:
         # Code Pays ISO dynamique
         iso_country = "CAN" if country_choice == "Canada" else "USA"
-        val_dcg = st.text_input("DCG - ISO Country", iso_country)
-        
-        val_dac = st.text_input("DAC - Given Names", "JEAN")
-        val_dcs = st.text_input("DCS - Surname", "NICOLAS")
-        val_dbb = st.text_input("DBB - Date of Birth (YYYYMMDD)", "19941208")
-        val_daq = st.text_input("DAQ - License Identifier", "N2420-941208-96")
-        val_dag = st.text_input("DAG - Residential Street", "1560 SHERBROOKE ST E")
+        val_dcg = st.text_input("DCG - ISO Country", iso_country, help=ui["tips"]["DCG"])
+        val_dac = st.text_input("DAC - Given Names", "JEAN", help=ui["tips"]["DAC"])
+        val_dcs = st.text_input("DCS - Surname", "NICOLAS", help=ui["tips"]["DCS"])
+        val_dbb = st.text_input("DBB - Date of Birth (YYYYMMDD)", "19941208", help=ui["tips"]["DBB"])
+        val_daq = st.text_input("DAQ - License Identifier", "N2420-941208-96", help=ui["tips"]["DAQ"])
+        val_dag = st.text_input("DAG - Residential Street", "1560 SHERBROOKE ST E", help=ui["tips"]["DAG"])
         
     with field_col_b:
-        val_dai = st.text_input("DAI - City / Locality", "MONTREAL")
-        val_dak = st.text_input("DAK - Postal Code", "H2L 4M1")
-        val_dbd = st.text_input("DBD - Issue Date (YYYYMMDD)", "20230510")
-        val_dba = st.text_input("DBA - Expiry Date (YYYYMMDD)", "20310509")
-        val_dbc = st.selectbox("DBC - Gender (1:M / 2:F)", ["1", "2"], index=0)
-        val_dcf = st.text_input("DCF - Audit Number", "PEJQ04N96")
+        val_dai = st.text_input("DAI - City / Locality", "MONTREAL", help=ui["tips"]["DAI"])
+        val_dak = st.text_input("DAK - Postal Code", "H2L 4M1", help=ui["tips"]["DAK"])
+        val_dbd = st.text_input("DBD - Issue Date (YYYYMMDD)", "20230510", help=ui["tips"]["DBD"])
+        val_dba = st.text_input("DBA - Expiry Date (YYYYMMDD)", "20310509", help=ui["tips"]["DBA"])
+        val_dbc = st.selectbox("DBC - Gender (1:M / 2:F)", ["1", "2"], index=0, help=ui["tips"]["DBC"])
+        val_dcf = st.text_input("DCF - Audit Number", "PEJQ04N96", help=ui["tips"]["DCF"])
     st.markdown('</div>', unsafe_allow_html=True)
 
     # --- ÉTAPE 3 : CONFIGURATION OPTIQUE (MOTEUR PRO) ---
