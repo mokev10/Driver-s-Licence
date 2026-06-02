@@ -321,7 +321,15 @@ def show_identity_gen(lang="EN"):
             "success": "Payload matrix successfully compiled.",
             "raw": "AAMVA Raw String Output",
             "use": "Standardized payload for external renderers.",
-            "preview": "Digital Twin Preview"
+            "preview": "Digital Twin Preview",
+            "fields": {
+                "dcg": ["DCG - ISO Country", "ISO Country Code"], "dac": ["DAC - Given Names", "Given Names"],
+                "dcs": ["DCS - Surname", "Family Name"], "dbb": ["DBB - Date of Birth (YYYYMMDD)", "Date of Birth"],
+                "daq": ["DAQ - License ID", "Driver License Number"], "dag": ["DAG - Address", "Residential Street"],
+                "dai": ["DAI - City", "City / Locality"], "dak": ["DAK - Postal Code", "ZIP / Postal Code"],
+                "dbd": ["DBD - Issue Date (YYYYMMDD)", "Document Issue Date"], "dba": ["DBA - Expiry Date (YYYYMMDD)", "Document Expiry Date"],
+                "dbc": ["DBC - Gender (1:M / 2:F)", "1=Male, 2=Female"], "dcf": ["DCF - Audit Number", "Audit / Control Number"]
+            }
         },
         "FR": {
             "title": "Studio Quantum AAMVA",
@@ -336,7 +344,15 @@ def show_identity_gen(lang="EN"):
             "success": "Matrice du payload compilée avec succès.",
             "raw": "Sortie de chaîne brute AAMVA",
             "use": "Payload standardisé pour moteurs de rendu externes.",
-            "preview": "Aperçu du jumeau numérique"
+            "preview": "Aperçu du jumeau numérique",
+            "fields": {
+                "dcg": ["DCG - Pays ISO", "Code pays ISO"], "dac": ["DAC - Prénoms", "Prénoms donnés"],
+                "dcs": ["DCS - Nom de famille", "Nom de famille"], "dbb": ["DBB - Date de naissance (AAAAMMJJ)", "Date de naissance"],
+                "daq": ["DAQ - ID Permis", "Numéro de permis de conduire"], "dag": ["DAG - Adresse", "Rue de résidence"],
+                "dai": ["DAI - Ville", "Ville / Localité"], "dak": ["DAK - Code postal", "Code postal / ZIP"],
+                "dbd": ["DBD - Date d'émission (AAAAMMJJ)", "Date d'émission"], "dba": ["DBA - Date d'expiration (AAAAMMJJ)", "Date d'expiration"],
+                "dbc": ["DBC - Sexe (1:M / 2:F)", "1=Masculin, 2=Féminin"], "dcf": ["DCF - Numéro d'audit", "Numéro d'audit / contrôle"]
+            }
         }
     }
 
@@ -389,24 +405,24 @@ def show_identity_gen(lang="EN"):
     st.subheader(ui["step2"])
     
     field_col_a, field_col_b = st.columns(2)
+    f = ui["fields"]
     with field_col_a:
         # Code Pays ISO dynamique
         iso_country = "CAN" if country_choice == "Canada" else "USA"
-        val_dcg = st.text_input("DCG - ISO Country", iso_country)
-        
-        val_dac = st.text_input("DAC - Given Names", "JEAN")
-        val_dcs = st.text_input("DCS - Surname", "NICOLAS")
-        val_dbb = st.text_input("DBB - Date of Birth (YYYYMMDD)", "19941208")
-        val_daq = st.text_input("DAQ - License Identifier", "N2420-941208-96")
-        val_dag = st.text_input("DAG - Residential Street", "1560 SHERBROOKE ST E")
+        val_dcg = st.text_input(f["dcg"][0], iso_country, help=f["dcg"][1])
+        val_dac = st.text_input(f["dac"][0], "JEAN", help=f["dac"][1])
+        val_dcs = st.text_input(f["dcs"][0], "NICOLAS", help=f["dcs"][1])
+        val_dbb = st.text_input(f["dbb"][0], "19941208", help=f["dbb"][1])
+        val_daq = st.text_input(f["daq"][0], "N2420-941208-96", help=f["daq"][1])
+        val_dag = st.text_input(f["dag"][0], "1560 SHERBROOKE ST E", help=f["dag"][1])
         
     with field_col_b:
-        val_dai = st.text_input("DAI - City / Locality", "MONTREAL")
-        val_dak = st.text_input("DAK - Postal Code", "H2L 4M1")
-        val_dbd = st.text_input("DBD - Issue Date (YYYYMMDD)", "20230510")
-        val_dba = st.text_input("DBA - Expiry Date (YYYYMMDD)", "20310509")
-        val_dbc = st.selectbox("DBC - Gender (1:M / 2:F)", ["1", "2"], index=0)
-        val_dcf = st.text_input("DCF - Audit Number", "PEJQ04N96")
+        val_dai = st.text_input(f["dai"][0], "MONTREAL", help=f["dai"][1])
+        val_dak = st.text_input(f["dak"][0], "H2L 4M1", help=f["dak"][1])
+        val_dbd = st.text_input(f["dbd"][0], "20230510", help=f["dbd"][1])
+        val_dba = st.text_input(f["dba"][0], "20310509", help=f["dba"][1])
+        val_dbc = st.selectbox(f["dbc"][0], ["1", "2"], index=0, help=f["dbc"][1])
+        val_dcf = st.text_input(f["dcf"][0], "PEJQ04N96", help=f["dcf"][1])
     st.markdown('</div>', unsafe_allow_html=True)
 
     # --- ÉTAPE 3 : CONFIGURATION OPTIQUE (MOTEUR PRO) ---
