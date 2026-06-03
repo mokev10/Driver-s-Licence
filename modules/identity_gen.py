@@ -321,7 +321,21 @@ def show_identity_gen(lang="EN"):
             "success": "Payload matrix successfully compiled.",
             "raw": "AAMVA Raw String Output",
             "use": "Standardized payload for external renderers.",
-            "preview": "Digital Twin Preview"
+            "preview": "Digital Twin Preview",
+            "fields": {
+                "DCG": ("ISO Country", "ISO 3166 country code (e.g., USA, CAN)"),
+                "DAC": ("Given Names", "Legal first and middle names"),
+                "DCS": ("Surname", "Legal family name"),
+                "DBB": ("Date of Birth (YYYYMMDD)", "Date of birth in YYYYMMDD format"),
+                "DAQ": ("License Identifier", "Unique driver license or ID number"),
+                "DAG": ("Residential Street", "Current residential street address"),
+                "DAI": ("City / Locality", "City or town of residence"),
+                "DAK": ("Postal Code", "ZIP or postal code"),
+                "DBD": ("Issue Date (YYYYMMDD)", "Date the document was issued (YYYYMMDD)"),
+                "DBA": ("Expiry Date (YYYYMMDD)", "Date the document expires (YYYYMMDD)"),
+                "DBC": ("Gender (1:M / 2:F)", "Gender: 1 for Male, 2 for Female"),
+                "DCF": ("Audit Number", "Administrative audit or document number")
+            }
         },
         "FR": {
             "title": "Studio Quantum AAMVA",
@@ -336,7 +350,21 @@ def show_identity_gen(lang="EN"):
             "success": "Matrice du payload compilée avec succès.",
             "raw": "Sortie de chaîne brute AAMVA",
             "use": "Payload standardisé pour moteurs de rendu externes.",
-            "preview": "Aperçu du jumeau numérique"
+            "preview": "Aperçu du jumeau numérique",
+            "fields": {
+                "DCG": ("Pays ISO", "Code pays ISO 3166 (ex: USA, CAN)"),
+                "DAC": ("Prénoms", "Prénoms légaux"),
+                "DCS": ("Nom", "Nom de famille légal"),
+                "DBB": ("Date de naissance (AAAAMMJJ)", "Date de naissance au format AAAAMMJJ"),
+                "DAQ": ("Identifiant du permis", "Numéro unique du permis ou de la carte d'identité"),
+                "DAG": ("Rue de résidence", "Adresse résidentielle actuelle"),
+                "DAI": ("Ville / Localité", "Ville ou localité de résidence"),
+                "DAK": ("Code postal", "Code postal"),
+                "DBD": ("Date d'émission (AAAAMMJJ)", "Date d'émission du document (AAAAMMJJ)"),
+                "DBA": ("Date d'expiration (AAAAMMJJ)", "Date d'expiration du document (AAAAMMJJ)"),
+                "DBC": ("Sexe (1:H / 2:F)", "Sexe : 1 pour Homme, 2 pour Femme"),
+                "DCF": ("Numéro d'audit", "Numéro d'audit administratif ou du document")
+            }
         }
     }
 
@@ -390,23 +418,20 @@ def show_identity_gen(lang="EN"):
     
     field_col_a, field_col_b = st.columns(2)
     with field_col_a:
-        # Code Pays ISO dynamique
         iso_country = "CAN" if country_choice == "Canada" else "USA"
-        val_dcg = st.text_input("DCG - ISO Country", iso_country)
-        
-        val_dac = st.text_input("DAC - Given Names", "JEAN")
-        val_dcs = st.text_input("DCS - Surname", "NICOLAS")
-        val_dbb = st.text_input("DBB - Date of Birth (YYYYMMDD)", "19941208")
-        val_daq = st.text_input("DAQ - License Identifier", "N2420-941208-96")
-        val_dag = st.text_input("DAG - Residential Street", "1560 SHERBROOKE ST E")
-        
+        val_dcg = st.text_input(f"DCG - {ui['fields']['DCG'][0]}", iso_country, help=ui['fields']['DCG'][1])
+        val_dac = st.text_input(f"DAC - {ui['fields']['DAC'][0]}", "JEAN", help=ui['fields']['DAC'][1])
+        val_dcs = st.text_input(f"DCS - {ui['fields']['DCS'][0]}", "NICOLAS", help=ui['fields']['DCS'][1])
+        val_dbb = st.text_input(f"DBB - {ui['fields']['DBB'][0]}", "19941208", help=ui['fields']['DBB'][1])
+        val_daq = st.text_input(f"DAQ - {ui['fields']['DAQ'][0]}", "N2420-941208-96", help=ui['fields']['DAQ'][1])
+        val_dag = st.text_input(f"DAG - {ui['fields']['DAG'][0]}", "1560 SHERBROOKE ST E", help=ui['fields']['DAG'][1])
     with field_col_b:
-        val_dai = st.text_input("DAI - City / Locality", "MONTREAL")
-        val_dak = st.text_input("DAK - Postal Code", "H2L 4M1")
-        val_dbd = st.text_input("DBD - Issue Date (YYYYMMDD)", "20230510")
-        val_dba = st.text_input("DBA - Expiry Date (YYYYMMDD)", "20310509")
-        val_dbc = st.selectbox("DBC - Gender (1:M / 2:F)", ["1", "2"], index=0)
-        val_dcf = st.text_input("DCF - Audit Number", "PEJQ04N96")
+        val_dai = st.text_input(f"DAI - {ui['fields']['DAI'][0]}", "MONTREAL", help=ui['fields']['DAI'][1])
+        val_dak = st.text_input(f"DAK - {ui['fields']['DAK'][0]}", "H2L 4M1", help=ui['fields']['DAK'][1])
+        val_dbd = st.text_input(f"DBD - {ui['fields']['DBD'][0]}", "20230510", help=ui['fields']['DBD'][1])
+        val_dba = st.text_input(f"DBA - {ui['fields']['DBA'][0]}", "20310509", help=ui['fields']['DBA'][1])
+        val_dbc = st.selectbox(f"DBC - {ui['fields']['DBC'][0]}", ["1", "2"], index=0, help=ui['fields']['DBC'][1])
+        val_dcf = st.text_input(f"DCF - {ui['fields']['DCF'][0]}", "PEJQ04N96", help=ui['fields']['DCF'][1])
     st.markdown('</div>', unsafe_allow_html=True)
 
     # --- ÉTAPE 3 : CONFIGURATION OPTIQUE (MOTEUR PRO) ---
