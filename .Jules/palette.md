@@ -1,0 +1,3 @@
+## 2025-05-22 - [AAMVA Tooltips & Streamlit Accessibility]
+**Learning:** Specialized industry standards (like AAMVA) often use technical acronyms (DCG, DAC, etc.) that are incomprehensible to general users. Localized tooltips provide essential context without overwhelming the visual design. In Streamlit, using the `help` parameter on inputs creates a separate button with `aria-label="Help for <Label Text>"` in the DOM, which is critical for both screen readers and automated visual verification.
+**Action:** Provide descriptive, localized tooltips for all technical fields. When verifying with Playwright, target `button[aria-label^="Help for"]` to trigger and verify tooltip visibility.
