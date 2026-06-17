@@ -284,7 +284,7 @@ details[data-testid="stExpander"][open] > summary {
 ================================== */
 
 label p {
-    color: rgba(255, 255, 255, 0.6) !important;
+    color: rgba(255, 255, 255, 0.9) !important;
     text-transform: uppercase !important;
     font-size: 0.75rem !important;
     letter-spacing: 1.5px !important;
@@ -392,21 +392,21 @@ def show_identity_gen(lang="EN"):
     with field_col_a:
         # Code Pays ISO dynamique
         iso_country = "CAN" if country_choice == "Canada" else "USA"
-        val_dcg = st.text_input("DCG - ISO Country", iso_country)
+        val_dcg = st.text_input("DCG - ISO Country", iso_country, help="ISO 3166-1 alpha-3 country code.")
         
-        val_dac = st.text_input("DAC - Given Names", "JEAN")
-        val_dcs = st.text_input("DCS - Surname", "NICOLAS")
-        val_dbb = st.text_input("DBB - Date of Birth (YYYYMMDD)", "19941208")
-        val_daq = st.text_input("DAQ - License Identifier", "N2420-941208-96")
-        val_dag = st.text_input("DAG - Residential Street", "1560 SHERBROOKE ST E")
+        val_dac = st.text_input("DAC - Given Names", "JEAN", help="First name or given names of the individual.")
+        val_dcs = st.text_input("DCS - Surname", "NICOLAS", help="Last name or family name of the individual.")
+        val_dbb = st.text_input("DBB - Date of Birth (YYYYMMDD)", "19941208", help="Date of birth in YYYYMMDD format.")
+        val_daq = st.text_input("DAQ - License Identifier", "N2420-941208-96", help="Unique license or ID number.")
+        val_dag = st.text_input("DAG - Residential Street", "1560 SHERBROOKE ST E", help="Full residential street address.")
         
     with field_col_b:
-        val_dai = st.text_input("DAI - City / Locality", "MONTREAL")
-        val_dak = st.text_input("DAK - Postal Code", "H2L 4M1")
-        val_dbd = st.text_input("DBD - Issue Date (YYYYMMDD)", "20230510")
-        val_dba = st.text_input("DBA - Expiry Date (YYYYMMDD)", "20310509")
-        val_dbc = st.selectbox("DBC - Gender (1:M / 2:F)", ["1", "2"], index=0)
-        val_dcf = st.text_input("DCF - Audit Number", "PEJQ04N96")
+        val_dai = st.text_input("DAI - City / Locality", "MONTREAL", help="City or municipality of residence.")
+        val_dak = st.text_input("DAK - Postal Code", "H2L 4M1", help="Postal code or ZIP code of residence.")
+        val_dbd = st.text_input("DBD - Issue Date (YYYYMMDD)", "20230510", help="Document issue date in YYYYMMDD format.")
+        val_dba = st.text_input("DBA - Expiry Date (YYYYMMDD)", "20310509", help="Document expiration date in YYYYMMDD format.")
+        val_dbc = st.selectbox("DBC - Gender (1:M / 2:F)", ["1", "2"], index=0, help="Gender identifier (1 for Male, 2 for Female).")
+        val_dcf = st.text_input("DCF - Audit Number", "PEJQ04N96", help="Document audit or control number.")
     st.markdown('</div>', unsafe_allow_html=True)
 
     # --- ÉTAPE 3 : CONFIGURATION OPTIQUE (MOTEUR PRO) ---
@@ -444,111 +444,113 @@ def show_identity_gen(lang="EN"):
     # ==============================================================================
     if st.button(ui["generate"], use_container_width=True):
 
-        try:
-            # Traitement du code de territoire (DAJ)
-            region_code = "QC" if region_name == "Quebec" else region_name[:2].upper()
-            
-            # Reconstruction du Header AAMVA (Format Standard DL/ID)
-            # Structure : ANSI + IIN + Version + DL + Offsets
-            aamva_head = f"ANSI {active_iin}050102DL00410287ZO02900045DL"
+        with st.spinner("Initializing generation sequence..."):
+            try:
+                # Traitement du code de territoire (DAJ)
+                region_code = "QC" if region_name == "Quebec" else region_name[:2].upper()
 
-            # Construction de la chaîne brute finale
-            raw_string = (
-                f"@\n{aamva_head}\n"
-                f"DCG{val_dcg}\nDCS{val_dcs}\nDAC{val_dac}\nDBB{val_dbb}\nDAQ{val_daq}\n"
-                f"DAG{val_dag}\nDAI{val_dai}\nDAJ{region_code}\nDAK{val_dak}\n"
-                f"DBD{val_dbd}\nDBA{val_dba}\nDBC{val_dbc}\nDCF{val_dcf}"
-            )
+                # Reconstruction du Header AAMVA (Format Standard DL/ID)
+                # Structure : ANSI + IIN + Version + DL + Offsets
+                aamva_head = f"ANSI {active_iin}050102DL00410287ZO02900045DL"
 
-            st.success(ui["success"])
-            st.divider()
+                # Construction de la chaîne brute finale
+                raw_string = (
+                    f"@\n{aamva_head}\n"
+                    f"DCG{val_dcg}\nDCS{val_dcs}\nDAC{val_dac}\nDBB{val_dbb}\nDAQ{val_daq}\n"
+                    f"DAG{val_dag}\nDAI{val_dai}\nDAJ{region_code}\nDAK{val_dak}\n"
+                    f"DBD{val_dbd}\nDBA{val_dba}\nDBC{val_dbc}\nDCF{val_dcf}"
+                )
 
-            # --- AFFICHAGE DES RÉSULTATS (LAYOUT DUAL CRYSTAL) ---
-            out_left, out_right = st.columns([1, 1.4])
+                st.success(ui["success"])
+                st.toast("Matrix compiled and barcode rendered!", icon="🎨")
+                st.divider()
 
-            with out_left:
-                st.markdown('<div class="crystal-card">', unsafe_allow_html=True)
-                st.subheader(ui["raw"])
-                
-                # Formatage de sortie (Escape chars ou Newlines)
-                display_string = raw_string.replace("\n", "\\n") if escape_mode else raw_string
-                st.code(display_string, language="text")
-                st.info(ui["use"])
-                st.markdown('</div>', unsafe_allow_html=True)
+                # --- AFFICHAGE DES RÉSULTATS (LAYOUT DUAL CRYSTAL) ---
+                out_left, out_right = st.columns([1, 1.4])
 
-            with out_right:
-                st.markdown('<div class="crystal-card" style="text-align:center;">', unsafe_allow_html=True)
-                st.subheader(ui["preview"])
-                
-                # Génération du code-barres PDF417 haute fidélité
-                try:
-                    gen_codes = encode(raw_string, columns=matrix_density)
-                    gen_image = render_image(gen_codes, scale=scale_val, padding=quiet_padding)
+                with out_left:
+                    st.markdown('<div class="crystal-card">', unsafe_allow_html=True)
+                    st.subheader(ui["raw"])
 
-                    # Conversion mémoire pour export PNG
-                    mem_buffer = io.BytesIO()
-                    gen_image.save(mem_buffer, format="PNG", dpi=(res_dpi, res_dpi))
-                    data_png = mem_buffer.getvalue()
+                    # Formatage de sortie (Escape chars ou Newlines)
+                    display_string = raw_string.replace("\n", "\\n") if escape_mode else raw_string
+                    st.code(display_string, language="text")
+                    st.info(ui["use"])
+                    st.markdown('</div>', unsafe_allow_html=True)
 
-                    # Zone d'aperçu Crystal
-                    st.image(data_png, use_column_width=True)
+                with out_right:
+                    st.markdown('<div class="crystal-card" style="text-align:center;">', unsafe_allow_html=True)
+                    st.subheader(ui["preview"])
 
-                    # Groupe de boutons de téléchargement (Style Pill Sans Emoji)
-                    btn_col_1, btn_col_2 = st.columns(2)
-                    with btn_col_1:
-                        st.download_button(
-                            label=f"EXPORT PNG ({res_dpi} DPI)",
-                            data=data_png,
-                            file_name=f"AAMVA_{val_dcs}_{region_name}.png",
-                            mime="image/png",
-                            use_container_width=True
-                        )
-                    
-                    # Traitement vectoriel SVG via moteur Potrace
-                    path_potrace = shutil.which("potrace")
-                    data_svg = None
-                    
-                    if path_potrace:
-                        try:
-                            data_svg = png_to_svg(png_bytes=data_png, potrace_path=path_potrace)
+                    # Génération du code-barres PDF417 haute fidélité
+                    try:
+                        gen_codes = encode(raw_string, columns=matrix_density)
+                        gen_image = render_image(gen_codes, scale=scale_val, padding=quiet_padding)
+
+                        # Conversion mémoire pour export PNG
+                        mem_buffer = io.BytesIO()
+                        gen_image.save(mem_buffer, format="PNG", dpi=(res_dpi, res_dpi))
+                        data_png = mem_buffer.getvalue()
+
+                        # Zone d'aperçu Crystal
+                        st.image(data_png, use_column_width=True)
+
+                        # Groupe de boutons de téléchargement (Style Pill Sans Emoji)
+                        btn_col_1, btn_col_2 = st.columns(2)
+                        with btn_col_1:
+                            st.download_button(
+                                label=f"EXPORT PNG ({res_dpi} DPI)",
+                                data=data_png,
+                                file_name=f"AAMVA_{val_dcs}_{region_name}.png",
+                                mime="image/png",
+                                use_container_width=True
+                            )
+
+                        # Traitement vectoriel SVG via moteur Potrace
+                        path_potrace = shutil.which("potrace")
+                        data_svg = None
+
+                        if path_potrace:
+                            try:
+                                data_svg = png_to_svg(png_bytes=data_png, potrace_path=path_potrace)
+                                with btn_col_2:
+                                    st.download_button(
+                                        label="EXPORT SVG VECTOR",
+                                        data=data_svg,
+                                        file_name=f"AAMVA_{val_dcs}_{region_name}.svg",
+                                        mime="image/svg+xml",
+                                        use_container_width=True
+                                    )
+                            except Exception as svge:
+                                st.error(f"Vectorization Fault: {str(svge)}")
+                        else:
                             with btn_col_2:
-                                st.download_button(
-                                    label="EXPORT SVG VECTOR",
-                                    data=data_svg,
-                                    file_name=f"AAMVA_{val_dcs}_{region_name}.svg",
-                                    mime="image/svg+xml",
-                                    use_container_width=True
-                                )
-                        except Exception as svge:
-                            st.error(f"Vectorization Fault: {str(svge)}")
-                    else:
-                        with btn_col_2:
-                            st.button("VECTOR ENGINE OFFLINE", disabled=True, use_container_width=True)
+                                st.button("VECTOR ENGINE OFFLINE", disabled=True, use_container_width=True)
 
-                    # Accordéon d'inspection vectorielle
-                    if data_svg:
-                        with st.expander("DETAILED VECTOR INSPECTION"):
-                            st.components.v1.html(
-    f"""
-    <div class="barcode-preview-box">
-        {str(data_svg)}
-    </div>
-    """,
-    height=500,
-    scrolling=True
-)
+                        # Accordéon d'inspection vectorielle
+                        if data_svg:
+                            with st.expander("DETAILED VECTOR INSPECTION"):
+                                st.components.v1.html(
+        f"""
+        <div class="barcode-preview-box">
+            {str(data_svg)}
+        </div>
+        """,
+        height=500,
+        scrolling=True
+    )
 
-                except Exception as bar_err:
-                    st.error(f"Render Engine Fault: {str(bar_err)}")
-                
-                st.markdown('</div>', unsafe_allow_html=True)
+                    except Exception as bar_err:
+                        st.error(f"Render Engine Fault: {str(bar_err)}")
 
-        except Exception:
-            st.error("CRITICAL SYSTEM FAILURE")
-            st.code(traceback.format_exc())
+                    st.markdown('</div>', unsafe_allow_html=True)
+
+            except Exception:
+                st.error("CRITICAL SYSTEM FAILURE")
+                st.code(traceback.format_exc())
 
 # ==============================================================================
-# FIN DU MODULE IDENTITY_GEN (500 LINES TARGET)DETAILED VECTOR INSPECTION
+# FIN DU MODULE IDENTITY_GEN (500 LINES TARGET)
 # ==============================================================================
 # Ce code intègre désormais :
 # 1. Gestion dynamique des drapeaux Canada/USA (Image URL HD).
