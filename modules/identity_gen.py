@@ -321,7 +321,35 @@ def show_identity_gen(lang="EN"):
             "success": "Payload matrix successfully compiled.",
             "raw": "AAMVA Raw String Output",
             "use": "Standardized payload for external renderers.",
-            "preview": "Digital Twin Preview"
+            "preview": "Digital Twin Preview",
+            "fields": {
+                "dcg": "DCG - ISO Country",
+                "dac": "DAC - Given Names",
+                "dcs": "DCS - Surname",
+                "dbb": "DBB - Date of Birth (YYYYMMDD)",
+                "daq": "DAQ - License Identifier",
+                "dag": "DAG - Residential Street",
+                "dai": "DAI - City / Locality",
+                "dak": "DAK - Postal Code",
+                "dbd": "DBD - Issue Date (YYYYMMDD)",
+                "dba": "DBA - Expiry Date (YYYYMMDD)",
+                "dbc": "DBC - Gender (1:M / 2:F)",
+                "dcf": "DCF - Audit Number"
+            },
+            "tips": {
+                "dcg": "ISO 3166-1 alpha-3 country code.",
+                "dac": "All given names or initials of the cardholder.",
+                "dcs": "Last name of the cardholder.",
+                "dbb": "Date of birth in YYYYMMDD format (e.g., 19941208).",
+                "daq": "The unique number assigned to the driver license or ID card.",
+                "dag": "Primary street address of the cardholder.",
+                "dai": "City or town of residence.",
+                "dak": "Postal or ZIP code.",
+                "dbd": "Date the document was issued (YYYYMMDD).",
+                "dba": "Date the document expires (YYYYMMDD).",
+                "dbc": "Gender of the cardholder (1 for Male, 2 for Female).",
+                "dcf": "A unique number for the document used for audit purposes."
+            }
         },
         "FR": {
             "title": "Studio Quantum AAMVA",
@@ -336,7 +364,35 @@ def show_identity_gen(lang="EN"):
             "success": "Matrice du payload compilée avec succès.",
             "raw": "Sortie de chaîne brute AAMVA",
             "use": "Payload standardisé pour moteurs de rendu externes.",
-            "preview": "Aperçu du jumeau numérique"
+            "preview": "Aperçu du jumeau numérique",
+            "fields": {
+                "dcg": "DCG - Pays ISO",
+                "dac": "DAC - Prénoms",
+                "dcs": "DCS - Nom de famille",
+                "dbb": "DBB - Date de naissance (AAAAMMJJ)",
+                "daq": "DAQ - Identifiant de permis",
+                "dag": "DAG - Rue de résidence",
+                "dai": "DAI - Ville / Localité",
+                "dak": "DAK - Code postal",
+                "dbd": "DBD - Date d'émission (AAAAMMJJ)",
+                "dba": "DBA - Date d'expiration (AAAAMMJJ)",
+                "dbc": "DBC - Sexe (1:M / 2:F)",
+                "dcf": "DCF - Numéro d'audit"
+            },
+            "tips": {
+                "dcg": "Code pays ISO 3166-1 alpha-3.",
+                "dac": "Tous les prénoms ou initiales du titulaire.",
+                "dcs": "Nom de famille du titulaire.",
+                "dbb": "Date de naissance au format AAAAMMJJ (ex: 19941208).",
+                "daq": "Numéro unique attribué au permis ou à la carte d'identité.",
+                "dag": "Adresse de résidence principale du titulaire.",
+                "dai": "Ville ou commune de résidence.",
+                "dak": "Code postal.",
+                "dbd": "Date d'émission du document (AAAAMMJJ).",
+                "dba": "Date d'expiration du document (AAAAMMJJ).",
+                "dbc": "Sexe du titulaire (1 pour Homme, 2 pour Femme).",
+                "dcf": "Numéro unique utilisé à des fins d'audit."
+            }
         }
     }
 
@@ -392,21 +448,21 @@ def show_identity_gen(lang="EN"):
     with field_col_a:
         # Code Pays ISO dynamique
         iso_country = "CAN" if country_choice == "Canada" else "USA"
-        val_dcg = st.text_input("DCG - ISO Country", iso_country)
+        val_dcg = st.text_input(ui["fields"]["dcg"], iso_country, help=ui["tips"]["dcg"])
         
-        val_dac = st.text_input("DAC - Given Names", "JEAN")
-        val_dcs = st.text_input("DCS - Surname", "NICOLAS")
-        val_dbb = st.text_input("DBB - Date of Birth (YYYYMMDD)", "19941208")
-        val_daq = st.text_input("DAQ - License Identifier", "N2420-941208-96")
-        val_dag = st.text_input("DAG - Residential Street", "1560 SHERBROOKE ST E")
+        val_dac = st.text_input(ui["fields"]["dac"], "JEAN", help=ui["tips"]["dac"])
+        val_dcs = st.text_input(ui["fields"]["dcs"], "NICOLAS", help=ui["tips"]["dcs"])
+        val_dbb = st.text_input(ui["fields"]["dbb"], "19941208", help=ui["tips"]["dbb"])
+        val_daq = st.text_input(ui["fields"]["daq"], "N2420-941208-96", help=ui["tips"]["daq"])
+        val_dag = st.text_input(ui["fields"]["dag"], "1560 SHERBROOKE ST E", help=ui["tips"]["dag"])
         
     with field_col_b:
-        val_dai = st.text_input("DAI - City / Locality", "MONTREAL")
-        val_dak = st.text_input("DAK - Postal Code", "H2L 4M1")
-        val_dbd = st.text_input("DBD - Issue Date (YYYYMMDD)", "20230510")
-        val_dba = st.text_input("DBA - Expiry Date (YYYYMMDD)", "20310509")
-        val_dbc = st.selectbox("DBC - Gender (1:M / 2:F)", ["1", "2"], index=0)
-        val_dcf = st.text_input("DCF - Audit Number", "PEJQ04N96")
+        val_dai = st.text_input(ui["fields"]["dai"], "MONTREAL", help=ui["tips"]["dai"])
+        val_dak = st.text_input(ui["fields"]["dak"], "H2L 4M1", help=ui["tips"]["dak"])
+        val_dbd = st.text_input(ui["fields"]["dbd"], "20230510", help=ui["tips"]["dbd"])
+        val_dba = st.text_input(ui["fields"]["dba"], "20310509", help=ui["tips"]["dba"])
+        val_dbc = st.selectbox(ui["fields"]["dbc"], ["1", "2"], index=0, help=ui["tips"]["dbc"])
+        val_dcf = st.text_input(ui["fields"]["dcf"], "PEJQ04N96", help=ui["tips"]["dcf"])
     st.markdown('</div>', unsafe_allow_html=True)
 
     # --- ÉTAPE 3 : CONFIGURATION OPTIQUE (MOTEUR PRO) ---
