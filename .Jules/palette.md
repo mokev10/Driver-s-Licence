@@ -1,0 +1,3 @@
+## 2025-05-15 - [Technical Field Clarity & Accessible Controls]
+**Learning:** In technical Streamlit applications (like AAMVA Studio), acronyms (DCG, DAC, etc.) create significant cognitive load. Native `help` parameters on `st.text_input` and `st.button` provide excellent just-in-time documentation without cluttering the UI. Additionally, `st.selectbox` needs a non-empty label (even when `label_visibility="collapsed"`) to provide a proper `aria-label` for screen readers.
+**Action:** Prioritize adding `help` tooltips to all domain-specific acronyms and ensure every icon-only or collapsed-label control has a descriptive internal label for accessibility.
