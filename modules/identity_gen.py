@@ -321,7 +321,21 @@ def show_identity_gen(lang="EN"):
             "success": "Payload matrix successfully compiled.",
             "raw": "AAMVA Raw String Output",
             "use": "Standardized payload for external renderers.",
-            "preview": "Digital Twin Preview"
+            "preview": "Digital Twin Preview",
+            "tips": {
+                "dcg": "ISO Country Code (3 letters)",
+                "dac": "Given Names (First and Middle)",
+                "dcs": "Family Name (Surname)",
+                "dbb": "Date of Birth (Format: YYYYMMDD)",
+                "daq": "Customer Identifier (DL Number)",
+                "dag": "Street Address",
+                "dai": "City or Locality",
+                "dak": "Postal Code",
+                "dbd": "Issue Date (Format: YYYYMMDD)",
+                "dba": "Expiry Date (Format: YYYYMMDD)",
+                "dbc": "Sex/Gender (1: Male, 2: Female)",
+                "dcf": "Audit or Inventory Number"
+            }
         },
         "FR": {
             "title": "Studio Quantum AAMVA",
@@ -336,7 +350,21 @@ def show_identity_gen(lang="EN"):
             "success": "Matrice du payload compilée avec succès.",
             "raw": "Sortie de chaîne brute AAMVA",
             "use": "Payload standardisé pour moteurs de rendu externes.",
-            "preview": "Aperçu du jumeau numérique"
+            "preview": "Aperçu du jumeau numérique",
+            "tips": {
+                "dcg": "Code pays ISO (3 lettres)",
+                "dac": "Prénoms (Premier et Deuxième)",
+                "dcs": "Nom de famille",
+                "dbb": "Date de naissance (Format: AAAAMMJJ)",
+                "daq": "Identifiant client (Numéro de permis)",
+                "dag": "Adresse (Rue)",
+                "dai": "Ville ou localité",
+                "dak": "Code postal",
+                "dbd": "Date d'émission (Format: AAAAMMJJ)",
+                "dba": "Date d'expiration (Format: AAAAMMJJ)",
+                "dbc": "Sexe/Genre (1: Homme, 2: Femme)",
+                "dcf": "Numéro d'audit ou d'inventaire"
+            }
         }
     }
 
@@ -389,24 +417,25 @@ def show_identity_gen(lang="EN"):
     st.subheader(ui["step2"])
     
     field_col_a, field_col_b = st.columns(2)
+    tips = ui.get("tips", {})
     with field_col_a:
         # Code Pays ISO dynamique
         iso_country = "CAN" if country_choice == "Canada" else "USA"
-        val_dcg = st.text_input("DCG - ISO Country", iso_country)
+        val_dcg = st.text_input("DCG - ISO Country", iso_country, help=tips.get("dcg"))
         
-        val_dac = st.text_input("DAC - Given Names", "JEAN")
-        val_dcs = st.text_input("DCS - Surname", "NICOLAS")
-        val_dbb = st.text_input("DBB - Date of Birth (YYYYMMDD)", "19941208")
-        val_daq = st.text_input("DAQ - License Identifier", "N2420-941208-96")
-        val_dag = st.text_input("DAG - Residential Street", "1560 SHERBROOKE ST E")
+        val_dac = st.text_input("DAC - Given Names", "JEAN", help=tips.get("dac"))
+        val_dcs = st.text_input("DCS - Surname", "NICOLAS", help=tips.get("dcs"))
+        val_dbb = st.text_input("DBB - Date of Birth (YYYYMMDD)", "19941208", help=tips.get("dbb"))
+        val_daq = st.text_input("DAQ - License Identifier", "N2420-941208-96", help=tips.get("daq"))
+        val_dag = st.text_input("DAG - Residential Street", "1560 SHERBROOKE ST E", help=tips.get("dag"))
         
     with field_col_b:
-        val_dai = st.text_input("DAI - City / Locality", "MONTREAL")
-        val_dak = st.text_input("DAK - Postal Code", "H2L 4M1")
-        val_dbd = st.text_input("DBD - Issue Date (YYYYMMDD)", "20230510")
-        val_dba = st.text_input("DBA - Expiry Date (YYYYMMDD)", "20310509")
-        val_dbc = st.selectbox("DBC - Gender (1:M / 2:F)", ["1", "2"], index=0)
-        val_dcf = st.text_input("DCF - Audit Number", "PEJQ04N96")
+        val_dai = st.text_input("DAI - City / Locality", "MONTREAL", help=tips.get("dai"))
+        val_dak = st.text_input("DAK - Postal Code", "H2L 4M1", help=tips.get("dak"))
+        val_dbd = st.text_input("DBD - Issue Date (YYYYMMDD)", "20230510", help=tips.get("dbd"))
+        val_dba = st.text_input("DBA - Expiry Date (YYYYMMDD)", "20310509", help=tips.get("dba"))
+        val_dbc = st.selectbox("DBC - Gender (1:M / 2:F)", ["1", "2"], index=0, help=tips.get("dbc"))
+        val_dcf = st.text_input("DCF - Audit Number", "PEJQ04N96", help=tips.get("dcf"))
     st.markdown('</div>', unsafe_allow_html=True)
 
     # --- ÉTAPE 3 : CONFIGURATION OPTIQUE (MOTEUR PRO) ---
