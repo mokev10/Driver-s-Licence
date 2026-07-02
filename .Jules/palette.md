@@ -1,0 +1,3 @@
+## 2025-05-15 - Enhancing Technical Clarity with Contextual Tooltips
+**Learning:** In applications using industry-specific acronyms (like AAMVA field codes DCG, DAQ, etc.), users benefit significantly from contextual tooltips. Streamlit's native `help` parameter is an ideal tool for this as it adds a "hidden" descriptive layer that is accessible to screen readers via auto-generated ARIA labels without cluttering the visual design.
+**Action:** Always provide localized descriptions for technical codes or cryptic abbreviations using the `help` parameter to balance professional density with user accessibility.
