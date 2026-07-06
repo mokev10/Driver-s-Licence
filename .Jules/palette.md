@@ -1,0 +1,3 @@
+## 2025-05-15 - [AAMVA Technical Clarity & Header Accessibility]
+**Learning:** Providing a non-empty string to the `label` parameter of `st.selectbox` in Streamlit, even when `label_visibility='collapsed'`, ensures the component generates a valid `aria-label` for the underlying input element, resolving accessibility warnings. Additionally, for specialized tools like AAMVA generators, using the native `help` parameter to explain cryptic acronyms (DCG, DAQ, etc.) significantly lowers the barrier for non-expert users.
+**Action:** Always provide descriptive labels to Streamlit widgets even if they are visually collapsed, and prioritize tooltips for technical/domain-specific technical abbreviations.
