@@ -321,7 +321,9 @@ def show_identity_gen(lang="EN"):
             "success": "Payload matrix successfully compiled.",
             "raw": "AAMVA Raw String Output",
             "use": "Standardized payload for external renderers.",
-            "preview": "Digital Twin Preview"
+            "preview": "Digital Twin Preview",
+            "tips": {"dcg": "ISO Country Code", "dac": "Given Names", "dcs": "Family Name", "dbb": "Date of Birth (YYYYMMDD)", "daq": "Customer ID", "dag": "Street", "dai": "City", "dak": "Postal Code", "dbd": "Issue Date", "dba": "Expiry Date", "dbc": "Gender", "dcf": "Audit/Inventory Number", "daj": "Jurisdiction abbreviation", "dpi": "Resolution (Dots Per Inch)", "cols": "PDF417 matrix columns", "quiet": "Margin around barcode", "gen_btn": "Compile and render barcode"},
+            "gender": {"1": "Male", "2": "Female"}
         },
         "FR": {
             "title": "Studio Quantum AAMVA",
@@ -336,7 +338,9 @@ def show_identity_gen(lang="EN"):
             "success": "Matrice du payload compilée avec succès.",
             "raw": "Sortie de chaîne brute AAMVA",
             "use": "Payload standardisé pour moteurs de rendu externes.",
-            "preview": "Aperçu du jumeau numérique"
+            "preview": "Aperçu du jumeau numérique",
+            "tips": {"dcg": "Code Pays ISO", "dac": "Prénoms", "dcs": "Nom de Famille", "dbb": "Date de Naissance (AAAAMMJJ)", "daq": "Identifiant Client", "dag": "Rue", "dai": "Ville", "dak": "Code Postal", "dbd": "Date d'Émission", "dba": "Date d'Expiration", "dbc": "Genre", "dcf": "Numéro d'Audit", "daj": "Abréviation de la juridiction", "dpi": "Résolution (Points par pouce)", "cols": "Colonnes de la matrice", "quiet": "Marge autour du code", "gen_btn": "Compiler et générer le code-barres"},
+            "gender": {"1": "Masculin", "2": "Féminin"}
         }
     }
 
@@ -374,13 +378,12 @@ def show_identity_gen(lang="EN"):
 
     with col_geo_right:
         if country_choice == "United States":
-            region_name = st.selectbox(ui["state"], sorted(IIN_US.keys()))
+            region_name = st.selectbox(ui["state"], sorted(IIN_US.keys()), help=ui["tips"]["daj"])
             active_iin = IIN_US[region_name]
         else:
-            # Quebec par défaut comme spécifié
             prov_list = sorted(IIN_CA.keys())
             def_prov_idx = prov_list.index("Quebec") if "Quebec" in prov_list else 0
-            region_name = st.selectbox(ui["prov"], prov_list, index=def_prov_idx)
+            region_name = st.selectbox(ui["prov"], prov_list, index=def_prov_idx, help=ui["tips"]["daj"])
             active_iin = IIN_CA[region_name]
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -392,21 +395,20 @@ def show_identity_gen(lang="EN"):
     with field_col_a:
         # Code Pays ISO dynamique
         iso_country = "CAN" if country_choice == "Canada" else "USA"
-        val_dcg = st.text_input("DCG - ISO Country", iso_country)
-        
-        val_dac = st.text_input("DAC - Given Names", "JEAN")
-        val_dcs = st.text_input("DCS - Surname", "NICOLAS")
-        val_dbb = st.text_input("DBB - Date of Birth (YYYYMMDD)", "19941208")
-        val_daq = st.text_input("DAQ - License Identifier", "N2420-941208-96")
-        val_dag = st.text_input("DAG - Residential Street", "1560 SHERBROOKE ST E")
+        val_dcg = st.text_input("DCG - ISO Country", iso_country, help=ui["tips"]["dcg"])
+        val_dac = st.text_input("DAC - Given Names", "JEAN", help=ui["tips"]["dac"])
+        val_dcs = st.text_input("DCS - Surname", "NICOLAS", help=ui["tips"]["dcs"])
+        val_dbb = st.text_input("DBB - Date of Birth (YYYYMMDD)", "19941208", help=ui["tips"]["dbb"])
+        val_daq = st.text_input("DAQ - License Identifier", "N2420-941208-96", help=ui["tips"]["daq"])
+        val_dag = st.text_input("DAG - Residential Street", "1560 SHERBROOKE ST E", help=ui["tips"]["dag"])
         
     with field_col_b:
-        val_dai = st.text_input("DAI - City / Locality", "MONTREAL")
-        val_dak = st.text_input("DAK - Postal Code", "H2L 4M1")
-        val_dbd = st.text_input("DBD - Issue Date (YYYYMMDD)", "20230510")
-        val_dba = st.text_input("DBA - Expiry Date (YYYYMMDD)", "20310509")
-        val_dbc = st.selectbox("DBC - Gender (1:M / 2:F)", ["1", "2"], index=0)
-        val_dcf = st.text_input("DCF - Audit Number", "PEJQ04N96")
+        val_dai = st.text_input("DAI - City / Locality", "MONTREAL", help=ui["tips"]["dai"])
+        val_dak = st.text_input("DAK - Postal Code", "H2L 4M1", help=ui["tips"]["dak"])
+        val_dbd = st.text_input("DBD - Issue Date (YYYYMMDD)", "20230510", help=ui["tips"]["dbd"])
+        val_dba = st.text_input("DBA - Expiry Date (YYYYMMDD)", "20310509", help=ui["tips"]["dba"])
+        val_dbc = st.selectbox("DBC - Gender", ["1", "2"], index=0, help=ui["tips"]["dbc"], format_func=lambda x: ui["gender"][x])
+        val_dcf = st.text_input("DCF - Audit Number", "PEJQ04N96", help=ui["tips"]["dcf"])
     st.markdown('</div>', unsafe_allow_html=True)
 
     # --- ÉTAPE 3 : CONFIGURATION OPTIQUE (MOTEUR PRO) ---
@@ -415,20 +417,12 @@ def show_identity_gen(lang="EN"):
 
     opt_col_1, opt_col_2 = st.columns(2)
     with opt_col_1:
-        # Sélection de la densité DPI avec slider custom
-        res_dpi = st.select_slider(
-            "RENDER RESOLUTION DENSITY (DPI)", 
-            options=[72, 150, 300, 600, 1200], 
-            value=600
-        )
+        res_dpi = st.select_slider("RENDER RESOLUTION DENSITY (DPI)", options=[72, 150, 300, 600, 1200], value=600, help=ui["tips"]["dpi"])
         scale_val = max(1, int(res_dpi / 40))
-        
-        # Densité des colonnes de la matrice
-        matrix_density = st.slider("MATRIX COLUMN COUNT", 1, 30, 10)
+        matrix_density = st.slider("MATRIX COLUMN COUNT", 1, 30, 10, help=ui["tips"]["cols"])
         
     with opt_col_2:
-        # Zone de protection (Quiet Zone)
-        quiet_padding = st.slider("QUIET ZONE PADDING", 0, 60, 5)
+        quiet_padding = st.slider("QUIET ZONE PADDING", 0, 60, 5, help=ui["tips"]["quiet"])
         
         st.write("") # Espacement cosmétique
         escape_mode = st.checkbox("FORMAT PAYLOAD WITH ESCAPE SEQUENCES (\\n)", value=True)
@@ -442,7 +436,7 @@ def show_identity_gen(lang="EN"):
     # ==============================================================================
     # EXÉCUTION DU MOTEUR DE GÉNÉRATION
     # ==============================================================================
-    if st.button(ui["generate"], use_container_width=True):
+    if st.button(ui["generate"], use_container_width=True, help=ui["tips"]["gen_btn"]):
 
         try:
             # Traitement du code de territoire (DAJ)

@@ -1,0 +1,3 @@
+## 2025-05-15 - Micro-UX improvements for technical Streamlit apps
+**Learning:** In technical applications (like AAMVA barcode generators), acronym-heavy fields (DCG, DAC, DAQ) create high cognitive load for non-expert users. Streamlit's `help` parameter is the most efficient way to provide "just-in-time" documentation without cluttering the UI. Additionally, technical codes (e.g., '1' for Male, '2' for Female) should always be mapped to human-readable labels using `format_func` in selectboxes to ensure the interface is intuitive.
+**Action:** Always provide tooltips for technical acronyms and use `format_func` for technical code selections to bridge the gap between backend data structures and user-facing labels.
