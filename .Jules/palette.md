@@ -1,0 +1,3 @@
+## 2026-07-11 - Improving Technical Field Clarity and Tooltip Visibility
+**Learning:** In technical applications like barcode generators, acronyms (DCG, DAQ, etc.) can be cryptic for non-expert users. Streamlit's native `help` parameter is excellent for providing context without cluttering the UI. However, custom CSS themes often break tooltip readability by not accounting for `stTooltipContent` styling.
+**Action:** Always provide descriptive tooltips for technical fields and explicitly style `div[data-testid="stTooltipContent"]` in the application's CSS to guarantee contrast in dark/light mode overrides.
