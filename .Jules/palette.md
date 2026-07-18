@@ -1,0 +1,3 @@
+## 2025-06-18 - Streamlit Icon-Only Component & Collapsed Selector Accessibility
+**Learning:** Icon-only controls (like theme toggle buttons) and select boxes with collapsed labels inside Streamlit default to empty accessible names, making them completely unreadable for screen readers. Using the native `help` parameter on `st.button` generates an on-hover tooltip and sets a correct accessible name, and specifying a localized non-empty label for collapsed `st.selectbox` allows the system to generate standard `aria-label` properties without visual clutter.
+**Action:** Always provide descriptive translations for `help` on interactive icon-only components, and define localized accessible names even when `label_visibility="collapsed"` is used.
