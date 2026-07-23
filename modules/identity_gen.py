@@ -321,7 +321,10 @@ def show_identity_gen(lang="EN"):
             "success": "Payload matrix successfully compiled.",
             "raw": "AAMVA Raw String Output",
             "use": "Standardized payload for external renderers.",
-            "preview": "Digital Twin Preview"
+            "preview": "Digital Twin Preview",
+            "gender_label": "DBC - Gender",
+            "gender_m": "Male",
+            "gender_f": "Female"
         },
         "FR": {
             "title": "Studio Quantum AAMVA",
@@ -336,7 +339,10 @@ def show_identity_gen(lang="EN"):
             "success": "Matrice du payload compilée avec succès.",
             "raw": "Sortie de chaîne brute AAMVA",
             "use": "Payload standardisé pour moteurs de rendu externes.",
-            "preview": "Aperçu du jumeau numérique"
+            "preview": "Aperçu du jumeau numérique",
+            "gender_label": "DBC - Sexe",
+            "gender_m": "Homme",
+            "gender_f": "Femme"
         }
     }
 
@@ -405,7 +411,12 @@ def show_identity_gen(lang="EN"):
         val_dak = st.text_input("DAK - Postal Code", "H2L 4M1")
         val_dbd = st.text_input("DBD - Issue Date (YYYYMMDD)", "20230510")
         val_dba = st.text_input("DBA - Expiry Date (YYYYMMDD)", "20310509")
-        val_dbc = st.selectbox("DBC - Gender (1:M / 2:F)", ["1", "2"], index=0)
+        val_dbc = st.selectbox(
+            ui.get("gender_label", "DBC - Gender"),
+            ["1", "2"],
+            index=0,
+            format_func=lambda x: ui.get("gender_m", "Male") if x == "1" else ui.get("gender_f", "Female")
+        )
         val_dcf = st.text_input("DCF - Audit Number", "PEJQ04N96")
     st.markdown('</div>', unsafe_allow_html=True)
 
