@@ -1,0 +1,3 @@
+## 2026-07-24 - Streamlit Header Controls Accessibility
+**Learning:** Icon-only buttons (like theme toggles) and collapsed label selectors (like language dropdowns) in Streamlit can be made fully accessible without visual clutter. Setting the `help` parameter on `st.button` generates a tooltip and accessible aria-label, and providing a localized label to `st.selectbox` with `label_visibility="collapsed"` generates an off-screen accessible name for screen readers.
+**Action:** Always provide a localized label to collapsed selectboxes and descriptive tooltips via `help` to icon-only buttons in Streamlit projects.
