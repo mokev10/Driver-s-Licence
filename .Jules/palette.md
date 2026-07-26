@@ -1,0 +1,3 @@
+## 2026-07-26 - Accessible Multi-language Streamlit Header Controls
+**Learning:** Adding custom icon-only buttons (like theme toggle buttons) in Streamlit can create screen-reader barriers unless we provide localized context. Streamlit's native `help` parameter provides tooltips that act as accessible names. Similarly, visually collapsing selectbox labels via `label_visibility="collapsed"` maintains visual balance while retaining screen-reader readability.
+**Action:** Always supply localized tooltip strings via the `help` attribute for icon-only buttons, and provide meaningful non-empty labels with `label_visibility="collapsed"` for compact selectboxes to preserve screen-reader accessible names without disrupting the visual flow.
