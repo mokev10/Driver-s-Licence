@@ -405,7 +405,13 @@ def show_identity_gen(lang="EN"):
         val_dak = st.text_input("DAK - Postal Code", "H2L 4M1")
         val_dbd = st.text_input("DBD - Issue Date (YYYYMMDD)", "20230510")
         val_dba = st.text_input("DBA - Expiry Date (YYYYMMDD)", "20310509")
-        val_dbc = st.selectbox("DBC - Gender (1:M / 2:F)", ["1", "2"], index=0)
+        val_dbc = st.selectbox(
+            "DBC - Gender",
+            ["1", "2"],
+            index=0,
+            format_func=lambda x: ("Male" if x == "1" else "Female") if lang == "EN" else ("Homme" if x == "1" else "Femme"),
+            help="Gender field: 1 represents Male, 2 represents Female" if lang == "EN" else "Champ Sexe/Genre : 1 représente Homme, 2 représente Femme"
+        )
         val_dcf = st.text_input("DCF - Audit Number", "PEJQ04N96")
     st.markdown('</div>', unsafe_allow_html=True)
 
