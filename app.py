@@ -341,13 +341,15 @@ def render_header(lang, dark_mode):
         st.markdown(f"<h1 style='margin: 0;'>✨ AI Generator PDF417</h1>", unsafe_allow_html=True)
     
     with col2:
-        if st.button("🌙" if dark_mode else "☀️", key="theme_toggle", use_container_width=True):
+        theme_help = "Toggle Dark/Light Theme" if lang == "EN" else "Basculer entre le thème sombre et clair"
+        if st.button("🌙" if dark_mode else "☀️", key="theme_toggle", use_container_width=True, help=theme_help):
             st.session_state.dark_mode = not st.session_state.dark_mode
             st.rerun()
     
     with col3:
+        lang_label = "Language Selection" if lang == "EN" else "Sélection de la langue"
         lang_val = st.selectbox(
-            "",
+            lang_label,
             ["EN", "FR"],
             index=0 if lang == "EN" else 1,
             label_visibility="collapsed",
