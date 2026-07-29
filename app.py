@@ -327,6 +327,17 @@ def apply_modern_css(dark_mode=True):
             background: var(--accent-secondary);
         }}
 
+        /* TOOLTIP CONTRAST CORRECTION */
+        div[data-testid="stTooltipContent"] {{
+            background-color: var(--bg-tertiary) !important;
+            border: 1px solid var(--border) !important;
+        }}
+        div[data-testid="stTooltipContent"] p,
+        div[data-testid="stTooltipContent"] span,
+        div[data-testid="stTooltipContent"] label {{
+            color: var(--text-primary) !important;
+        }}
+
     </style>
     """, unsafe_allow_html=True)
 
@@ -341,13 +352,15 @@ def render_header(lang, dark_mode):
         st.markdown(f"<h1 style='margin: 0;'>✨ AI Generator PDF417</h1>", unsafe_allow_html=True)
     
     with col2:
-        if st.button("🌙" if dark_mode else "☀️", key="theme_toggle", use_container_width=True):
+        help_theme = t["theme_light"] if dark_mode else t["theme_dark"]
+        if st.button("🌙" if dark_mode else "☀️", key="theme_toggle", use_container_width=True, help=help_theme):
             st.session_state.dark_mode = not st.session_state.dark_mode
             st.rerun()
     
     with col3:
+        lang_label = "Language Selection" if lang == "EN" else "Sélection de la langue"
         lang_val = st.selectbox(
-            "",
+            lang_label,
             ["EN", "FR"],
             index=0 if lang == "EN" else 1,
             label_visibility="collapsed",
