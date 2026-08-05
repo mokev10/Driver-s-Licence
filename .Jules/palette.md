@@ -1,0 +1,3 @@
+## 2026-08-05 - Accessible Form Elements in Streamlit
+**Learning:** Streamlit form elements (like selectboxes) with visually collapsed labels (`label_visibility="collapsed"`) still need a valid localized text label as their first parameter. This ensures that assistive technologies (like screen readers) can generate a correct accessible name, and that tooltips on icon-only control elements are explicit to enhance clarity.
+**Action:** Always provide a descriptive, localized label parameter even when hiding it visually using `label_visibility="collapsed"`, and add localized `help` tooltips to clarify icon-only buttons.
