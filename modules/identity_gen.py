@@ -388,25 +388,40 @@ def show_identity_gen(lang="EN"):
     st.markdown('<div class="crystal-card">', unsafe_allow_html=True)
     st.subheader(ui["step2"])
     
+    tips = {
+        "EN": {
+            "dcg": "ISO Country Code", "dac": "Given Names", "dcs": "Surname / Family Name",
+            "dbb": "Date of Birth (YYYYMMDD)", "daq": "License Identifier", "dag": "Residential Street",
+            "dai": "City / Locality", "dak": "Postal Code", "dbd": "Issue Date (YYYYMMDD)",
+            "dba": "Expiry Date (YYYYMMDD)", "dbc": "Gender / Sex (1:M, 2:F)", "dcf": "Audit / Inventory Number"
+        },
+        "FR": {
+            "dcg": "Code pays ISO", "dac": "Prénoms", "dcs": "Nom de famille",
+            "dbb": "Date de naissance (AAAAMMJJ)", "daq": "Numéro de permis / ID", "dag": "Adresse résidentielle",
+            "dai": "Ville / Localité", "dak": "Code postal", "dbd": "Date d'émission (AAAAMMJJ)",
+            "dba": "Date d'expiration (AAAAMMJJ)", "dbc": "Genre / Sexe (1:H, 2:F)", "dcf": "Numéro d'audit"
+        }
+    }[lang]
+
     field_col_a, field_col_b = st.columns(2)
     with field_col_a:
         # Code Pays ISO dynamique
         iso_country = "CAN" if country_choice == "Canada" else "USA"
-        val_dcg = st.text_input("DCG - ISO Country", iso_country)
+        val_dcg = st.text_input("DCG - ISO Country", iso_country, help=tips["dcg"])
         
-        val_dac = st.text_input("DAC - Given Names", "JEAN")
-        val_dcs = st.text_input("DCS - Surname", "NICOLAS")
-        val_dbb = st.text_input("DBB - Date of Birth (YYYYMMDD)", "19941208")
-        val_daq = st.text_input("DAQ - License Identifier", "N2420-941208-96")
-        val_dag = st.text_input("DAG - Residential Street", "1560 SHERBROOKE ST E")
+        val_dac = st.text_input("DAC - Given Names", "JEAN", help=tips["dac"])
+        val_dcs = st.text_input("DCS - Surname", "NICOLAS", help=tips["dcs"])
+        val_dbb = st.text_input("DBB - Date of Birth (YYYYMMDD)", "19941208", help=tips["dbb"])
+        val_daq = st.text_input("DAQ - License Identifier", "N2420-941208-96", help=tips["daq"])
+        val_dag = st.text_input("DAG - Residential Street", "1560 SHERBROOKE ST E", help=tips["dag"])
         
     with field_col_b:
-        val_dai = st.text_input("DAI - City / Locality", "MONTREAL")
-        val_dak = st.text_input("DAK - Postal Code", "H2L 4M1")
-        val_dbd = st.text_input("DBD - Issue Date (YYYYMMDD)", "20230510")
-        val_dba = st.text_input("DBA - Expiry Date (YYYYMMDD)", "20310509")
-        val_dbc = st.selectbox("DBC - Gender (1:M / 2:F)", ["1", "2"], index=0)
-        val_dcf = st.text_input("DCF - Audit Number", "PEJQ04N96")
+        val_dai = st.text_input("DAI - City / Locality", "MONTREAL", help=tips["dai"])
+        val_dak = st.text_input("DAK - Postal Code", "H2L 4M1", help=tips["dak"])
+        val_dbd = st.text_input("DBD - Issue Date (YYYYMMDD)", "20230510", help=tips["dbd"])
+        val_dba = st.text_input("DBA - Expiry Date (YYYYMMDD)", "20310509", help=tips["dba"])
+        val_dbc = st.selectbox("DBC - Gender (1:M / 2:F)", ["1", "2"], index=0, help=tips["dbc"])
+        val_dcf = st.text_input("DCF - Audit Number", "PEJQ04N96", help=tips["dcf"])
     st.markdown('</div>', unsafe_allow_html=True)
 
     # --- ÉTAPE 3 : CONFIGURATION OPTIQUE (MOTEUR PRO) ---

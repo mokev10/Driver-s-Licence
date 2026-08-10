@@ -163,6 +163,20 @@ def apply_modern_css(dark_mode=True):
             color: var(--text-primary) !important;
         }}
 
+        /* TOOLTIP CONTRAST OVERRIDE */
+        div[data-testid="stTooltipContent"] p,
+        div[data-testid="stTooltipContent"] span,
+        div[data-testid="stTooltipContent"] label {{
+            color: #ffffff !important;
+        }}
+        div[data-testid="stTooltipContent"] {{
+            background-color: #1a1f3a !important;
+            border: 1px solid var(--accent-primary) !important;
+            border-radius: 8px !important;
+            padding: 8px 12px !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+        }}
+
         /* CARDS & CONTAINERS */
         .stCard, div[data-testid="stExpander"] {{
             background-color: var(--bg-secondary) !important;
