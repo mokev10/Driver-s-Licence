@@ -1,0 +1,3 @@
+## 2026-08-13 - Accessible Names for Visually Collapsed Form Controls
+**Learning:** Streamlit components utilizing `label_visibility="collapsed"` still require a meaningful and non-empty `label` string value. While the label is visually hidden from the user interface, the underlying HTML relies on this parameter to construct the accessible name (ARIA label equivalent) for screen-readers. Providing an empty string `""` as a label leaves the element completely unlabelled in the accessibility tree, creating a severe accessibility barrier.
+**Action:** Always provide a descriptive, fully localized label text even when configuring form components to visually hide their labels using `label_visibility="collapsed"` or equivalent design system properties.
