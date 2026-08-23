@@ -1,0 +1,3 @@
+## 2026-08-23 - Screen Reader Naming for Visually Collapsed Streamlit Controls
+**Learning:** Streamlit selectboxes with `label_visibility="collapsed"` still require a valid label string (e.g. `t["lang_label"]`) rather than an empty string `""` to ensure screen readers generate an accessible name for key controls. Furthermore, custom styling of `div[data-testid="stTooltipContent"]` is necessary in dark-themed Streamlit apps to ensure high-contrast tooltip legibility.
+**Action:** Always provide meaningful label strings to Streamlit components regardless of visual label collapse settings, and explicitly style `div[data-testid="stTooltipContent"]` for dark mode themes.
