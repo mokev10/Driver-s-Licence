@@ -1,0 +1,3 @@
+## 2026-08-24 - Streamlit Collapsed Label & Tooltip Dark Mode Accessibility
+**Learning:** In Streamlit applications, selectbox components with visually collapsed labels still generate screen-reader accessible names from their `label` parameter. Additionally, global CSS overrides like `label, p { color: white !important }` can render tooltip popups unreadable unless `div[data-testid="stTooltipContent"]` is explicitly styled.
+**Action:** Always provide descriptive localized text labels even when using `label_visibility="collapsed"`, and add explicit dark/light styling rules for `div[data-testid="stTooltipContent"]` in custom Streamlit CSS.
