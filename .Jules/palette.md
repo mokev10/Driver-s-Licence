@@ -1,0 +1,3 @@
+## 2026-08-28 - Streamlit Icon Button Tooltips & Dark Mode Tooltip Contrast
+**Learning:** Icon-only buttons (like theme toggles) in Streamlit lack accessible names unless given a localized `help` tooltip. Furthermore, dark mode custom CSS that targets generic text elements (`p`, `span`, `label`) can cause white-on-white text in standard Streamlit tooltip overlays unless `div[data-testid="stTooltipContent"]` is explicitly styled with explicit background and text color variables.
+**Action:** Always provide `help` tooltips on Streamlit icon buttons and include explicit styling for `div[data-testid="stTooltipContent"]` in custom dark theme CSS implementations.
