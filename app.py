@@ -47,6 +47,10 @@ TEXTS = {
     "EN": {
         "theme_dark": "🌙 Dark",
         "theme_light": "☀️ Light",
+        "theme_tip_light": "Switch to light theme",
+        "theme_tip_dark": "Switch to dark theme",
+        "lang_label": "Select language",
+        "lang_tip": "Change application language",
         "sidebar_title": "🪪 Identity Generator",
         "sidebar_info": "Generate realistic digital identities with AI",
         "settings": "⚙️ Settings",
@@ -54,6 +58,10 @@ TEXTS = {
     "FR": {
         "theme_dark": "🌙 Sombre",
         "theme_light": "☀️ Clair",
+        "theme_tip_light": "Passer au mode clair",
+        "theme_tip_dark": "Passer au mode sombre",
+        "lang_label": "Choisir la langue",
+        "lang_tip": "Changer la langue de l'application",
         "sidebar_title": "🪪 Générateur d'Identité",
         "sidebar_info": "Générez des identités numériques réalistes avec l'IA",
         "settings": "⚙️ Paramètres",
@@ -263,6 +271,17 @@ def apply_modern_css(dark_mode=True):
             align-items: center;
         }}
 
+        /* TOOLTIPS STYLING */
+        div[data-testid="stTooltipContent"] {{
+            background-color: var(--bg-secondary) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 8px !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+        }}
+        div[data-testid="stTooltipContent"] * {{
+            color: var(--text-primary) !important;
+        }}
+
         /* THEME & LANGUAGE BUTTONS */
         .theme-toggle, .lang-toggle {{
             background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary)) !important;
@@ -341,17 +360,19 @@ def render_header(lang, dark_mode):
         st.markdown(f"<h1 style='margin: 0;'>✨ AI Generator PDF417</h1>", unsafe_allow_html=True)
     
     with col2:
-        if st.button("🌙" if dark_mode else "☀️", key="theme_toggle", use_container_width=True):
+        theme_tip = t["theme_tip_light"] if dark_mode else t["theme_tip_dark"]
+        if st.button("🌙" if dark_mode else "☀️", key="theme_toggle", help=theme_tip, use_container_width=True):
             st.session_state.dark_mode = not st.session_state.dark_mode
             st.rerun()
     
     with col3:
         lang_val = st.selectbox(
-            "",
+            t["lang_label"],
             ["EN", "FR"],
             index=0 if lang == "EN" else 1,
             label_visibility="collapsed",
             key="lang_select",
+            help=t["lang_tip"],
         )
         
         if lang_val != lang:

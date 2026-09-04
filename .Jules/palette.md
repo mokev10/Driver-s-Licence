@@ -1,0 +1,3 @@
+## 2026-09-04 - Accessible Names and Tooltip Contrast in Streamlit Header
+**Learning:** In Streamlit, selectboxes with visually collapsed labels (`label_visibility="collapsed"`) still require a descriptive label string to generate a valid HTML accessible name for screen readers. Furthermore, global CSS rules targeting `p, span, label` with dark theme text colors override default tooltip styling, causing white-on-white text in popups; explicitly styling `div[data-testid="stTooltipContent"]` restores contrast and readability.
+**Action:** Always provide explicit label strings for collapsed form controls and include dedicated `div[data-testid="stTooltipContent"]` rules in Streamlit CSS themes.
