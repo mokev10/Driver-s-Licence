@@ -365,7 +365,7 @@ def show_identity_gen(lang="EN"):
     st.markdown(
         f"""
         <div class="flag-container">
-            <img src="{flag_url}" class="flag-image">
+            <img src="{flag_url}" class="flag-image" alt="{country_choice} Flag">
             <span class="jurisdiction-title">{ui["step1"]}</span>
         </div>
         """, 
