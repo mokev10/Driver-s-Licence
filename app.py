@@ -327,6 +327,16 @@ def apply_modern_css(dark_mode=True):
             background: var(--accent-secondary);
         }}
 
+        /* TOOLTIP OVERRIDE FOR DARK MODE READABILITY */
+        div[data-testid="stTooltipContent"] {{
+            background-color: var(--bg-secondary) !important;
+            color: var(--text-primary) !important;
+            border: 1px solid var(--border) !important;
+        }}
+        div[data-testid="stTooltipContent"] p {{
+            color: var(--text-primary) !important;
+        }}
+
     </style>
     """, unsafe_allow_html=True)
 
@@ -341,13 +351,17 @@ def render_header(lang, dark_mode):
         st.markdown(f"<h1 style='margin: 0;'>✨ AI Generator PDF417</h1>", unsafe_allow_html=True)
     
     with col2:
-        if st.button("🌙" if dark_mode else "☀️", key="theme_toggle", use_container_width=True):
+        theme_tip = "Switch to Light Mode" if dark_mode else "Switch to Dark Mode"
+        if lang == "FR":
+            theme_tip = "Passer au mode clair" if dark_mode else "Passer au mode sombre"
+        if st.button("🌙" if dark_mode else "☀️", key="theme_toggle", help=theme_tip, use_container_width=True):
             st.session_state.dark_mode = not st.session_state.dark_mode
             st.rerun()
     
     with col3:
+        lang_label = "Language" if lang == "EN" else "Langue"
         lang_val = st.selectbox(
-            "",
+            lang_label,
             ["EN", "FR"],
             index=0 if lang == "EN" else 1,
             label_visibility="collapsed",

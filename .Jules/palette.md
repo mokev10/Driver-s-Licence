@@ -1,0 +1,3 @@
+## 2026-09-07 - Streamlit Collapsed Labels and Tooltip Contrast
+**Learning:** Streamlit selectboxes with visually collapsed labels still need a non-empty localized text label (`label_visibility="collapsed"`) to provide screen readers with a valid accessible name. Additionally, global CSS styling `p, span, label` with white text in dark mode requires explicitly targeting `div[data-testid="stTooltipContent"]` to maintain dark readable text on default tooltip popovers.
+**Action:** Always provide meaningful label text when using `label_visibility="collapsed"`, and add explicit `div[data-testid="stTooltipContent"]` CSS rules when applying dark theme overrides in Streamlit apps.
