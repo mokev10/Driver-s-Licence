@@ -1,0 +1,3 @@
+## 2026-09-22 - Streamlit Tooltip Contrast and Collapsed Selectbox Accessibility
+**Learning:** Global CSS color rules (`p, span, label`) in dark-themed Streamlit apps cause `div[data-testid="stTooltipContent"]` text to render white-on-white. Additionally, `st.selectbox` controls with `label_visibility="collapsed"` require a valid localized text string rather than `""` to generate accessible names for screen readers.
+**Action:** Always target `div[data-testid="stTooltipContent"]` explicitly when injecting dark mode CSS, and pass meaningful localized label text to `st.selectbox` even when visually collapsed.
