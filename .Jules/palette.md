@@ -1,0 +1,3 @@
+## 2026-09-25 - Header Controls Layout & Accessible Name Mapping
+**Learning:** Narrow column allocations in Streamlit headers cause selectboxes like language options ("EN"/"FR") to clip text on standard viewports. Additionally, selectboxes with visually collapsed labels still need explicit localized text labels to generate proper accessible names for screen readers without overflowing header layout bounds.
+**Action:** Use wider relative column proportions (e.g. `[7, 1.3, 1.7]`) for header utility controls and always provide a descriptive `label` and `help` text on header buttons and selectboxes.
