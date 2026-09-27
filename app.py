@@ -47,16 +47,22 @@ TEXTS = {
     "EN": {
         "theme_dark": "🌙 Dark",
         "theme_light": "☀️ Light",
+        "theme_tooltip_dark": "Switch to Dark Mode",
+        "theme_tooltip_light": "Switch to Light Mode",
         "sidebar_title": "🪪 Identity Generator",
         "sidebar_info": "Generate realistic digital identities with AI",
         "settings": "⚙️ Settings",
+        "lang_label": "Select Language",
     },
     "FR": {
         "theme_dark": "🌙 Sombre",
         "theme_light": "☀️ Clair",
+        "theme_tooltip_dark": "Passer au mode sombre",
+        "theme_tooltip_light": "Passer au mode clair",
         "sidebar_title": "🪪 Générateur d'Identité",
         "sidebar_info": "Générez des identités numériques réalistes avec l'IA",
         "settings": "⚙️ Paramètres",
+        "lang_label": "Changer de langue",
     }
 }
 
@@ -341,13 +347,14 @@ def render_header(lang, dark_mode):
         st.markdown(f"<h1 style='margin: 0;'>✨ AI Generator PDF417</h1>", unsafe_allow_html=True)
     
     with col2:
-        if st.button("🌙" if dark_mode else "☀️", key="theme_toggle", use_container_width=True):
+        theme_help = t["theme_tooltip_light"] if dark_mode else t["theme_tooltip_dark"]
+        if st.button("🌙" if dark_mode else "☀️", key="theme_toggle", help=theme_help, use_container_width=True):
             st.session_state.dark_mode = not st.session_state.dark_mode
             st.rerun()
     
     with col3:
         lang_val = st.selectbox(
-            "",
+            t["lang_label"],
             ["EN", "FR"],
             index=0 if lang == "EN" else 1,
             label_visibility="collapsed",
