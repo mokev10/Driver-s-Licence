@@ -47,6 +47,8 @@ TEXTS = {
     "EN": {
         "theme_dark": "🌙 Dark",
         "theme_light": "☀️ Light",
+        "theme_tooltip": "Toggle dark / light theme",
+        "lang_label": "Select language",
         "sidebar_title": "🪪 Identity Generator",
         "sidebar_info": "Generate realistic digital identities with AI",
         "settings": "⚙️ Settings",
@@ -54,6 +56,8 @@ TEXTS = {
     "FR": {
         "theme_dark": "🌙 Sombre",
         "theme_light": "☀️ Clair",
+        "theme_tooltip": "Basculer le thème sombre / clair",
+        "lang_label": "Sélectionner la langue",
         "sidebar_title": "🪪 Générateur d'Identité",
         "sidebar_info": "Générez des identités numériques réalistes avec l'IA",
         "settings": "⚙️ Paramètres",
@@ -327,6 +331,15 @@ def apply_modern_css(dark_mode=True):
             background: var(--accent-secondary);
         }}
 
+        /* TOOLTIP STYLING */
+        div[data-testid="stTooltipContent"] {{
+            background-color: var(--bg-tertiary) !important;
+            color: var(--text-primary) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 6px !important;
+            font-size: 0.85rem !important;
+        }}
+
     </style>
     """, unsafe_allow_html=True)
 
@@ -335,23 +348,24 @@ def render_header(lang, dark_mode):
     """Render modern header with theme/language controls"""
     t = TEXTS[lang]
     
-    col1, col2, col3 = st.columns([8, 1, 1])
+    col1, col2, col3 = st.columns([7, 1.3, 1.7])
     
     with col1:
         st.markdown(f"<h1 style='margin: 0;'>✨ AI Generator PDF417</h1>", unsafe_allow_html=True)
     
     with col2:
-        if st.button("🌙" if dark_mode else "☀️", key="theme_toggle", use_container_width=True):
+        if st.button("🌙" if dark_mode else "☀️", key="theme_toggle", help=t["theme_tooltip"], use_container_width=True):
             st.session_state.dark_mode = not st.session_state.dark_mode
             st.rerun()
     
     with col3:
         lang_val = st.selectbox(
-            "",
+            t["lang_label"],
             ["EN", "FR"],
             index=0 if lang == "EN" else 1,
             label_visibility="collapsed",
             key="lang_select",
+            help=t["lang_label"],
         )
         
         if lang_val != lang:
