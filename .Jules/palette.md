@@ -1,0 +1,3 @@
+## 2026-10-03 - Streamlit Dark Mode Tooltip Contrast & Collapsed Selectbox Accessibility
+**Learning:** Custom dark mode CSS in Streamlit can unintentionally override `p` and `span` color inside `div[data-testid="stTooltipContent"]`, causing white text on light default tooltip backgrounds. Also, selectboxes with `label_visibility="collapsed"` still require a non-empty string label so screen readers receive an accessible name.
+**Action:** Always target `div[data-testid="stTooltipContent"]` explicitly when applying global dark mode CSS styles, and provide a meaningful localized label to `st.selectbox` even when `label_visibility="collapsed"`.
