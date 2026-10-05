@@ -1,0 +1,4 @@
+## 2026-10-05 - Accessible Labels and Custom Dark Mode Tooltips for Collapsed Selectboxes & Icon Buttons
+
+**Learning:** In Streamlit applications with dark mode themes, icon-only buttons (`st.button`) lack screen-reader text unless provided a localized `help` parameter. Furthermore, visually collapsing selectbox labels (`label_visibility="collapsed"`) still requires a non-empty string as the component label so screen readers announce an accessible name. Custom CSS targeting `div[data-testid="stTooltipContent"]` is necessary in dark mode to ensure tooltips have sufficient text contrast against tooltip backgrounds.
+**Action:** Always provide localized strings for `help` and `selectbox` labels even when visually collapsed, and include `div[data-testid="stTooltipContent"]` CSS rules when implementing dark mode themes.
