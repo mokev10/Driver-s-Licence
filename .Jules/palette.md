@@ -1,0 +1,3 @@
+## 2026-10-07 - Accessible Names for Collapsed Streamlit Controls and Column Widths
+**Learning:** Streamlit selectboxes with visually collapsed labels (`label_visibility="collapsed"`) still require a valid, non-empty localized text label to generate correct screen-reader accessible names, while column layout ratios must account for component dropdown paddings to avoid option text truncation (e.g. clipping 'EN' to 'E').
+**Action:** Always provide meaningful localized text labels for collapsed controls and allocate sufficient width in Streamlit multi-column layouts for dropdowns and icon buttons.
