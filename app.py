@@ -50,6 +50,9 @@ TEXTS = {
         "sidebar_title": "🪪 Identity Generator",
         "sidebar_info": "Generate realistic digital identities with AI",
         "settings": "⚙️ Settings",
+        "theme_tooltip_dark": "Switch to light mode",
+        "theme_tooltip_light": "Switch to dark mode",
+        "lang_label": "Language",
     },
     "FR": {
         "theme_dark": "🌙 Sombre",
@@ -57,6 +60,9 @@ TEXTS = {
         "sidebar_title": "🪪 Générateur d'Identité",
         "sidebar_info": "Générez des identités numériques réalistes avec l'IA",
         "settings": "⚙️ Paramètres",
+        "theme_tooltip_dark": "Passer en mode clair",
+        "theme_tooltip_light": "Passer en mode sombre",
+        "lang_label": "Langue",
     }
 }
 
@@ -308,6 +314,19 @@ def apply_modern_css(dark_mode=True):
             h2 {{ font-size: 1.4rem !important; }}
         }}
 
+        /* TOOLTIP STYLING FIX */
+        div[data-testid="stTooltipContent"] {{
+            background-color: var(--bg-secondary) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 8px !important;
+            padding: 8px 12px !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+        }}
+
+        div[data-testid="stTooltipContent"] * {{
+            color: var(--text-primary) !important;
+        }}
+
         /* SCROLLBAR STYLING */
         ::-webkit-scrollbar {{
             width: 8px;
@@ -335,23 +354,25 @@ def render_header(lang, dark_mode):
     """Render modern header with theme/language controls"""
     t = TEXTS[lang]
     
-    col1, col2, col3 = st.columns([8, 1, 1])
+    col1, col2, col3 = st.columns([7, 1.3, 1.7])
     
     with col1:
         st.markdown(f"<h1 style='margin: 0;'>✨ AI Generator PDF417</h1>", unsafe_allow_html=True)
     
     with col2:
-        if st.button("🌙" if dark_mode else "☀️", key="theme_toggle", use_container_width=True):
+        theme_help = t["theme_tooltip_dark"] if dark_mode else t["theme_tooltip_light"]
+        if st.button("🌙" if dark_mode else "☀️", key="theme_toggle", help=theme_help, use_container_width=True):
             st.session_state.dark_mode = not st.session_state.dark_mode
             st.rerun()
     
     with col3:
         lang_val = st.selectbox(
-            "",
+            t["lang_label"],
             ["EN", "FR"],
             index=0 if lang == "EN" else 1,
             label_visibility="collapsed",
             key="lang_select",
+            help=t["lang_label"],
         )
         
         if lang_val != lang:
