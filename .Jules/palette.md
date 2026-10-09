@@ -1,0 +1,3 @@
+## 2026-10-09 - Streamlit Tooltip Contrast and Selectbox Accessibility
+**Learning:** Streamlit dark mode apps with global custom CSS overrides for text (`p, span, label`) can cause tooltip text to render white-on-white against default light tooltip backgrounds; targeting `div[data-testid="stTooltipContent"]` explicitly resolves contrast issues. Additionally, selectboxes with visually collapsed labels still require valid localized text labels and tooltips (`help`) to provide accessible names for screen readers.
+**Action:** Always test Streamlit custom CSS against native tooltips and ensure all icon buttons and collapsed selectboxes pass localized `help` descriptions.
