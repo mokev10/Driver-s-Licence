@@ -47,6 +47,9 @@ TEXTS = {
     "EN": {
         "theme_dark": "🌙 Dark",
         "theme_light": "☀️ Light",
+        "theme_tooltip_dark": "Switch to light theme",
+        "theme_tooltip_light": "Switch to dark theme",
+        "lang_label": "Language",
         "sidebar_title": "🪪 Identity Generator",
         "sidebar_info": "Generate realistic digital identities with AI",
         "settings": "⚙️ Settings",
@@ -54,6 +57,9 @@ TEXTS = {
     "FR": {
         "theme_dark": "🌙 Sombre",
         "theme_light": "☀️ Clair",
+        "theme_tooltip_dark": "Passer au thème clair",
+        "theme_tooltip_light": "Passer au thème sombre",
+        "lang_label": "Langue",
         "sidebar_title": "🪪 Générateur d'Identité",
         "sidebar_info": "Générez des identités numériques réalistes avec l'IA",
         "settings": "⚙️ Paramètres",
@@ -128,7 +134,7 @@ def apply_modern_css(dark_mode=True):
         }}
 
         /* MAIN APP BACKGROUND */
-        .stApp {{
+        .stApp, header[data-testid="stHeader"] {{
             background-color: var(--bg-primary) !important;
             color: var(--text-primary) !important;
         }}
@@ -188,7 +194,7 @@ def apply_modern_css(dark_mode=True):
         }}
 
         /* BUTTONS - PRIMARY */
-        div.stButton > button {{
+        div.stButton button {{
             background: linear-gradient(135deg, {colors['accent_primary']} 0%, {colors['accent_secondary']} 100%) !important;
             color: white !important;
             border: none !important;
@@ -203,17 +209,25 @@ def apply_modern_css(dark_mode=True):
             letter-spacing: 0.5px !important;
         }}
 
-        div.stButton > button:hover {{
+        .st-key-theme_toggle button {{
+            background: linear-gradient(135deg, {colors['bg_secondary']}, {colors['bg_tertiary']}) !important;
+            border: 1px solid var(--border) !important;
+            color: var(--text-primary) !important;
+            box-shadow: none !important;
+            padding: 8px 14px !important;
+        }}
+
+        div.stButton button:hover {{
             box-shadow: 0 8px 30px rgba(99, 102, 241, 0.5) !important;
             transform: translateY(-2px) !important;
         }}
 
-        div.stButton > button:active {{
+        div.stButton button:active {{
             transform: translateY(0) !important;
         }}
 
         /* INPUTS & TEXTAREAS */
-        input, textarea, select {{
+        input, textarea, select, div[data-baseweb="select"], div[data-baseweb="select"] > div {{
             background-color: var(--bg-tertiary) !important;
             color: var(--text-primary) !important;
             border: 1px solid var(--border) !important;
@@ -335,7 +349,7 @@ def render_header(lang, dark_mode):
     """Render modern header with theme/language controls"""
     t = TEXTS[lang]
     
-    col1, col2, col3 = st.columns([8, 1, 1])
+    col1, col2, col3 = st.columns([7, 1.3, 1.7])
     
     with col1:
         st.markdown(f"<h1 style='margin: 0;'>✨ AI Generator PDF417</h1>", unsafe_allow_html=True)
@@ -347,7 +361,7 @@ def render_header(lang, dark_mode):
     
     with col3:
         lang_val = st.selectbox(
-            "",
+            t["lang_label"],
             ["EN", "FR"],
             index=0 if lang == "EN" else 1,
             label_visibility="collapsed",
