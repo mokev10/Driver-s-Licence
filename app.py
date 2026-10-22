@@ -47,6 +47,7 @@ TEXTS = {
     "EN": {
         "theme_dark": "🌙 Dark",
         "theme_light": "☀️ Light",
+        "lang_label": "Language",
         "sidebar_title": "🪪 Identity Generator",
         "sidebar_info": "Generate realistic digital identities with AI",
         "settings": "⚙️ Settings",
@@ -54,6 +55,7 @@ TEXTS = {
     "FR": {
         "theme_dark": "🌙 Sombre",
         "theme_light": "☀️ Clair",
+        "lang_label": "Langue",
         "sidebar_title": "🪪 Générateur d'Identité",
         "sidebar_info": "Générez des identités numériques réalistes avec l'IA",
         "settings": "⚙️ Paramètres",
@@ -335,7 +337,7 @@ def render_header(lang, dark_mode):
     """Render modern header with theme/language controls"""
     t = TEXTS[lang]
     
-    col1, col2, col3 = st.columns([8, 1, 1])
+    col1, col2, col3 = st.columns([7, 1.3, 1.7])
     
     with col1:
         st.markdown(f"<h1 style='margin: 0;'>✨ AI Generator PDF417</h1>", unsafe_allow_html=True)
@@ -347,7 +349,7 @@ def render_header(lang, dark_mode):
     
     with col3:
         lang_val = st.selectbox(
-            "",
+            t["lang_label"],
             ["EN", "FR"],
             index=0 if lang == "EN" else 1,
             label_visibility="collapsed",
