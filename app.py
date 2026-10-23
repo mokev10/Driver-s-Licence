@@ -47,16 +47,22 @@ TEXTS = {
     "EN": {
         "theme_dark": "🌙 Dark",
         "theme_light": "☀️ Light",
+        "theme_tooltip_dark": "Switch to light theme",
+        "theme_tooltip_light": "Switch to dark theme",
         "sidebar_title": "🪪 Identity Generator",
         "sidebar_info": "Generate realistic digital identities with AI",
         "settings": "⚙️ Settings",
+        "select_language": "Select language",
     },
     "FR": {
         "theme_dark": "🌙 Sombre",
         "theme_light": "☀️ Clair",
+        "theme_tooltip_dark": "Passer au thème clair",
+        "theme_tooltip_light": "Passer au thème sombre",
         "sidebar_title": "🪪 Générateur d'Identité",
         "sidebar_info": "Générez des identités numériques réalistes avec l'IA",
         "settings": "⚙️ Paramètres",
+        "select_language": "Choisir la langue",
     }
 }
 
@@ -188,7 +194,7 @@ def apply_modern_css(dark_mode=True):
         }}
 
         /* BUTTONS - PRIMARY */
-        div.stButton > button {{
+        div.stButton button {{
             background: linear-gradient(135deg, {colors['accent_primary']} 0%, {colors['accent_secondary']} 100%) !important;
             color: white !important;
             border: none !important;
@@ -203,13 +209,21 @@ def apply_modern_css(dark_mode=True):
             letter-spacing: 0.5px !important;
         }}
 
-        div.stButton > button:hover {{
+        div.stButton button:hover {{
             box-shadow: 0 8px 30px rgba(99, 102, 241, 0.5) !important;
             transform: translateY(-2px) !important;
         }}
 
-        div.stButton > button:active {{
+        div.stButton button:active {{
             transform: translateY(0) !important;
+        }}
+
+        /* TOOLTIP CONTENT OVERRIDE */
+        div[data-testid="stTooltipContent"] {{
+            background-color: var(--bg-tertiary) !important;
+            color: var(--text-primary) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 6px !important;
         }}
 
         /* INPUTS & TEXTAREAS */
@@ -341,13 +355,14 @@ def render_header(lang, dark_mode):
         st.markdown(f"<h1 style='margin: 0;'>✨ AI Generator PDF417</h1>", unsafe_allow_html=True)
     
     with col2:
-        if st.button("🌙" if dark_mode else "☀️", key="theme_toggle", use_container_width=True):
+        theme_help = t["theme_tooltip_dark"] if dark_mode else t["theme_tooltip_light"]
+        if st.button("🌙" if dark_mode else "☀️", key="theme_toggle", help=theme_help, use_container_width=True):
             st.session_state.dark_mode = not st.session_state.dark_mode
             st.rerun()
     
     with col3:
         lang_val = st.selectbox(
-            "",
+            t["select_language"],
             ["EN", "FR"],
             index=0 if lang == "EN" else 1,
             label_visibility="collapsed",

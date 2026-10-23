@@ -1,0 +1,3 @@
+## 2026-10-23 - Accessible Streamlit Header Controls and Tooltip Contrast
+**Learning:** Streamlit selectbox components with collapsed labels still require non-empty localized label text so screen readers can parse their accessible name. Additionally, global CSS overrides targeting text tags can render tooltip text unreadable unless `div[data-testid="stTooltipContent"]` is explicitly styled with theme variables.
+**Action:** Always provide descriptive labels on Streamlit selectboxes even when `label_visibility="collapsed"`, and explicitly style `div[data-testid="stTooltipContent"]` in theme CSS.
