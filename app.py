@@ -127,8 +127,8 @@ def apply_modern_css(dark_mode=True):
             --warning: {colors['warning']};
         }}
 
-        /* MAIN APP BACKGROUND */
-        .stApp {{
+        /* MAIN APP BACKGROUND & HEADER FIX */
+        header[data-testid="stHeader"], html, body, .stApp {{
             background-color: var(--bg-primary) !important;
             color: var(--text-primary) !important;
         }}
@@ -188,7 +188,7 @@ def apply_modern_css(dark_mode=True):
         }}
 
         /* BUTTONS - PRIMARY */
-        div.stButton > button {{
+        div.stButton button {{
             background: linear-gradient(135deg, {colors['accent_primary']} 0%, {colors['accent_secondary']} 100%) !important;
             color: white !important;
             border: none !important;
@@ -308,6 +308,18 @@ def apply_modern_css(dark_mode=True):
             h2 {{ font-size: 1.4rem !important; }}
         }}
 
+        /* TOOLTIP STYLING */
+        div[data-testid="stTooltipContent"], div[data-baseweb="tooltip"] {{
+            background-color: var(--bg-tertiary) !important;
+            color: var(--text-primary) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 6px !important;
+        }}
+
+        div[data-testid="stTooltipContent"] p, div[data-baseweb="tooltip"] p {{
+            color: var(--text-primary) !important;
+        }}
+
         /* SCROLLBAR STYLING */
         ::-webkit-scrollbar {{
             width: 8px;
@@ -335,19 +347,24 @@ def render_header(lang, dark_mode):
     """Render modern header with theme/language controls"""
     t = TEXTS[lang]
     
-    col1, col2, col3 = st.columns([8, 1, 1])
+    col1, col2, col3 = st.columns([7, 1.3, 1.7])
     
     with col1:
         st.markdown(f"<h1 style='margin: 0;'>✨ AI Generator PDF417</h1>", unsafe_allow_html=True)
     
     with col2:
-        if st.button("🌙" if dark_mode else "☀️", key="theme_toggle", use_container_width=True):
+        if lang == "FR":
+            theme_help = "Passer au mode clair" if dark_mode else "Passer au mode sombre"
+        else:
+            theme_help = "Switch to Light Mode" if dark_mode else "Switch to Dark Mode"
+        if st.button("🌙" if dark_mode else "☀️", key="theme_toggle", help=theme_help, use_container_width=True):
             st.session_state.dark_mode = not st.session_state.dark_mode
             st.rerun()
     
     with col3:
+        lang_label = "Language" if lang == "EN" else "Langue"
         lang_val = st.selectbox(
-            "",
+            lang_label,
             ["EN", "FR"],
             index=0 if lang == "EN" else 1,
             label_visibility="collapsed",
