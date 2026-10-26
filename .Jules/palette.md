@@ -1,0 +1,3 @@
+## 2026-10-26 - Streamlit Header Canvas & Tooltip Styling in Custom Dark Themes
+**Learning:** In Streamlit applications with custom CSS dark mode, `header[data-testid="stHeader"]` and `html, body` can reveal unstyled light canvas backgrounds, and default `st.button` tooltips (`div[data-testid="stTooltipContent"]`) can render unstyled light popup containers.
+**Action:** Always set `header[data-testid="stHeader"], html, body` to `var(--bg-primary)` in CSS and explicitly style `div[data-testid="stTooltipContent"]` with `var(--bg-tertiary)` and `var(--text-primary)` to guarantee seamless theme rendering.
