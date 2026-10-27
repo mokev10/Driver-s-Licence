@@ -47,6 +47,8 @@ TEXTS = {
     "EN": {
         "theme_dark": "🌙 Dark",
         "theme_light": "☀️ Light",
+        "theme_tip": "Toggle light / dark theme",
+        "lang_label": "Language",
         "sidebar_title": "🪪 Identity Generator",
         "sidebar_info": "Generate realistic digital identities with AI",
         "settings": "⚙️ Settings",
@@ -54,9 +56,11 @@ TEXTS = {
     "FR": {
         "theme_dark": "🌙 Sombre",
         "theme_light": "☀️ Clair",
-        "sidebar_title": "🪪 Générateur d'Identité",
-        "sidebar_info": "Générez des identités numériques réalistes avec l'IA",
-        "settings": "⚙️ Paramètres",
+        "theme_tip": "Basculer le th\u00e8me clair / sombre",
+        "lang_label": "Langue",
+        "sidebar_title": "🪪 G\u00e9n\u00e9rateur d'Identit\u00e9",
+        "sidebar_info": "G\u00e9n\u00e9rez des identit\u00e9s num\u00e9riques r\u00e9alistes avec l'IA",
+        "settings": "⚙️ Param\u00e8tres",
     }
 }
 
@@ -127,10 +131,14 @@ def apply_modern_css(dark_mode=True):
             --warning: {colors['warning']};
         }}
 
-        /* MAIN APP BACKGROUND */
-        .stApp {{
+        /* MAIN APP BACKGROUND & HEADER OVERRIDE */
+        html, body, .stApp {{
             background-color: var(--bg-primary) !important;
             color: var(--text-primary) !important;
+        }}
+
+        header[data-testid="stHeader"] {{
+            background-color: transparent !important;
         }}
 
         /* SIDEBAR */
@@ -335,19 +343,19 @@ def render_header(lang, dark_mode):
     """Render modern header with theme/language controls"""
     t = TEXTS[lang]
     
-    col1, col2, col3 = st.columns([8, 1, 1])
+    col1, col2, col3 = st.columns([7, 1.2, 1.8])
     
     with col1:
         st.markdown(f"<h1 style='margin: 0;'>✨ AI Generator PDF417</h1>", unsafe_allow_html=True)
     
     with col2:
-        if st.button("🌙" if dark_mode else "☀️", key="theme_toggle", use_container_width=True):
+        if st.button("🌙" if dark_mode else "☀️", key="theme_toggle", help=t["theme_tip"], use_container_width=True):
             st.session_state.dark_mode = not st.session_state.dark_mode
             st.rerun()
     
     with col3:
         lang_val = st.selectbox(
-            "",
+            t["lang_label"],
             ["EN", "FR"],
             index=0 if lang == "EN" else 1,
             label_visibility="collapsed",
