@@ -1,0 +1,4 @@
+## 2026-05-06 - Streamlit Header Accessibility and Contrast
+
+**Learning:** In Streamlit applications, icon-only buttons lack accessible names by default unless a descriptive `help` tooltip is provided, which supplies both visible hover feedback and accessible metadata. Additionally, selectboxes with `label_visibility="collapsed"` require a non-empty localized label string to populate the input's `aria-label` attribute for screen readers. In dark theme custom stylesheets, tooltip text must be explicitly styled to prevent white-on-white text rendering inside light tooltip containers.
+**Action:** Always provide localized `help` text on icon-only Streamlit buttons, provide meaningful labels even on collapsed selectboxes, and ensure `stTooltipContent` text color contrasts properly against light tooltips.
