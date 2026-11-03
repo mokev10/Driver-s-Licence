@@ -47,6 +47,8 @@ TEXTS = {
     "EN": {
         "theme_dark": "🌙 Dark",
         "theme_light": "☀️ Light",
+        "theme_tooltip_dark": "Switch to light mode",
+        "theme_tooltip_light": "Switch to dark mode",
         "sidebar_title": "🪪 Identity Generator",
         "sidebar_info": "Generate realistic digital identities with AI",
         "settings": "⚙️ Settings",
@@ -54,6 +56,8 @@ TEXTS = {
     "FR": {
         "theme_dark": "🌙 Sombre",
         "theme_light": "☀️ Clair",
+        "theme_tooltip_dark": "Passer au mode clair",
+        "theme_tooltip_light": "Passer au mode sombre",
         "sidebar_title": "🪪 Générateur d'Identité",
         "sidebar_info": "Générez des identités numériques réalistes avec l'IA",
         "settings": "⚙️ Paramètres",
@@ -161,6 +165,10 @@ def apply_modern_css(dark_mode=True):
 
         p, span, label {{
             color: var(--text-primary) !important;
+        }}
+
+        div[data-testid="stTooltipContent"] p {{
+            color: #111827 !important;
         }}
 
         /* CARDS & CONTAINERS */
@@ -341,7 +349,8 @@ def render_header(lang, dark_mode):
         st.markdown(f"<h1 style='margin: 0;'>✨ AI Generator PDF417</h1>", unsafe_allow_html=True)
     
     with col2:
-        if st.button("🌙" if dark_mode else "☀️", key="theme_toggle", use_container_width=True):
+        tooltip = t["theme_tooltip_dark"] if dark_mode else t["theme_tooltip_light"]
+        if st.button("🌙" if dark_mode else "☀️", key="theme_toggle", help=tooltip, use_container_width=True):
             st.session_state.dark_mode = not st.session_state.dark_mode
             st.rerun()
     
